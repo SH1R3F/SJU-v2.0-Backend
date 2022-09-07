@@ -37,10 +37,11 @@ class SubscribersSeeder extends Seeder
 
           'qualification' => 6,
 
-          'mobile'     => '558170052',
-          'mobile_key' => '966',
-          'email'      => 'moheis@outlook.com',
-          'password'   => Hash::make('secret'),
+          'mobile'      => '558170052',
+          'mobile_key'  => '966',
+          'email'       => 'moheis@outlook.com',
+          'password'    => Hash::make('secret'),
+          'status'      => 1,
 
         ]);
 
@@ -63,11 +64,11 @@ class SubscribersSeeder extends Seeder
 
           'qualification' => 6,
 
-          'mobile'     => '558410052',
-          'mobile_key' => '966',
-          'email'      => 'msadeis@outlook.com',
-          'password'   => Hash::make('secret'),
-
+          'mobile'      => '558410052',
+          'mobile_key'  => '966',
+          'email'       => 'msadeis@outlook.com',
+          'password'    => Hash::make('secret'),
+          'status'      => 0,
         ]);
 
 

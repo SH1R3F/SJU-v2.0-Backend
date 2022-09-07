@@ -48,7 +48,6 @@ class SubscriberController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
           // Account information
-          'national_id' => 'required|unique:subscribers,national_id',
           'email' => 'required|email|unique:subscribers,email',
           'password' => 'required|min:6',
 

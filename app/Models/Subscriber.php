@@ -53,7 +53,6 @@ class Subscriber extends Authenticatable
         'mobile',
         'mobile_key',
         'email',
-        'national_id',
         'password',
 
         'image'
@@ -81,11 +80,9 @@ class Subscriber extends Authenticatable
     public function scopeFilter($query, $request)
     {
 
-      // Filter by national id
-      if ($request->national_id) {
-        $query->where('national_id', 'LIKE', "%{$request->national_id}%");
-      }
-      
+      // Filter by status
+      $query->where('status', $request->status);
+
       // Filter by mobile
       if ($request->mobile) {
         $query->where('mobile', 'LIKE', "%{$request->mobile}%");

@@ -30,12 +30,12 @@ Route::prefix('/admin')->group(function() {
 
 
   Route::controller(SubscriberController::class)->prefix('subscribers')->group(function () {
-      Route::get('/', 'index');
-      Route::get('/show/{subscriber}', 'show');
-      Route::post('/update/{subscriber}', 'update');
-      Route::get('/show/{subscriber}/courses', 'courses');
-      Route::post('/store', 'store');
-      Route::post('/delete/{subscriber}', 'destroy');
+    Route::get('/', 'index');
+    Route::get('/show/{subscriber}', 'show');
+    Route::post('/update/{subscriber}', 'update');
+    Route::get('/show/{subscriber}/courses', 'courses');
+    Route::post('/store', 'store');
+    Route::post('/delete/{subscriber}', 'destroy');
   });
 
 });

@@ -45,9 +45,9 @@ return new class extends Migration
 
             $table->string('mobile');
             $table->string('mobile_key');
-            $table->string('national_id')->unique();
             $table->string('email')->unique();
             $table->string('password');
+            $table->boolean('status')->comment('0: Disabled, 1: Active')->default(0);
 
             $table->string('image')->nullable();
 
