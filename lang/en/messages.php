@@ -13,5 +13,6 @@ return [
 
 
     "successful_update" => "Updated successfully",
-
+    "successful_create" => "Created successfully",
+    "successful_delete" => "Deleted successfully"
 ];

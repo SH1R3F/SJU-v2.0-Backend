@@ -46,7 +46,8 @@ class SubscriberResource extends JsonResource
           "mobile"          => $this->mobile,
           "mobile_key"      => $this->mobile_key,
           "email"           => $this->email,
-          "avatar"          => $this->image ? asset("storage/images/users/3/{$this->image}") : null,
+          "national_id"     => $this->national_id,
+          "avatar"          => $this->image ? asset("storage/subscribers/{$this->id}/images/{$this->image}") : null,
           'courses'         => 11,
           'status'          => 1,
           'created_at'      => $this->created_at->format('d / m / Y')

@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class Subscriber extends Authenticatable
 {
@@ -32,6 +33,7 @@ class Subscriber extends Authenticatable
         'gender',
         'country',
         'city',
+        'nationality',
         'birthday_hijri',
         'birthday_meladi',
 
@@ -49,7 +51,9 @@ class Subscriber extends Authenticatable
         'post_code',
 
         'mobile',
+        'mobile_key',
         'email',
+        'national_id',
         'password',
 
         'image'
@@ -76,16 +80,34 @@ class Subscriber extends Authenticatable
 
     public function scopeFilter($query, $request)
     {
-      if ($request->q) {
-        $query->where('fname_ar', 'LIKE', "%{$request->q}%")
-              ->orWhere('sname_ar', 'LIKE', "%{$request->q}%")
-              ->orWhere('tname_ar', 'LIKE', "%{$request->q}%")
-              ->orWhere('lname_ar', 'LIKE', "%{$request->q}%")
-              ->orWhere('fname_en', 'LIKE', "%{$request->q}%")
-              ->orWhere('sname_en', 'LIKE', "%{$request->q}%")
-              ->orWhere('tname_en', 'LIKE', "%{$request->q}%")
-              ->orWhere('lname_en', 'LIKE', "%{$request->q}%");
+
+      // Filter by national id
+      if ($request->national_id) {
+        $query->where('national_id', 'LIKE', "%{$request->national_id}%");
       }
+      
+      // Filter by mobile
+      if ($request->mobile) {
+        $query->where('mobile', 'LIKE', "%{$request->mobile}%");
+      }
+      
+      // Filter by email
+      if ($request->email) {
+        $query->where('email', 'LIKE', "%{$request->email}%");
+      }
+
+      // Filter by name
+      if ($request->name) {
+        $query->where(DB::raw("CONCAT(`fname_ar`, ' ', `sname_ar`, ' ', `tname_ar`, ' ', `lname_ar` )"), 'LIKE', "%{$request->name}%")
+              ->orWhere(DB::raw("CONCAT(`fname_en`, ' ', `sname_en`, ' ', `tname_en`, ' ', `lname_en` )"), 'LIKE', "%{$request->name}%");
+      }
+
+      // Filter by search
+      if ($request->q) {
+        $query->where(DB::raw("CONCAT(`fname_ar`, ' ', `sname_ar`, ' ', `tname_ar`, ' ', `lname_ar` )"), 'LIKE', "%{$request->q}%")
+              ->orWhere(DB::raw("CONCAT(`fname_en`, ' ', `sname_en`, ' ', `tname_en`, ' ', `lname_en` )"), 'LIKE', "%{$request->q}%");
+      }
+      
       return $query;
     }
 

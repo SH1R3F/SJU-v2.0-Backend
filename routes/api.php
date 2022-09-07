@@ -34,6 +34,8 @@ Route::prefix('/admin')->group(function() {
       Route::get('/show/{subscriber}', 'show');
       Route::post('/update/{subscriber}', 'update');
       Route::get('/show/{subscriber}/courses', 'courses');
+      Route::post('/store', 'store');
+      Route::post('/delete/{subscriber}', 'destroy');
   });
 
 });

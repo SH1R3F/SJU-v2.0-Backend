@@ -6,6 +6,7 @@ use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\SubscriberResource;
 
@@ -44,7 +45,41 @@ class SubscriberController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validation
+        $validator = Validator::make($request->all(), [
+          // Account information
+          'national_id' => 'required|unique:subscribers,national_id',
+          'email' => 'required|email|unique:subscribers,email',
+          'password' => 'required|min:6',
+
+          // Personal information
+          'fname_ar'        => 'required|min:3',
+          'sname_ar'        => 'required|min:3',
+          'tname_ar'        => 'required|min:3',
+          'lname_ar'        => 'required|min:3',
+          'gender'          => 'required|in:0,1',
+          'mobile'          => 'required',
+          'mobile_key'      => 'required',
+          'country'         => 'required',
+          'city'            => 'required',
+          'nationality'     => 'required',
+        ]);
+
+        if ($validator->fails()) {
+          return response()->json($validator->errors(), 400);
+        }
+
+        // Hash password
+        $request->merge(['password' => Hash::make($request->password)]);
+
+        // Update
+        $subscriber = Subscriber::create($request->all());
+
+        return response()->json([
+          'message' => __('messages.successful_create'),
+          'subscriber' => new SubscriberResource($subscriber)
+        ], 200);
+
     }
 
     /**
@@ -94,7 +129,7 @@ class SubscriberController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
           // Account information
-          'email' => 'nullable|email|unique:subscribers,email,' . $subscriber->id,
+          'subscriberEmail' => 'nullable|email|unique:subscribers,email,' . $subscriber->id,
           'password' => 'nullable|min:6|confirmed',
 
           // Personal information
@@ -124,18 +159,41 @@ class SubscriberController extends Controller
           'worktel_ext'     => 'nullable',
           'fax'             => 'nullable',
           'fax_ext'         => 'nullable',
-          'mobile'          => 'required',
-          'mobile_key'      => 'required',
+          'mobile'          => 'nullable',
+          'mobile_key'      => 'nullable',
         ]);
 
         if ($validator->fails()) {
           return response()->json($validator->errors(), 400);
         } 
 
+        // Subscriber email
+        if ($request->subscriberEmail) {
+          $request->merge(['email' => $request->subscriberEmail]);
+        }
+
         // Hash password
         if ($request->password) {
           $request->merge(['password' => Hash::make($request->password)]);
         }
+
+        // Update Avatar
+        if ($request->avatar) {
+          $base64Image  = explode(";base64,", $request->avatar);
+          $explodeImage = explode("image/", $base64Image[0]);
+          $imageType    = $explodeImage[1];
+          $image_base64 = base64_decode($base64Image[1]);
+          $imageName    = uniqid() . '.'.$imageType;
+          Storage::disk('public')->put("subscribers/{$subscriber->id}/images/{$imageName}", $image_base64);
+          $request->merge(['image' => $imageName]);
+
+        } else if($subscriber->image) { // If subscriber had avatar then deleted.
+          // Delete file from disk
+          Storage::disk('public')->delete("subscribers/{$subscriber->id}/images/{$subscriber->image}");
+          // Null db value
+          $request->merge(['image' => null]);
+        }
+
 
         // Update
         $subscriber->update($request->all());
@@ -149,11 +207,18 @@ class SubscriberController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  Subscriber  $subscriber
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Subscriber $subscriber)
     {
-        //
+        // Delete his files on desk
+        Storage::disk('public')->delete("subscribers/{$subscriber->id}");
+
+        // Delete database record
+        $subscriber->delete();
+        return response()->json([
+          'message' => __('messages.successful_delete')
+        ], 200);
     }
 }

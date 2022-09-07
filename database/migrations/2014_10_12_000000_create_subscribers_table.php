@@ -19,18 +19,18 @@ return new class extends Migration
             $table->string('sname_ar');
             $table->string('tname_ar');
             $table->string('lname_ar');
-            $table->string('fname_en');
-            $table->string('sname_en');
-            $table->string('tname_en');
-            $table->string('lname_en');
+            $table->string('fname_en')->nullable();
+            $table->string('sname_en')->nullable();
+            $table->string('tname_en')->nullable();
+            $table->string('lname_en')->nullable();
             $table->boolean('gender')->comment('0: Male, 1: Female');
             $table->string('country');
             $table->string('city');
             $table->string('nationality');
-            $table->date('birthday_hijri');
-            $table->date('birthday_meladi');
+            $table->date('birthday_hijri')->nullable();
+            $table->date('birthday_meladi')->nullable();
 
-            $table->string('qualification');
+            $table->string('qualification')->nullable();
             $table->string('major')->nullable();
             $table->string('job_title')->nullable();
             $table->string('employer')->nullable();
@@ -43,8 +43,9 @@ return new class extends Migration
             $table->string('post_box')->nullable();
             $table->string('post_code')->nullable();
 
-            $table->string('mobile')->unique();
+            $table->string('mobile');
             $table->string('mobile_key');
+            $table->string('national_id')->unique();
             $table->string('email')->unique();
             $table->string('password');
 
