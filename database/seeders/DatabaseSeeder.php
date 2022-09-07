@@ -4,7 +4,14 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Database\Seeders\SubscribersSeeder;
+use Database\Seeders\Courses\TypesSeeder;
+use Database\Seeders\Courses\CoursesSeeder;
+use Database\Seeders\Courses\GendersSeeder;
+use Database\Seeders\Courses\LocationsSeeder;
+use Database\Seeders\Courses\TemplatesSeeder;
+use Database\Seeders\Courses\CategoriesSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
+use Database\Seeders\Courses\QuestionnairesSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
@@ -19,6 +26,13 @@ class DatabaseSeeder extends Seeder
       $this->call([
         RolesAndPermissionsSeeder::class,
         SubscribersSeeder::class,
+        TypesSeeder::class,
+        GendersSeeder::class,
+        LocationsSeeder::class,
+        CategoriesSeeder::class,
+        TemplatesSeeder::class,
+        QuestionnairesSeeder::class,
+        CoursesSeeder::class,
       ]);
     }
 }
