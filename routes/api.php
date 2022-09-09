@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\Course\TypeController;
 use App\Http\Controllers\Api\Admin\Course\GenderController;
 use App\Http\Controllers\Api\Admin\Course\CategoryController;
 use App\Http\Controllers\Api\Admin\Course\LocationController;
+use App\Http\Controllers\Api\Admin\Course\TemplateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +106,17 @@ Route::prefix('/admin')->group(function() {
       });
 
     }); // namings
+
+      /**
+       * Templates routes
+       */
+      Route::controller(TemplateController::class)->prefix('templates')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/show/{template}', 'show');
+        Route::post('/update/{template}', 'update');
+        Route::post('/store', 'store');
+        Route::post('/delete/{template}', 'destroy');
+      });
 
   }); // courses
 

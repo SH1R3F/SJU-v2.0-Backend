@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\Admin\Course;
 use Illuminate\Http\Request;
 use App\Models\Course\Category;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\Course\NamingResource;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -23,16 +25,6 @@ class CategoryController extends Controller
           'total'   => Category::all()->count(),
           'namings' => NamingResource::collection($categories)
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**

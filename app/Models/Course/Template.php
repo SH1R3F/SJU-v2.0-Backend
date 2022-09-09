@@ -20,4 +20,25 @@ class Template extends Model
       'language',
       'layout'
     ];
+
+    public function scopeFilter($query, $request)
+    {
+
+      // Filter by search
+      if ($request->q) {
+        $query->where("name", 'LIKE', "%{$request->q}%");
+      }
+      
+      return $query;
+    }
+
+    public function scopeSortData($query, $request)
+    {
+      $sortBy   = $request->sortBy;
+      $sortType = $request->sortDesc == 'true' ? 'DESC' : 'ASC';
+
+      return $query->orderBy($sortBy, $sortType);
+    }
+
+
 }

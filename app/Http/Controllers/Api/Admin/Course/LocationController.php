@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\Admin\Course;
 use Illuminate\Http\Request;
 use App\Models\Course\Location;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\Course\NamingResource;
+use Illuminate\Support\Facades\Storage;
 
 class LocationController extends Controller
 {
