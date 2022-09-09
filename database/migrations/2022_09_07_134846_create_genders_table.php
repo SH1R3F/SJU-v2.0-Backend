@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('description_ar')->nullable();
             $table->string('description_en')->nullable();
             $table->string('image')->nullable();
-            $table->boolean('status')->comment('0: Disabled, 1: Active');
+            $table->boolean('status')->default(1)->comment('0: Disabled, 1: Active');
             $table->timestamps();
         });
     }

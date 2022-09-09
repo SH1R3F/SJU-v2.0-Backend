@@ -22,6 +22,7 @@ return new class extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
+            $table->string('SN')->unique();
             $table->string('name_ar');
             $table->string('name_en');
             $table->string('region');

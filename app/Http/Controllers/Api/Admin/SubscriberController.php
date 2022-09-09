@@ -15,6 +15,7 @@ class SubscriberController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -22,8 +23,8 @@ class SubscriberController extends Controller
 
         $subscribers = Subscriber::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
         return response()->json([
-          'total' => Subscriber::count(),
-          'users' => SubscriberResource::collection($subscribers)
+          'total'       => Subscriber::filter($request)->get()->count(),
+          'subscribers' => SubscriberResource::collection($subscribers)
         ]);
     }
 
