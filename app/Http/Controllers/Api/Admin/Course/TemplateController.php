@@ -89,7 +89,6 @@ class TemplateController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
           'name'         => 'required|min:3',
-          'templatefile' => 'required|file',
           'language'     => 'required',
           'layout'       => 'required'
         ]);

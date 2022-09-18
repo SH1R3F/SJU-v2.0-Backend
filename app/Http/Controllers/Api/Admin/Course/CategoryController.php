@@ -102,20 +102,27 @@ class CategoryController extends Controller
 
         // Upload Image
         if ($request->image) {
-          $base64Image  = explode(";base64,", $request->image);
-          $explodeImage = explode("image/", $base64Image[0]);
-          $imageCategory    = $explodeImage[1];
-          $image_base64 = base64_decode($base64Image[1]);
-          $imageName    = uniqid() . '.'.$imageCategory;
-          // Delete the previous image
-          Storage::disk('public')->delete("courses/namings/images/{$category->image}");
-          // Save the new image
-          Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
-          $request->merge(['image' => $imageName]);
+
+          if (str_starts_with($request->image, 'data:image')) {
+            $base64Image  = explode(";base64,", $request->image);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageCategory    = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName    = uniqid() . '.'.$imageCategory;
+            // Delete the previous image
+            Storage::disk('public')->delete("courses/namings/images/{$category->image}");
+            // Save the new image
+            Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
+            $request->merge(['image' => $imageName]);
+          } else {
+            $request->merge(['image' => $category->image]);
+          }
+          
         } else if($category->image) {
           // Delete the previous image
           Storage::disk('public')->delete("courses/namings/images/{$category->image}");
         }
+
 
         // Store in database
         $category->update($request->all());

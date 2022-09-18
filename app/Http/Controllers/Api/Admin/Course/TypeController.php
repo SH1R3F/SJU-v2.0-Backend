@@ -112,23 +112,26 @@ class TypeController extends Controller
 
         // Upload Image
         if ($request->image) {
-          $base64Image  = explode(";base64,", $request->image);
-          $explodeImage = explode("image/", $base64Image[0]);
-          $imageType    = $explodeImage[1];
-          $image_base64 = base64_decode($base64Image[1]);
-          $imageName    = uniqid() . '.'.$imageType;
-          // Delete the previous image
-          Storage::disk('public')->delete("courses/namings/images/{$type->image}");
-          // Save the new image
-          Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
-          $request->merge(['image' => $imageName]);
-        } else if($type->image) {
-          // Delete the previous image
+          if (str_starts_with($request->image, 'data:image')) {
+            $base64Image  = explode(";base64,", $request->image);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageType    = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName    = uniqid() . '.'.$imageType;
+            // Delete the previous image
+            Storage::disk('public')->delete("courses/namings/images/{$type->image}");
+            // Save the new image
+            Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
+            $request->merge(['image' => $imageName]);
+          } else {
+            $request->merge(['image' => $type->image]);
+          }
+        } else if($type->image) {// Delete the previous image
           Storage::disk('public')->delete("courses/namings/images/{$type->image}");
         }
 
         // Store in database
-        $type->update($request->all());
+        $gender->update($request->all());
 
         return response()->json([
           'message' => __('messages.successful_update'),

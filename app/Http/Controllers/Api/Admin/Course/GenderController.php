@@ -112,18 +112,21 @@ class GenderController extends Controller
 
         // Upload Image
         if ($request->image) {
-          $base64Image  = explode(";base64,", $request->image);
-          $explodeImage = explode("image/", $base64Image[0]);
-          $imageGender    = $explodeImage[1];
-          $image_base64 = base64_decode($base64Image[1]);
-          $imageName    = uniqid() . '.'.$imageGender;
-          // Delete the previous image
-          Storage::disk('public')->delete("courses/namings/images/{$gender->image}");
-          // Save the new image
-          Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
-          $request->merge(['image' => $imageName]);
-        } else if($gender->image) {
-          // Delete the previous image
+          if (str_starts_with($request->image, 'data:image')) {
+            $base64Image  = explode(";base64,", $request->image);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageGender    = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName    = uniqid() . '.'.$imageGender;
+            // Delete the previous image
+            Storage::disk('public')->delete("courses/namings/images/{$gender->image}");
+            // Save the new image
+            Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
+            $request->merge(['image' => $imageName]);
+          } else {
+            $request->merge(['image' => $gender->image]);
+          }
+        } else if($gender->image) {// Delete the previous image
           Storage::disk('public')->delete("courses/namings/images/{$gender->image}");
         }
 

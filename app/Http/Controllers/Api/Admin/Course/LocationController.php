@@ -112,16 +112,20 @@ class LocationController extends Controller
 
         // Upload Image
         if ($request->image) {
-          $base64Image  = explode(";base64,", $request->image);
-          $explodeImage = explode("image/", $base64Image[0]);
-          $imageLocation    = $explodeImage[1];
-          $image_base64 = base64_decode($base64Image[1]);
-          $imageName    = uniqid() . '.'.$imageLocation;
-          // Delete the previous image
-          Storage::disk('public')->delete("courses/namings/images/{$location->image}");
-          // Save the new image
-          Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
-          $request->merge(['image' => $imageName]);
+          if (str_starts_with($request->image, 'data:image')) {
+            $base64Image  = explode(";base64,", $request->image);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageLocation    = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName    = uniqid() . '.'.$imageLocation;
+            // Delete the previous image
+            Storage::disk('public')->delete("courses/namings/images/{$location->image}");
+            // Save the new image
+            Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
+            $request->merge(['image' => $imageName]);
+          } else {
+            $request->merge(['image' => $location->image]);
+          }
         } else if($location->image) {
           // Delete the previous image
           Storage::disk('public')->delete("courses/namings/images/{$location->image}");

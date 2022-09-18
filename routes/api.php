@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Admin\Course\GenderController;
 use App\Http\Controllers\Api\Admin\Course\CategoryController;
 use App\Http\Controllers\Api\Admin\Course\LocationController;
 use App\Http\Controllers\Api\Admin\Course\TemplateController;
+use App\Http\Controllers\Api\Admin\Course\QuestionnaireController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,14 +39,8 @@ Route::prefix('/admin')->group(function() {
    * Subscribers routes
    * list, show, update, store, and delete
    */
-  Route::controller(SubscriberController::class)->prefix('subscribers')->group(function () {
-    Route::get('/', 'index');
-    Route::get('/show/{subscriber}', 'show');
-    Route::post('/update/{subscriber}', 'update');
-    Route::get('/show/{subscriber}/courses', 'courses');
-    Route::post('/store', 'store');
-    Route::post('/delete/{subscriber}', 'destroy');
-  });
+  Route::get('subscribers/show/{subscriber}/courses', [ SubscriberController::class, 'courses' ]);
+  Route::resource('subscribers', SubscriberController::class)->except(['edit', 'create']);
 
   /**
    * Courses routes
@@ -60,63 +55,38 @@ Route::prefix('/admin')->group(function() {
       /**
        * Types routes
        */
-      Route::controller(TypeController::class)->prefix('type')->group(function () {
-        Route::get('/', 'index');
-        Route::get('/show/{type}', 'show');
-        Route::post('/update/{type}', 'update');
-        Route::post('/toggle/{type}', 'toggle');
-        Route::post('/store', 'store');
-        Route::post('/delete/{type}', 'destroy');
-      });
+      Route::post('type/toggle/{type}', [ TypeController::class, 'toggle' ]);
+      Route::resource('type', TypeController::class)->except(['edit', 'create']);
 
       /**
        * Categories routes
        */
-      Route::controller(CategoryController::class)->prefix('category')->group(function () {
-        Route::get('/', 'index');
-        Route::get('/show/{category}', 'show');
-        Route::post('/update/{category}', 'update');
-        Route::post('/toggle/{category}', 'toggle');
-        Route::post('/store', 'store');
-        Route::post('/delete/{category}', 'destroy');
-      });
+      Route::post('category/toggle/{category}', [ CategoryController::class, 'toggle' ]);
+      Route::resource('category', CategoryController::class)->except(['edit', 'create']);
 
       /**
        * Genders routes
        */
-      Route::controller(GenderController::class)->prefix('gender')->group(function () {
-        Route::get('/', 'index');
-        Route::get('/show/{gender}', 'show');
-        // Route::post('/update/{gender}', 'update');
-        Route::post('/toggle/{gender}', 'toggle');
-        // Route::post('/store', 'store');
-        // Route::post('/delete/{gender}', 'destroy');
-      });
+      Route::post('gender/toggle/{gender}', [ GenderController::class, 'toggle' ]);
+      Route::resource('gender', GenderController::class)->except(['edit', 'create', 'update', 'store', 'delete']);
 
       /**
-       * Categories routes
+       * Locations routes
        */
-      Route::controller(LocationController::class)->prefix('location')->group(function () {
-        Route::get('/', 'index');
-        Route::get('/show/{location}', 'show');
-        Route::post('/update/{location}', 'update');
-        Route::post('/toggle/{location}', 'toggle');
-        Route::post('/store', 'store');
-        Route::post('/delete/{location}', 'destroy');
-      });
+      Route::post('location/toggle/{location}', [ LocationController::class, 'toggle' ]);
+      Route::resource('location', LocationController::class)->except(['edit', 'create']);
 
     }); // namings
 
       /**
        * Templates routes
        */
-      Route::controller(TemplateController::class)->prefix('templates')->group(function () {
-        Route::get('/', 'index');
-        Route::get('/show/{template}', 'show');
-        Route::post('/update/{template}', 'update');
-        Route::post('/store', 'store');
-        Route::post('/delete/{template}', 'destroy');
-      });
+      Route::resource('templates', TemplateController::class)->except(['edit', 'create']);
+
+      /**
+       * Questionnaires routes
+       */
+      Route::resource('questionnaires', QuestionnaireController::class)->except(['edit', 'create']);
 
   }); // courses
 

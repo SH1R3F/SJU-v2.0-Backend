@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name_ar');
             $table->string('name_en')->nullable();
-            $table->integer('status')->comment('0: Disabled, 1: Active');
+            $table->boolean('status')->default(1)->comment('0: Disabled, 1: Active');
             $table->timestamps();
         });
     }
