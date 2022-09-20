@@ -2,8 +2,9 @@
 
 namespace App\Models\Course;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Course\Course;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Template extends Model
 {
@@ -38,6 +39,16 @@ class Template extends Model
       $sortType = $request->sortDesc == 'true' ? 'DESC' : 'ASC';
 
       return $query->orderBy($sortBy, $sortType);
+    }
+
+    
+    /**
+     * Get all of the courses for the Type
+     *
+     */
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
     }
 
 

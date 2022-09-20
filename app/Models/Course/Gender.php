@@ -2,8 +2,9 @@
 
 namespace App\Models\Course;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Course\Course;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Gender extends Model
 {
@@ -48,6 +49,16 @@ class Gender extends Model
       }
 
       return $query->orderBy($sortBy, $sortType);
+    }
+
+    
+    /**
+     * Get all of the courses for the Type
+     *
+     */
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
     }
 
 }
