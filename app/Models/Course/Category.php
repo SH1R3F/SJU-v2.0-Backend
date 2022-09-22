@@ -44,7 +44,12 @@ class Category extends Model
       $sortType = $request->sortDesc == 'true' ? 'DESC' : 'ASC';
 
       if ($sortBy == 'name') {
-        $query->orderBy("name_ar $sortType");
+        if (app()->getLocale() == 'ar') {
+          $query->orderBy("name_ar", $sortType);
+        } else {
+          $query->orderBy("name_en", $sortType);
+        }
+
         return $query;
       }
 

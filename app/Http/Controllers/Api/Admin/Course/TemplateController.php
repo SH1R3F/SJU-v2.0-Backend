@@ -47,7 +47,7 @@ class TemplateController extends Controller
           return response()->json($validator->errors(), 400);
         }
 
-        // Upload Image
+        // Upload Template file
         if ($request->hasFile('templatefile')) {
           // Save the new file
           $file = $request->file('templatefile');
@@ -108,6 +108,9 @@ class TemplateController extends Controller
           $name = uniqid() . '.' . $file->extension();
           $file->storeAs("/courses/templates/", $name, 'public');
           $request->merge(['file' => $name]);
+
+          // Delete the previous if exists
+          Storage::disk('public')->delete("courses/templates/{$template->file}");
         }
 
         // Store in database

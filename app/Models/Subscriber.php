@@ -114,7 +114,11 @@ class Subscriber extends Authenticatable
       $sortType = $request->sortDesc == 'true' ? 'DESC' : 'ASC';
 
       if ($sortBy == 'subscriber') {
-        $query->orderByRaw("CONCAT(fname_ar, sname_ar, tname_ar, lname_ar) $sortType");
+        if (app()->getLocale() == 'ar') {
+          $query->orderByRaw("CONCAT(fname_ar, sname_ar, tname_ar, lname_ar) $sortType");
+        } else {
+          $query->orderByRaw("CONCAT(fname_en, sname_en, tname_en, lname_en) $sortType");
+        }
         return $query;
       }
 

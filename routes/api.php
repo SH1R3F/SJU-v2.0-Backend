@@ -10,6 +10,7 @@ use App\Models\Course\Template;
 use App\Models\Course\Questionnaire;
 use Illuminate\Support\Facades\Route;
 use App\Http\Resources\Admin\Course\NamingResource;
+use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
 use App\Http\Controllers\Api\Admin\SubscriberController;
@@ -44,6 +45,12 @@ Route::prefix('/admin')->group(function() {
     return 'Home works only if authenticated!';
   })->middleware('auth:api-admins');
 
+
+  /**
+   * Members routes
+   * list, show, update, store, and delete
+   */
+  Route::resource('members', MemberController::class)->except(['edit', 'create']);
 
   /**
    * Subscribers routes
