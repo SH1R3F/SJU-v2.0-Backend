@@ -13,6 +13,7 @@ use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
+use App\Http\Controllers\Api\Admin\VolunteerController;
 use App\Http\Controllers\Api\Admin\SubscriberController;
 use App\Http\Controllers\Api\Admin\Course\TypeController;
 use App\Http\Resources\Admin\Course\QuestionnaireResource;
@@ -58,6 +59,13 @@ Route::prefix('/admin')->group(function() {
    */
   Route::get('subscribers/show/{subscriber}/courses', [ SubscriberController::class, 'courses' ]);
   Route::resource('subscribers', SubscriberController::class)->except(['edit', 'create']);
+
+  /**
+   * Volunteers routes
+   * list, show, update, store, and delete
+   */
+  Route::get('volunteers/show/{volunteer}/courses', [ VolunteerController::class, 'courses' ]);
+  Route::resource('volunteers', VolunteerController::class)->except(['edit', 'create']);
 
   /**
    * Courses routes

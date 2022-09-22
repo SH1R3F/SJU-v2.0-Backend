@@ -8,12 +8,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Subscriber extends Authenticatable
+class Volunteer extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-
-    protected $guard = 'api-subscribers';
+    protected $guard = 'api-volunteers';
 
     /**
      * The attributes that are mass assignable.
@@ -113,7 +112,7 @@ class Subscriber extends Authenticatable
       $sortBy   = $request->sortBy;
       $sortType = $request->sortDesc == 'true' ? 'DESC' : 'ASC';
 
-      if ($sortBy == 'subscriber') {
+      if ($sortBy == 'volunteer') {
         if (app()->getLocale() == 'ar') {
           $query->orderByRaw("CONCAT(fname_ar, sname_ar, tname_ar, lname_ar) $sortType");
         } else {
@@ -129,4 +128,5 @@ class Subscriber extends Authenticatable
 
       return $query->orderBy($sortBy, $sortType);
     }
+
 }
