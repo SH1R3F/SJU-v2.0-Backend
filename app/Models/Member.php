@@ -105,7 +105,9 @@ class Member extends Model
     {
 
       // Filter by status
-      // $query->where('status', $request->status);
+      if ($request->status !== 'all') {
+        $query->where('status', $request->status);
+      }
 
       // Filter by mobile
       if ($request->mobile) {
