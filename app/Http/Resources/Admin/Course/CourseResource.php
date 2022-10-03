@@ -54,7 +54,11 @@ class CourseResource extends JsonResource
           'questionnaire' => $this->questionnaire,
           'attendance_duration' => $this->attendance_duration,
           'status' => $this->status,
-          'created_at' => $this->created_at->format('Y/m/d')
+          'created_at' => $this->created_at->format('Y/m/d'),
+          'users'  => $this->users ? $this->users->count() : null,
+          'passed' => $this->passed,
+          'unpassed' => $this->users ? ($this->users->count() - $this->passed) : null,
+          'pivot' => $this->pivot
         ];
     }
 }

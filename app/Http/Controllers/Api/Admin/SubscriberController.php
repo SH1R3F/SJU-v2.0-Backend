@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\SubscriberResource;
+use App\Http\Resources\Admin\Course\CourseResource;
 
 class SubscriberController extends Controller
 {
@@ -97,25 +98,18 @@ class SubscriberController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  Subscriber  $subscriber
      * @return \Illuminate\Http\Response
      */
-    public function courses(Request $request)
+    public function courses(Subscriber $subscriber)
     {
-
-        $courses = [];
-        return $courses;
+      $courses = $subscriber->courses()->withPivot('attendance')->get();;
+      return response()->json([
+          'total'       => $courses->count(),
+          'courses' => CourseResource::collection($courses)
+      ], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

@@ -62,5 +62,10 @@ class CoursesSeeder extends Seeder
         Course::create($record);
       });
 
+      // Add members, subscribers, volunteers to first course
+      $course = Course::first();
+      $course->members()->sync([1,3,4]);
+      $course->subscribers()->sync([1,2]);
+      $course->volunteers()->sync([1,2]);
     }
 }

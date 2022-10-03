@@ -87,12 +87,6 @@ Route::prefix('/admin')->group(function() {
     Route::get('volunteers/show/{volunteer}/courses', [ VolunteerController::class, 'courses' ]);
     Route::resource('volunteers', VolunteerController::class)->except(['edit', 'create']);
   
-    /**
-     * Courses routes
-     */
-    Route::get('/courses/{course}/enrollers', [courseController::class, 'enrollers']);
-    Route::resource('/courses', CourseController::class)->except(['edit', 'ceate']);
-  
     Route::prefix('courses')->group(function () {
   
       /**
@@ -153,6 +147,15 @@ Route::prefix('/admin')->group(function() {
         Route::resource('questionnaires', QuestionnaireController::class)->except(['edit', 'create']);
   
     }); // courses
+
+    /**
+     * Courses routes
+     */
+    Route::get('/courses/{course}/enrollers', [courseController::class, 'enrollers']);
+    Route::post('/courses/{course}/enrollers/{type}/{id}', [courseController::class, 'togglePass']);
+    Route::delete('/courses/{course}/enrollers/{type}/{id}', [courseController::class, 'deleteEnroller']);
+    Route::resource('/courses', CourseController::class)->except(['edit', 'ceate']);
+  
 
   });
 

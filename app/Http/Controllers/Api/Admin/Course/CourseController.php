@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Admin\Course;
 
+use App\Models\Member;
+use App\Models\Volunteer;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use App\Models\Course\Course;
@@ -9,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\SubscriberResource;
 use App\Http\Resources\Admin\Course\CourseResource;
+use App\Http\Resources\Admin\Course\EnrollersResource;
 
 class CourseController extends Controller
 {
@@ -203,14 +206,60 @@ class CourseController extends Controller
 
     public function enrollers(Course $course)
     {
-      /**
-       * UNFINISHED WORK: Till we add members, volunteers and add the table connects them to courses..
-       */
-      $subscribers = Subscriber::all();
+      // Fetching all enrollers in this course
       return response()->json([
-        'total'     => Subscriber::all()->count(),
-        'enrollers' => SubscriberResource::collection($subscribers)
+        'total'     => $course->users->count(),
+        'enrollers' => EnrollersResource::collection($course->users)
       ]);
+    }
+
+    public function togglePass(Course $course, $type, $id)
+    {
+      switch($type) {
+        case 'member':
+          $user = $course->members->where('id', $id)->first();
+          break;
+
+        case 'subscriber':
+          $user = $course->subscribers->where('id', $id)->first();
+          break;
+
+        case 'volunteer':
+          $user = $course->volunteers->where('id', $id)->first();
+          break;
+
+      }
+      $user->pivot->attendance = !$user->pivot->attendance;
+      $user->pivot->save();
+
+      return response()->json([
+        'message' => __('messages.successful_update'),
+      ], 200);
+
+    }
+
+    public function deleteEnroller(Course $course, $type, $id)
+    {
+      switch($type) {
+        case 'member':
+          $user = $course->members->where('id', $id)->first();
+          break;
+
+        case 'subscriber':
+          $user = $course->subscribers->where('id', $id)->first();
+          break;
+
+        case 'volunteer':
+          $user = $course->volunteers->where('id', $id)->first();
+          break;
+
+      }
+      $user->pivot->delete();
+
+      return response()->json([
+        'message' => __('messages.successful_delete'),
+      ], 200);
+
     }
 
     private function SN()

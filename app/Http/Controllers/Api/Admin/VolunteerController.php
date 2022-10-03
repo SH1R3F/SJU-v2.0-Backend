@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Volunteer;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\VolunteerResource;
+use App\Http\Resources\Admin\Course\CourseResource;
 
 class VolunteerController extends Controller
 {
@@ -97,13 +98,16 @@ class VolunteerController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  Volunteer  $volunteer
      * @return \Illuminate\Http\Response
      */
-    public function courses(Request $request)
+    public function courses(Request $request, Volunteer $volunteer)
     {
-
-        $courses = [];
-        return $courses;
+      $courses = $volunteer->courses()->withPivot('attendance')->get();;
+      return response()->json([
+          'total'   => $courses->count(),
+          'courses' => CourseResource::collection($courses)
+      ], 200);
     }
 
     /**

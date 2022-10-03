@@ -2,6 +2,9 @@
 
 namespace App\Models\Course;
 
+use App\Models\Member;
+use App\Models\Volunteer;
+use App\Models\Subscriber;
 use App\Models\Course\Category;
 use App\Models\Course\Template;
 use App\Models\Course\Questionnaire;
@@ -35,8 +38,6 @@ class Course extends Model
     protected $casts = [
       'days' => 'array'  
     ];
-
-    
 
 
     public function scopeFilter($query, $request)
@@ -168,4 +169,32 @@ class Course extends Model
         return $this->belongsTo(Questionnaire::class);
     }
 
+    public function members()
+    {
+        return $this->morphedByMany(Member::class, 'courseable', 'course_user')->withPivot('attendance');
+    }
+
+    public function subscribers()
+    {
+        return $this->morphedByMany(Subscriber::class, 'courseable', 'course_user')->withPivot('attendance');
+    }
+
+    public function volunteers()
+    {
+        return $this->morphedByMany(Volunteer::class, 'courseable', 'course_user')->withPivot('attendance');
+    }
+
+    public function getUsersAttribute()
+    {
+      $concatenated = $this->members->concat($this->subscribers)->concat($this->volunteers);
+      return $concatenated;
+    }
+
+    public function getPassedAttribute()
+    {
+      $members     = $this->members()->wherePivot('attendance', 1)->count();
+      $subscribers = $this->subscribers()->wherePivot('attendance', 1)->count();
+      $volunteers  = $this->volunteers()->wherePivot('attendance', 1)->count();
+      return $members + $subscribers + $volunteers;
+    }
 }

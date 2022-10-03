@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Courseable;
+use App\Models\Course\Course;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Member extends Authenticatable
 {
@@ -178,4 +180,8 @@ class Member extends Authenticatable
       return !empty($sortBy) ? $query->orderBy($sortBy, $sortType) : $query;
     }
 
+    public function courses()
+    {
+      return $this->morphToMany(Course::class, 'courseable', 'course_user');
+    }
 }
