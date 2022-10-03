@@ -164,7 +164,7 @@ class GenderController extends Controller
     public function destroy(Gender $gender)
     {
         // Delete his files on desk
-        Storage::disk('public')->delete("courses/namings/images/{$gender->image}");
+        Storage::disk('public')->deleteDirectory("courses/namings/images/{$gender->image}");
 
         // Delete database record
         $gender->delete();

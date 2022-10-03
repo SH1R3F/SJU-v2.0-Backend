@@ -107,17 +107,6 @@ class VolunteerController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -179,14 +168,17 @@ class VolunteerController extends Controller
 
         // Update Avatar
         if ($request->avatar) {
-          $base64Image  = explode(";base64,", $request->avatar);
-          $explodeImage = explode("image/", $base64Image[0]);
-          $imageType    = $explodeImage[1];
-          $image_base64 = base64_decode($base64Image[1]);
-          $imageName    = uniqid() . '.'.$imageType;
-          Storage::disk('public')->put("volunteers/{$volunteer->id}/images/{$imageName}", $image_base64);
-          $request->merge(['image' => $imageName]);
-
+          if (str_starts_with($request->avatar, 'data:image')) {
+            $base64Image  = explode(";base64,", $request->avatar);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageType    = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName    = uniqid() . '.'.$imageType;
+            Storage::disk('public')->put("volunteers/{$volunteer->id}/images/{$imageName}", $image_base64);
+            $request->merge(['image' => $imageName]);
+          } else {
+            $request->merge(['image' => $volunteer->image]);
+          }
         } else if($volunteer->image) { // If volunteer had avatar then deleted.
           // Delete file from disk
           Storage::disk('public')->delete("volunteers/{$volunteer->id}/images/{$volunteer->image}");
@@ -213,7 +205,7 @@ class VolunteerController extends Controller
     public function destroy(Volunteer $volunteer)
     {
         // Delete his files on desk
-        Storage::disk('public')->delete("volunteers/{$volunteer->id}");
+        Storage::disk('public')->deleteDirectory("volunteers/{$volunteer->id}");
 
         // Delete database record
         $volunteer->delete();

@@ -192,7 +192,7 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         // Delete his files on desk
-        // Storage::disk('public')->delete("courses/namings/images/{$category->image}");
+        // Storage::disk('public')->deleteDirectory("courses/namings/images/{$category->image}");
 
         // Delete database record
         $course->delete();

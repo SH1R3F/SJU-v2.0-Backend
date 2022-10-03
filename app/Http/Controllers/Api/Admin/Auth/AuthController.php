@@ -31,9 +31,12 @@ class AuthController extends Controller
         return response(['message' => 'invalid login credentials'], 422);
       }
 
+      // Revoking previous tokens
+      $admin->tokens()->delete();
+
       return response([
         'userData'  => new AdminResource($admin),
-        'accessToken' => $admin->createToken('accessToken')
+        'accessToken' => $admin->createToken('accessToken', ['server-update'])->plainTextToken
       ]);
 
     }

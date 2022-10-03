@@ -14,23 +14,32 @@ class AdminResource extends JsonResource
      */
     public function toArray($request)
     {
+        $permissions = $this->roles()->first() ? $this->roles()->first()->permissions()->pluck('name') : [];
+        $abilities = [
+          [
+            'action'  => 'read',
+            'subject' => 'dashboard',
+          ],
+          [
+            'action'  => 'read',
+            'subject' => 'all',
+          ],
+        ];
+        foreach ($permissions as $permission) {
+          $permission = explode('-', $permission);
+          array_push($abilities, [ 'action' => $permission[0], 'subject' => $permission[1] ]);
+        }
+
         return [
           'id'          => $this->id,
-          'fullName'    => $this->username,
           'username'    => $this->username,
-          'avatar'      => 'https://pickaface.net/gallery/avatar/20130319_083314_1174_admin.png',
+          'avatar'      => $this->avatar ? asset("storage/admins/{$this->id}/images/{$this->avatar}") : 'https://pickaface.net/gallery/avatar/20130319_083314_1174_admin.png',
           'email'       => $this->email,
-          'role'        => $this->roles()->first()->name,
-          'permissions' => $this->permissions,
-          'ability'     => [
-            [
-              'action'  => 'manage',
-              'subject' => 'all',
-            ],
-          ],
-          'extras'      => [
-            'eCommerceCartItemsCount' => 0
-          ]
+          'mobile'      => $this->mobile,
+          'role'        => $this->roles()->first() ? $this->roles()->first()->display_name : null,
+          'role_id'     => $this->roles()->first() ? $this->roles()->first()->id : null,
+          'permissions' => $permissions,
+          'ability'     => $abilities
         ];
 
         

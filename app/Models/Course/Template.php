@@ -38,7 +38,7 @@ class Template extends Model
       $sortBy   = $request->sortBy;
       $sortType = $request->sortDesc == 'true' ? 'DESC' : 'ASC';
 
-      return $query->orderBy($sortBy, $sortType);
+      return !empty($sortBy) ? $query->orderBy($sortBy, $sortType) : $query;
     }
 
     

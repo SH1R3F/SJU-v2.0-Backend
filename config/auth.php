@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users',
+        'passwords' => 'subscribers',
     ],
 
     /*
@@ -38,15 +38,15 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'subscribers',
         ],
         'api-admins' => [
-            'driver' => 'passport',
+            'driver' => 'sanctum',
             'provider' => 'admins',
         ],
-        'api-users' => [
-            'driver' => 'passport',
-            'provider' => 'users',
+        'api-subscribers' => [
+            'driver' => 'sanctum',
+            'provider' => 'subscribers',
         ],
     ],
 
@@ -68,7 +68,7 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'subscribers' => [
             'driver' => 'eloquent',
             'model' => App\Models\Subscriber::class,
         ],
@@ -94,8 +94,8 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'subscribers' => [
+            'provider' => 'subscribers',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

@@ -213,7 +213,7 @@ class SubscriberController extends Controller
     public function destroy(Subscriber $subscriber)
     {
         // Delete his files on desk
-        Storage::disk('public')->delete("subscribers/{$subscriber->id}");
+        Storage::disk('public')->deleteDirectory("subscribers/{$subscriber->id}");
 
         // Delete database record
         $subscriber->delete();

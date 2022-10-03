@@ -52,7 +52,7 @@ class Gender extends Model
         return $query;
       }
 
-      return $query->orderBy($sortBy, $sortType);
+      return !empty($sortBy) ? $query->orderBy($sortBy, $sortType) : $query;
     }
 
     

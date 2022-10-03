@@ -131,7 +131,7 @@ class TypeController extends Controller
         }
 
         // Store in database
-        $gender->update($request->all());
+        $type->update($request->all());
 
         return response()->json([
           'message' => __('messages.successful_update'),

@@ -17,7 +17,7 @@ class Localization
      */
     public function handle(Request $request, Closure $next)
     {
-      if ($request->header()['accept-language'][0] === 'ar') {
+      if (isset($request->header()['accept-language']) && $request->header()['accept-language'][0] === 'ar') {
         App::setlocale('ar');
       }
       return $next($request);

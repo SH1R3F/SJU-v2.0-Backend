@@ -12,6 +12,14 @@ use App\Http\Resources\Admin\MemberResource;
 
 class MemberController extends Controller
 {
+
+  public function __construct()
+  {
+    $this->middleware('permission:read-member', [ 'only' => ['index', 'show']]);
+    $this->middleware('permission:create-member', [ 'only' => 'store']);
+    $this->middleware('permission:update-member', [ 'only' => 'update']);
+    $this->middleware('permission:delete-member', [ 'only' => 'destroy']);
+  }
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +27,6 @@ class MemberController extends Controller
      */
     public function index(Request $request)
     {
-
         $members = Member::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
         return response()->json([
           'total'   => Member::filter($request)->get()->count(),
@@ -254,7 +261,7 @@ class MemberController extends Controller
     public function destroy(Member $member)
     {
         // Delete his files on desk
-        Storage::disk('public')->delete("members/{$member->id}");
+        Storage::disk('public')->deleteDirectory("members/{$member->id}");
 
         // Delete database record
         $member->delete();

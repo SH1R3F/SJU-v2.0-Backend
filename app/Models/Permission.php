@@ -14,4 +14,8 @@ class Permission extends LaratrustPermission
       return $this->belongsToMany(Role::class);
     }
 
+    public function admins()
+    {
+      return $this->belongsToMany(Admin::class);
+    }
 }

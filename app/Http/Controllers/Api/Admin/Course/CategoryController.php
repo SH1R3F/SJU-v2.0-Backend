@@ -158,7 +158,7 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         // Delete his files on desk
-        Storage::disk('public')->delete("courses/namings/images/{$category->image}");
+        Storage::disk('public')->deleteDirectory("courses/namings/images/{$category->image}");
 
         // Delete database record
         $category->delete();

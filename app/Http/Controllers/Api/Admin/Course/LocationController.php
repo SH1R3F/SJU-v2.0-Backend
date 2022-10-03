@@ -165,7 +165,7 @@ class LocationController extends Controller
     public function destroy(Location $location)
     {
         // Delete his files on desk
-        Storage::disk('public')->delete("courses/namings/images/{$location->image}");
+        Storage::disk('public')->deleteDirectory("courses/namings/images/{$location->image}");
 
         // Delete database record
         $location->delete();

@@ -131,7 +131,7 @@ class TemplateController extends Controller
     public function destroy(Template $template)
     {
         // Delete files on desk
-        Storage::disk('public')->delete("courses/templates/{$template->file}");
+        Storage::disk('public')->deleteDirectory("courses/templates/{$template->file}");
 
         // Delete database record
         $template->delete();
