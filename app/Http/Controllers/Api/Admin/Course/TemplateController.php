@@ -135,5 +135,9 @@ class TemplateController extends Controller
 
         // Delete database record
         $template->delete();
+        return response()->json([
+          'message' => __('messages.successful_delete')
+        ], 200);
+
     }
 }

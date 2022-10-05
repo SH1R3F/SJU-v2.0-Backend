@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
+use App\Http\Controllers\Api\Admin\StudioController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
 use App\Http\Controllers\Api\Admin\VolunteerController;
@@ -166,6 +167,14 @@ Route::prefix('/admin')->group(function() {
     Route::post('/support/{ticket}', [ TechnicalSupportController::class , 'message' ]);
     Route::put('/support/{ticket}', [ TechnicalSupportController::class , 'toggle' ]);
     Route::delete('/support/{ticket}', [ TechnicalSupportController::class , 'destroy' ]);
+
+    /**
+     * Studio routes
+     */
+    Route::get('/studio', [ StudioController::class , 'index' ]);
+    Route::post('/studio/{type}', [ StudioController::class , 'store' ]);
+    Route::delete('/studio/{item}', [ StudioController::class , 'destroy' ]);
+
   });
 
 }); // admin 
