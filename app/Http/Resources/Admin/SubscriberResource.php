@@ -45,6 +45,7 @@ class SubscriberResource extends JsonResource
           "post_code"       => $this->post_code,
           "mobile"          => $this->mobile,
           "mobile_key"      => $this->mobile_key,
+          "fullMobile"      => $this->mobile_key . $this->mobile,
           "email"           => $this->email,
           "avatar"          => $this->image ? asset("storage/subscribers/{$this->id}/images/{$this->image}") : null,
           'courses'         => 11,

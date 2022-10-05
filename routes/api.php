@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\Admin\Course\GenderController;
 use App\Http\Controllers\Api\Admin\Course\CategoryController;
 use App\Http\Controllers\Api\Admin\Course\LocationController;
 use App\Http\Controllers\Api\Admin\Course\TemplateController;
+use App\Http\Controllers\Api\Admin\TechnicalSupportController;
 use App\Http\Controllers\Api\Admin\Course\QuestionnaireController;
 
 /*
@@ -157,6 +158,14 @@ Route::prefix('/admin')->group(function() {
     Route::resource('/courses', CourseController::class)->except(['edit', 'ceate']);
   
 
+    /**
+     * Technical Support routes
+     */
+    Route::get('/support', [ TechnicalSupportController::class , 'index' ]);
+    Route::get('/support/{ticket}', [ TechnicalSupportController::class , 'chat' ]);
+    Route::post('/support/{ticket}', [ TechnicalSupportController::class , 'message' ]);
+    Route::put('/support/{ticket}', [ TechnicalSupportController::class , 'toggle' ]);
+    Route::delete('/support/{ticket}', [ TechnicalSupportController::class , 'destroy' ]);
   });
 
 }); // admin 

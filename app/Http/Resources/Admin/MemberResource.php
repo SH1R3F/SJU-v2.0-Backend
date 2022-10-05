@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -50,6 +51,7 @@ class MemberResource extends JsonResource
           "post_box"                       => $this->post_box,
           "post_code"                      => $this->post_code,
           "mobile"                         => $this->mobile,
+          "fullMobile"                     => $this->mobile,
           "email"                          => $this->email,
           "city"                           => $this->city,
           "experiences_and_fields"         => !is_null($this->experiences_and_fields) ? $this->experiences_and_fields : [
@@ -73,7 +75,8 @@ class MemberResource extends JsonResource
           "invoice_status"                 => $this->invoice_status,
           'status'                         => $this->status,
           'courses'                        => 11,
-          'created_at'                     => $this->created_at->format('Y/m/d') . (App::getLocale() == 'ar' ? ' م': '')
+          'created_at'                     => $this->created_at->format('Y/m/d') . (App::getLocale() == 'ar' ? ' م': ''),
+          'online'                         => $this->last_seen > Carbon::now()->subMinutes(5)
         ];
     }
 }

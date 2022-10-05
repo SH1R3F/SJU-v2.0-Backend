@@ -9,6 +9,7 @@ use Database\Seeders\SubscribersSeeder;
 use Database\Seeders\Courses\TypesSeeder;
 use Database\Seeders\Courses\CoursesSeeder;
 use Database\Seeders\Courses\GendersSeeder;
+use Database\Seeders\TechnicalSupportSeeder;
 use Database\Seeders\Courses\LocationsSeeder;
 use Database\Seeders\Courses\TemplatesSeeder;
 use Database\Seeders\Courses\CategoriesSeeder;
@@ -37,7 +38,8 @@ class DatabaseSeeder extends Seeder
         TemplatesSeeder::class,
         QuestionnairesSeeder::class,
         CoursesSeeder::class,
-        SiteOptionsSeeder::class
+        SiteOptionsSeeder::class,
+        TechnicalSupportSeeder::class,
       ]);
     }
 }

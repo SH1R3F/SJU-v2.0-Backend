@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Courseable;
 use App\Models\Course\Course;
 use Illuminate\Support\Facades\DB;
+use App\Models\TechnicalSupportTicket;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -56,6 +57,7 @@ class Subscriber extends Authenticatable
         'mobile_key',
         'email',
         'password',
+        'last_seen',
 
         'image'
     ];
@@ -135,6 +137,11 @@ class Subscriber extends Authenticatable
     public function courses()
     {
       return $this->morphToMany(Course::class, 'courseable', 'course_user');
+    }
+
+    public function tickets()
+    {
+      return $this->morphMany(TechnicalSupportTicket::class, 'ticketable');
     }
 
 }

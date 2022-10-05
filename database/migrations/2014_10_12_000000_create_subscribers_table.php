@@ -50,6 +50,7 @@ return new class extends Migration
             $table->boolean('status')->comment('0: Disabled, 1: Active')->default(0);
 
             $table->string('image')->nullable();
+            $table->dateTime('last_seen')->nullable();
 
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

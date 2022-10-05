@@ -74,6 +74,7 @@ return new class extends Migration
             $table->bigInteger('invoice_id')->nullable(); // To be updated to a foreign id when invoices are created *UNFINISHED WORK*
             $table->boolean('invoice_status')->default(0);
             $table->integer('status')->default(0);
+            $table->dateTime('last_seen')->nullable();
 
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
