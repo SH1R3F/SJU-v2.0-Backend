@@ -15,11 +15,13 @@ use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Controllers\Api\Admin\StudioController;
 use App\Http\Resources\Admin\Course\TemplateResource;
+use App\Http\Controllers\Api\Admin\BlogPostController;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
 use App\Http\Controllers\Api\Admin\VolunteerController;
 use App\Http\Controllers\Api\Admin\SiteOptionController;
 use App\Http\Controllers\Api\Admin\SubscriberController;
 use App\Http\Controllers\Api\Admin\Course\TypeController;
+use App\Http\Controllers\Api\Admin\BlogCategoryController;
 use App\Http\Resources\Admin\Course\QuestionnaireResource;
 use App\Http\Controllers\Api\Admin\Course\CourseController;
 use App\Http\Controllers\Api\Admin\Course\GenderController;
@@ -180,6 +182,16 @@ Route::prefix('/admin')->group(function() {
      * Pages routes
      */
     Route::resource('/pages', PageController::class)->except(['edit', 'create']);
+
+    /**
+     * Posts routes
+     */
+    Route::resource('/blog/posts', BlogPostController::class)->except(['edit', 'create']);
+
+    /**
+     * Categories routes
+     */
+    Route::resource('/blog/categories', BlogCategoryController::class)->except(['edit', 'create']);
 
   });
 
