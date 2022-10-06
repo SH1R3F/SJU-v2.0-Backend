@@ -8,6 +8,7 @@ use App\Models\Course\Location;
 use App\Models\Course\Template;
 use App\Models\Course\Questionnaire;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Admin\MenuController;
 use App\Http\Controllers\Api\Admin\PageController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\AdminController;
@@ -192,6 +193,12 @@ Route::prefix('/admin')->group(function() {
      * Categories routes
      */
     Route::resource('/blog/categories', BlogCategoryController::class)->except(['edit', 'create']);
+
+    /**
+     * Menus routes
+     */
+    Route::put('/menus', [ MenuController::class, 'reorder' ]);
+    Route::resource('/menus', MenuController::class)->except(['edit', 'create']);
 
   });
 

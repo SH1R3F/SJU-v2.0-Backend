@@ -41,7 +41,7 @@ class BlogPost extends Model
      * @var array
      */
     protected $casts = [
-      'photos'           => 'array',
+      'photos' => 'array',
     ];
 
     public function scopeFilter($query, $request)

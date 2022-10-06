@@ -125,6 +125,7 @@ class BlogPostController extends Controller
      */
     public function destroy(BlogPost $post)
     {
+        Storage::disk('public')->deleteDirectory("blog/posts/{$post->id}");
         $post->delete();
         return response()->json([
           'message' => __('messages.successful_delete')

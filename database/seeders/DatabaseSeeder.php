@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Database\Seeders\BlogSeeder;
+use Database\Seeders\MenusSeeder;
 use Database\Seeders\PagesSeeder;
 use Database\Seeders\MembersSeeder;
 use Database\Seeders\SiteOptionsSeeder;
@@ -44,6 +45,7 @@ class DatabaseSeeder extends Seeder
         TechnicalSupportSeeder::class,
         PagesSeeder::class,
         BlogSeeder::class,
+        MenusSeeder::class
       ]);
     }
 }
