@@ -8,6 +8,7 @@ use App\Models\Course\Location;
 use App\Models\Course\Template;
 use App\Models\Course\Questionnaire;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Admin\PageController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Resources\Admin\Course\NamingResource;
@@ -174,6 +175,11 @@ Route::prefix('/admin')->group(function() {
     Route::get('/studio', [ StudioController::class , 'index' ]);
     Route::post('/studio/{type}', [ StudioController::class , 'store' ]);
     Route::delete('/studio/{item}', [ StudioController::class , 'destroy' ]);
+
+    /**
+     * Pages routes
+     */
+    Route::resource('/pages', PageController::class)->except(['edit', 'create']);
 
   });
 

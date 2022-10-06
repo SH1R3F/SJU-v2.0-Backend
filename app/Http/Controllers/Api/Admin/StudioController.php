@@ -80,6 +80,7 @@ class StudioController extends Controller
      */
     public function destroy(Studio $item)
     {
+        Storage::disk('public')->delete("/studio/{$item->type}/{$item->file}");
         $item->delete();
         return response()->json([
           'message' => __('messages.successful_delete')
