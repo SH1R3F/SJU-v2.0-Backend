@@ -41,7 +41,7 @@ class CourseResource extends JsonResource
           'minutes' => $this->minutes,
           'percentage' => $this->percentage,
           'price' => $this->price,
-          'images' => $this->images,
+          'images' => $this->images ? $this->images : [],
           'trainer' => $this->trainer,
           'summary' => $this->summary,
           'content' => $this->content,

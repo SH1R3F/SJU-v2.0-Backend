@@ -8,6 +8,7 @@ use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use App\Models\Course\Course;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\SubscriberResource;
 use App\Http\Resources\Admin\Course\CourseResource;
@@ -15,6 +16,15 @@ use App\Http\Resources\Admin\Course\EnrollersResource;
 
 class CourseController extends Controller
 {
+  
+    public function __construct()
+    {
+        $this->middleware('permission:read-course', [ 'only' => ['index', 'show', 'enrollers']]);
+        $this->middleware('permission:create-course', [ 'only' => 'store']);
+        $this->middleware('permission:update-course', [ 'only' => [ 'update', 'togglePass', 'deleteEnroller' ]]);
+        $this->middleware('permission:delete-course', [ 'only' => 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -61,7 +71,7 @@ class CourseController extends Controller
           'minutes' => 'required|integer',
           'percentage' => 'required|integer',
           'price' => 'required|integer',
-          'photos' => 'nullable', // To be worked on with upload center
+          'images' => 'nullable', 
           'trainer' => 'required|min:3',
           'content' => 'required|min:10',
           'summary' => 'required|min:3',
@@ -74,23 +84,31 @@ class CourseController extends Controller
           return response()->json($validator->errors(), 400);
         }
         // Set SN
-        $request->merge(['SN' => $this->SN()]);
-        // Encode days
-        $request->merge(['days' => json_encode($request->days)]);
+        $data = $request->all();
+        $data['SN'] = $this->SN();
+        $data['status'] = 1;
 
-        // Upload Image
-        // if ($request->image) {
-        //   $base64Image  = explode(";base64,", $request->image);
-        //   $explodeImage = explode("image/", $base64Image[0]);
-        //   $imageCourse    = $explodeImage[1];
-        //   $image_base64 = base64_decode($base64Image[1]);
-        //   $imageName    = uniqid() . '.'.$imageCourse;
-        //   Storage::disk('public')->put("courses/images/{$imageName}", $image_base64);
-        //   $request->merge(['image' => $imageName]);
-        // }
-        // Store in database
-        $course = Course::create($request->all());
-        
+        $course = Course::create($data);
+
+        // Update photos
+        $photos = [];
+        foreach ($request->images as $photo) {
+          if (str_starts_with($photo, 'data:image')) {
+            // Save to disk
+            $base64Image  = explode(";base64,", $photo);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageType    = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName    = uniqid() . '.'.$imageType;
+            Storage::disk('public')->put("course/images/{$course->id}/{$imageName}", $image_base64);
+            array_push($photos, asset("storage/course/images/{$course->id}/{$imageName}"));
+          } else {
+            array_push($photos, $photo);
+          }
+        }
+
+        $course->update(['images' => $photos]);
+
         return response()->json([
           'message' => __('messages.successful_create'),
           'course'   => new CourseResource($course)
@@ -153,32 +171,28 @@ class CourseController extends Controller
           return response()->json($validator->errors(), 400);
         }
 
-        // // Upload Image
-        // if ($request->image) {
+        // Update photos
+        $photos = [];
+        foreach ($request->images as $photo) {
+          if (str_starts_with($photo, 'data:image')) {
+            // Save to disk
+            $base64Image  = explode(";base64,", $photo);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageType    = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName    = uniqid() . '.'.$imageType;
+            Storage::disk('public')->put("course/images/{$course->id}/{$imageName}", $image_base64);
+            array_push($photos, asset("storage/course/images/{$course->id}/{$imageName}"));
+          } else {
+            array_push($photos, $photo);
+          }
+        }
 
-        //   if (str_starts_with($request->image, 'data:image')) {
-        //     $base64Image  = explode(";base64,", $request->image);
-        //     $explodeImage = explode("image/", $base64Image[0]);
-        //     $imageCourse    = $explodeImage[1];
-        //     $image_base64 = base64_decode($base64Image[1]);
-        //     $imageName    = uniqid() . '.'.$imageCourse;
-        //     // Delete the previous image
-        //     Storage::disk('public')->delete("courses/images/{$course->image}");
-        //     // Save the new image
-        //     Storage::disk('public')->put("courses/images/{$imageName}", $image_base64);
-        //     $request->merge(['image' => $imageName]);
-        //   } else {
-        //     $request->merge(['image' => $course->image]);
-        //   }
-          
-        // } else if($course->image) {
-        //   // Delete the previous image
-        //   Storage::disk('public')->delete("courses/images/{$course->image}");
-        // }
-
+        $data = $request->all();
+        $data['images'] = $photos;
 
         // Store in database
-        $course->update($request->all());
+        $course->update($data);
 
         return response()->json([
           'message' => __('messages.successful_update'),

@@ -51,7 +51,7 @@ return new class extends Migration
             $table->foreignIdFor(Template::class)->nullable()->onDelete('set null')->onUpdate('cascade');
             $table->foreignIdFor(Questionnaire::class)->nullable()->onDelete('set null')->onUpdate('cascade');
             $table->integer('attendance_duration')->unsigned()->nullable();
-            $table->integer('status')->unsigned()->default(1);
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

@@ -11,6 +11,15 @@ use App\Http\Resources\Admin\Course\TemplateResource;
 
 class TemplateController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('permission:read-template', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:create-template', [ 'only' => 'store']);
+        $this->middleware('permission:update-template', [ 'only' => 'update']);
+        $this->middleware('permission:delete-template', [ 'only' => 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *

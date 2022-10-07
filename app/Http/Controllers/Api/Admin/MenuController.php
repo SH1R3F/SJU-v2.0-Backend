@@ -10,6 +10,15 @@ use App\Http\Resources\Admin\MenuResource;
 
 class MenuController extends Controller
 {
+      
+    public function __construct()
+    {
+        $this->middleware('permission:read-menu', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:create-menu', [ 'only' => 'store']);
+        $this->middleware('permission:update-menu', [ 'only' => ['update', 'reorder']]);
+        $this->middleware('permission:delete-menu', [ 'only' => 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *

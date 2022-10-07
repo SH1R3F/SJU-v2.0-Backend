@@ -14,6 +14,13 @@ use App\Http\Resources\Admin\AdminResource;
 class AdminController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('permission:read-moderator', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:create-moderator', [ 'only' => 'store']);
+        $this->middleware('permission:update-moderator', [ 'only' => 'update']);
+        $this->middleware('permission:delete-moderator', [ 'only' => 'destroy']);
+    }
   
     /**
      * Display a listing of the resource.

@@ -10,6 +10,15 @@ use App\Http\Resources\Admin\PageResource;
 
 class PageController extends Controller
 {
+  
+    public function __construct()
+    {
+        $this->middleware('permission:read-page', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:create-page', [ 'only' => 'store']);
+        $this->middleware('permission:update-page', [ 'only' => 'update']);
+        $this->middleware('permission:delete-page', [ 'only' => 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -10,6 +10,12 @@ use App\Http\Resources\Admin\StudioResource;
 
 class StudioController extends Controller
 {
+  
+    public function __construct()
+    {
+        $this->middleware('permission:manage-studio');
+    }
+
     /**
      * Display a listing of the resource.
      *

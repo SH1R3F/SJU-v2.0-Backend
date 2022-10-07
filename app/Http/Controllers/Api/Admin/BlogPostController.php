@@ -11,6 +11,15 @@ use App\Http\Resources\Admin\BlogPostResource;
 
 class BlogPostController extends Controller
 {
+    
+    public function __construct()
+    {
+        $this->middleware('permission:read-post', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:create-post', [ 'only' => 'store']);
+        $this->middleware('permission:update-post', [ 'only' => 'update']);
+        $this->middleware('permission:delete-post', [ 'only' => 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,11 +44,14 @@ class BlogPostController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-          'title_ar'   => 'required',
-          'title_en'   => 'required',
-          'slug'       => 'required|unique:blog_posts,slug',
-          'content_ar' => 'required',
-          'content_en' => 'required'
+          'title_ar'         => 'required',
+          'title_en'         => 'required',
+          'blog_category_id' => 'required|exists:blog_categories,id',
+          'post_date'        => 'required|date',
+          'summary_ar'       => 'required',
+          'summary_ar'       => 'required',
+          'content_ar'       => 'required',
+          'content_ar'       => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -47,6 +59,28 @@ class BlogPostController extends Controller
         }
 
         $post = BlogPost::create($request->all());
+
+        
+        // Upload photos
+        $photos = [];
+        foreach ($request->photos as $photo) {
+          if (str_starts_with($photo, 'data:image')) {
+            // Save to disk
+            $base64Image  = explode(";base64,", $photo);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageType    = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName    = uniqid() . '.'.$imageType;
+            Storage::disk('public')->put("blog/posts/{$post->id}/{$imageName}", $image_base64);
+            array_push($photos, asset("storage/blog/posts/{$post->id}/{$imageName}"));
+          } else {
+            array_push($photos, $photo);
+          }
+        }
+
+        $data['photos'] = $photos;
+        $post->update(['photos' => $photos]);
+
 
         return response()->json([
           'message' => __('messages.successful_create')

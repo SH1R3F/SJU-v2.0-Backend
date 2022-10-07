@@ -12,6 +12,15 @@ use App\Http\Resources\Admin\TechnicalSupportResource;
 
 class TechnicalSupportController extends Controller
 {
+      
+    public function __construct()
+    {
+        // HONESTLY... idk how to manage this.
+        // $this->middleware('permission:manage-membersupport');
+        // $this->middleware('permission:manage-subscribersupport');
+        // $this->middleware('permission:manage-volunteersupport');
+    }
+
     /**
      * Display a listing of the resource.
      *

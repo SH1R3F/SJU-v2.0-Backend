@@ -8,6 +8,12 @@ use App\Http\Controllers\Controller;
 
 class SiteOptionController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('permission:manage-options');
+    }
+
     /**
      * Display a listing of the resource.
      *

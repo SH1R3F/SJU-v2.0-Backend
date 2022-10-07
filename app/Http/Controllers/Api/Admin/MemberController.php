@@ -13,13 +13,13 @@ use App\Http\Resources\Admin\MemberResource;
 class MemberController extends Controller
 {
 
-  public function __construct()
-  {
-    $this->middleware('permission:read-member', [ 'only' => ['index', 'show']]);
-    $this->middleware('permission:create-member', [ 'only' => 'store']);
-    $this->middleware('permission:update-member', [ 'only' => 'update']);
-    $this->middleware('permission:delete-member', [ 'only' => 'destroy']);
-  }
+    public function __construct()
+    {
+        $this->middleware('permission:read-member', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:create-member', [ 'only' => 'store']);
+        $this->middleware('permission:update-member', [ 'only' => 'update']);
+        $this->middleware('permission:delete-member', [ 'only' => 'destroy']);
+    }
     /**
      * Display a listing of the resource.
      *

@@ -10,6 +10,15 @@ use App\Http\Resources\Admin\Course\QuestionnaireResource;
 
 class QuestionnaireController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('permission:read-questionnaire', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:create-questionnaire', [ 'only' => 'store']);
+        $this->middleware('permission:update-questionnaire', [ 'only' => 'update']);
+        $this->middleware('permission:delete-questionnaire', [ 'only' => 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *

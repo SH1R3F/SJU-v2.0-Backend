@@ -55,6 +55,7 @@ Route::prefix('/admin')->group(function() {
     /**
      * Moderators routes
      * list roles, list, show, update, store, and delete
+     * Middleware permissions: read-moderator, create-moderator, update-moderator, delete-moderator
      */
     Route::get('admins/roles', [ AdminController::class, 'roles' ]);
     Route::resource('admins', AdminController::class)->except(['edit', 'create']);
@@ -62,6 +63,7 @@ Route::prefix('/admin')->group(function() {
     /**
      * Roles routes
      * list permissions, update permissions, list, show, update, store, and delete
+     * Middleware permissions: manage-roles
      */
     Route::get('roles/{role}/permissions', [ RoleController::class, 'get_permissions' ]);
     Route::post('roles/{role}/permissions', [ RoleController::class, 'update_permissions' ]);
@@ -70,18 +72,21 @@ Route::prefix('/admin')->group(function() {
     /**
      * Site options routes
      * list, show, update, store, and delete
+     * Middleware permissions: manage-options
      */
     Route::resource('site_options', SiteOptionController::class);
 
     /**
      * Members routes
      * list, show, update, store, and delete
+     * Middleware permissions: read-member, create-member, update-member, delete-member
      */
     Route::resource('members', MemberController::class)->except(['edit', 'create']);
   
     /**
      * Subscribers routes
      * list, show, update, store, and delete
+     * Middleware permissions: read-susbcriber, create-susbcriber, update-susbcriber, delete-susbcriber
      */
     Route::get('subscribers/show/{subscriber}/courses', [ SubscriberController::class, 'courses' ]);
     Route::resource('subscribers', SubscriberController::class)->except(['edit', 'create']);
@@ -89,6 +94,7 @@ Route::prefix('/admin')->group(function() {
     /**
      * Volunteers routes
      * list, show, update, store, and delete
+     * Middleware permissions: read-volunteer, create-volunteer, update-volunteer, delete-volunteer
      */
     Route::get('volunteers/show/{volunteer}/courses', [ VolunteerController::class, 'courses' ]);
     Route::resource('volunteers', VolunteerController::class)->except(['edit', 'create']);
@@ -97,8 +103,9 @@ Route::prefix('/admin')->group(function() {
   
       /**
        * Naming routes
+       * Middleware permissions: manage-namings
        */
-      Route::prefix('namings')->group(function () {
+      Route::middleware('permission:read-manage-namings')->prefix('namings')->group(function () {
   
         /**
          * Types routes
@@ -140,15 +147,17 @@ Route::prefix('/admin')->group(function() {
   
         });
   
-      }); // namings
+      });// namings
   
         /**
          * Templates routes
+         * Middleware permissions: read-template, create-template, update-template, delete-template
          */
         Route::resource('templates', TemplateController::class)->except(['edit', 'create']);
   
         /**
          * Questionnaires routes
+         * Middleware permissions: read-questionnaire, create-questionnaire, update-questionnaire, delete-questionnaire
          */
         Route::resource('questionnaires', QuestionnaireController::class)->except(['edit', 'create']);
   
@@ -156,6 +165,7 @@ Route::prefix('/admin')->group(function() {
 
     /**
      * Courses routes
+     * Middleware permissions: read-course, create-course, update-course, delete-course
      */
     Route::get('/courses/{course}/enrollers', [courseController::class, 'enrollers']);
     Route::post('/courses/{course}/enrollers/{type}/{id}', [courseController::class, 'togglePass']);
@@ -165,6 +175,7 @@ Route::prefix('/admin')->group(function() {
 
     /**
      * Technical Support routes
+     * Middleware permissions: manage-membersupport, manage-subscribersupport, manage-volunteersupport NOT YET
      */
     Route::get('/support', [ TechnicalSupportController::class , 'index' ]);
     Route::get('/support/{ticket}', [ TechnicalSupportController::class , 'chat' ]);
@@ -174,6 +185,7 @@ Route::prefix('/admin')->group(function() {
 
     /**
      * Studio routes
+     * Middleware permissions: manage-studio
      */
     Route::get('/studio', [ StudioController::class , 'index' ]);
     Route::post('/studio/{type}', [ StudioController::class , 'store' ]);
@@ -181,22 +193,26 @@ Route::prefix('/admin')->group(function() {
 
     /**
      * Pages routes
+     * Middleware permissions: read-page, create-page, update-page, delete-page
      */
     Route::resource('/pages', PageController::class)->except(['edit', 'create']);
 
     /**
      * Posts routes
+     * Middleware permissions: read-post, create-post, update-post, delete-post
      */
     Route::resource('/blog/posts', BlogPostController::class)->except(['edit', 'create']);
 
     /**
      * Categories routes
+     * Middleware permissions: manage-settings
      */
     Route::put('/blog/categories', [ BlogCategoryController::class, 'reorder' ]);
     Route::resource('/blog/categories', BlogCategoryController::class)->except(['edit', 'create']);
 
     /**
      * Menus routes
+     * Middleware permissions: read-menu, create-menu, update-menu, delete-menu
      */
     Route::put('/menus', [ MenuController::class, 'reorder' ]);
     Route::resource('/menus', MenuController::class)->except(['edit', 'create']);

@@ -36,7 +36,8 @@ class Course extends Model
      * @var array
      */
     protected $casts = [
-      'days' => 'array'  
+      'days' => 'array',
+      'images' => 'array',
     ];
 
 

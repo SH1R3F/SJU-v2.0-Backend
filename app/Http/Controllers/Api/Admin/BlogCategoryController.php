@@ -8,6 +8,12 @@ use App\Http\Controllers\Controller;
 
 class BlogCategoryController extends Controller
 {
+      
+    public function __construct()
+    {
+        $this->middleware('permission:manage-settings');
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -13,6 +13,15 @@ use App\Http\Resources\Admin\Course\CourseResource;
 
 class SubscriberController extends Controller
 {
+  
+    public function __construct()
+    {
+        $this->middleware('permission:read-subscriber', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:create-subscriber', [ 'only' => 'store']);
+        $this->middleware('permission:update-subscriber', [ 'only' => 'update']);
+        $this->middleware('permission:delete-subscriber', [ 'only' => 'destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *
