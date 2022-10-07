@@ -192,6 +192,7 @@ Route::prefix('/admin')->group(function() {
     /**
      * Categories routes
      */
+    Route::put('/blog/categories', [ BlogCategoryController::class, 'reorder' ]);
     Route::resource('/blog/categories', BlogCategoryController::class)->except(['edit', 'create']);
 
     /**

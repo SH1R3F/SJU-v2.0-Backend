@@ -36,7 +36,7 @@ class PageController extends Controller
         $validator = Validator::make($request->all(), [
           'title_ar'   => 'required',
           'title_en'   => 'required',
-          'slug'       => 'required|unique:pages,slug',
+          'slug'       => 'required|alpha_dash|unique:pages,slug',
           'content_ar' => 'required',
           'content_en' => 'required'
         ]);
@@ -77,7 +77,7 @@ class PageController extends Controller
         $validator = Validator::make($request->all(), [
           'title_ar'   => 'required',
           'title_en'   => 'required',
-          'slug'       => 'required|unique:pages,slug,' . $page->id,
+          'slug'       => 'required|alpha_dash|unique:pages,slug,' . $page->id,
           'content_ar' => 'required',
           'content_ar' => 'required',
         ]);
