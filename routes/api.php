@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Admin\StudioController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\BlogPostController;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
+use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\VolunteerController;
 use App\Http\Controllers\Api\Admin\SiteOptionController;
 use App\Http\Controllers\Api\Admin\SubscriberController;
@@ -47,10 +48,21 @@ use App\Http\Controllers\Api\Admin\Course\QuestionnaireController;
 //     return $request->user();
 // });
 
+Route::get('/', function () {
+  return 'Welcome to api';
+});
+
 Route::prefix('/admin')->group(function() {
   Route::post('/login', [AuthController::class, 'login']);
 
   Route::middleware('auth:api-admins')->group(function() {
+
+    /**
+     * Dashboard route
+     * Returning stats
+     */
+    Route::get('dashboard', [ DashboardController::class, 'index' ]);
+
 
     /**
      * Moderators routes
