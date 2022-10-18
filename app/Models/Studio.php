@@ -9,9 +9,7 @@ class Studio extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['file', 'type'];
-
-
+    protected $fillable = ['file', 'link', 'type'];
 
     public function scopeFilter($query, $request)
     {

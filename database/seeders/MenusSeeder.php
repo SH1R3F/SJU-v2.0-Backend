@@ -15,6 +15,75 @@ class MenusSeeder extends Seeder
      */
     public function run()
     {
-        Menu::factory()->count(15)->create();
+        $records = [
+          [
+            'title_ar' => 'الرئيسية',
+            'title_en' => 'Home',
+            'link' => 'http://localhost:3000/',
+            'open_in_same_page' => 1,
+            'order' => 1,
+          ],
+          [
+            'title_ar' => 'الأخبار',
+            'title_en' => 'News',
+            'link' => 'http://localhost:3000/posts',
+            'open_in_same_page' => 1,
+            'order' => 2,
+          ],
+          [
+            'title_ar' => 'عن الهيئة',
+            'title_en' => 'About us',
+            'link' => 'http://localhost:3000/pages/about-us',
+            'open_in_same_page' => 1,
+            'order' => 3,
+          ],
+          [
+            'title_ar' => 'ميثاق الشرف',
+            'title_en' => 'Honor code',
+            'link' => 'http://localhost:3000/pages/honor-code',
+            'open_in_same_page' => 1,
+            'order' => 4,
+          ],
+          [
+            'title_ar' => 'العضوية في الهيئة',
+            'title_en' => 'Membership',
+            'link' => 'http://localhost:3000/pages/membership',
+            'open_in_same_page' => 1,
+            'order' => 5,
+          ],
+          [
+            'title_ar' => 'اللوائح والأنظمة',
+            'title_en' => 'Regulations',
+            'link' => 'http://localhost:3000/pages/regulations',
+            'open_in_same_page' => 1,
+            'order' => 6,
+          ],
+          [
+            'title_ar' => 'الصحافة',
+            'title_en' => 'Press',
+            'link' => 'http://localhost:3000/pages/press',
+            'open_in_same_page' => 1,
+            'order' => 7,
+          ],
+          [
+            'title_ar' => 'الإذاعة والتلفزيون',
+            'title_en' => 'Radio & TV',
+            'link' => '#',
+            'open_in_same_page' => 1,
+            'order' => 8,
+          ],
+          [
+            'title_ar' => 'شراكات',
+            'title_en' => 'Partners',
+            'link' => 'https://sju.org.sa/partnership',
+            'open_in_same_page' => 1,
+            'order' => 9,
+          ]
+        ];
+
+        collect($records)->each(function( $record ) {
+          Menu::create($record);
+        });
+
     }
 }

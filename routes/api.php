@@ -8,6 +8,7 @@ use App\Models\Course\Location;
 use App\Models\Course\Template;
 use App\Models\Course\Questionnaire;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\Admin\MenuController;
 use App\Http\Controllers\Api\Admin\PageController;
 use App\Http\Controllers\Api\Admin\RoleController;
@@ -51,6 +52,9 @@ use App\Http\Controllers\Api\Admin\Course\QuestionnaireController;
 Route::get('/', function () {
   return 'Welcome to api';
 });
+
+Route::get('/menus', [HomeController::class, 'menus']);
+Route::get('/home', [HomeController::class, 'index']);
 
 Route::prefix('/admin')->group(function() {
   Route::post('/login', [AuthController::class, 'login']);

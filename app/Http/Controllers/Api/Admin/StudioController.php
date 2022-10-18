@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Models\Studio;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\StudioResource;
 
@@ -44,20 +45,29 @@ class StudioController extends Controller
         if (!in_array($type, ['photo', 'video'])) return;
 
         $validator = Validator::make($request->all(), [
-          'studioFile' => 'required|file'
+          'studioFile' => 'nullable|file',
+          'link' => 'nullable|url',
         ]);
 
         if ($validator->fails()) {
           return response()->json($validator->errors(), 400);
         }
 
-        // Save the new file
-        $file = $request->file('studioFile');
-        $name = uniqid() . '.' . $file->extension();
-        $file->storeAs("/studio/$type/", $name, 'public');
-        $request->merge(['file' => $name]);
-        $request->merge(['type' => $type]);
+        if (!$request->hasFile('studioFile') && !$request->link) {
+          return response()->json([
+            'message' => __('messages.successful_create')
+          ], 200);
+        }
 
+        // Save the new file
+        if ($request->hasFile('studioFile')) {
+          $file = $request->file('studioFile');
+          $name = uniqid() . '.' . $file->extension();
+          $file->storeAs("/studio/$type/", $name, 'public');
+          $request->merge(['file' => $name]);
+        }
+        
+        $request->merge(['type' => $type]);
         // Store in database
         Studio::create($request->all());
 

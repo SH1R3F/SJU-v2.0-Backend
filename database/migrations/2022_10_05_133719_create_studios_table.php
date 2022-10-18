@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('studios', function (Blueprint $table) {
             $table->id();
-            $table->string('file');
+            $table->string('file')->nullable();
+            $table->string('link')->nullable();
             $table->string('type');
             $table->timestamps();
         });

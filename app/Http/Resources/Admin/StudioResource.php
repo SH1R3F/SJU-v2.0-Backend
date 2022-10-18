@@ -17,9 +17,10 @@ class StudioResource extends JsonResource
         return [
           'id'         => $this->id,
           'file'       => $this->file ? asset("storage/studio/{$this->type}/{$this->file}") : null,
+          'link'       => $this->link,
           'type'       => $this->type,
-          'created_at' => $this->created_at->format('d / m / Y'),
-          'updated_at' => $this->updated_at->format('d / m / Y')
+          'created_at' => $this->created_at ? $this->created_at->format('d / m / Y') : null,
+          'updated_at' => $this->updated_at ? $this->updated_at->format('d / m / Y') : null
         ];
     }
 }
