@@ -23,7 +23,7 @@ return new class extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->string('SN')->unique();
-            $table->string('name_ar');
+            $table->text('name_ar');
             $table->string('name_en')->nullable();
             $table->string('region');
             $table->foreignIdFor(Type::class)->nullable()->onDelete('set null')->onUpdate('cascade');
@@ -43,10 +43,10 @@ return new class extends Migration
             $table->integer('percentage')->unsigned()->nullable();
             $table->integer('price')->unsigned()->nullable();
             $table->json('images')->nullable();
-            $table->string('trainer')->nullable();
+            $table->text('trainer')->nullable();
             $table->text('summary')->nullable();
             $table->text('content')->nullable();
-            $table->string('zoom')->nullable();
+            $table->text('zoom')->nullable();
             $table->string('youtube')->nullable();
             $table->foreignIdFor(Template::class)->nullable()->onDelete('set null')->onUpdate('cascade');
             $table->foreignIdFor(Questionnaire::class)->nullable()->onDelete('set null')->onUpdate('cascade');

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('description_ar');
             $table->string('description_en');
             $table->integer('order')->nullable();
+            $table->boolean('active')->default(1)->comment('1: Active, 0: Inactive');
             $table->timestamps();
         });
     }

@@ -27,6 +27,7 @@ class BlogPostResource extends JsonResource
           'content_ar'       => $this->content_ar,
           'content_en'       => $this->content_en,
           'post_date'        => Carbon::parse($this->post_date)->format('d / m / Y'),
+          'postDate'         => $this->post_date,
         ];
     }
 }

@@ -56,6 +56,12 @@ class BlogPost extends Model
               ->orWhere("content_ar", 'LIKE', "%{$request->q}%")
               ->orWhere("content_en", 'LIKE', "%{$request->q}%");
       }
+
+      // Filter by category id
+      if (is_numeric($request->category) && $request->category !== 'all') {
+        $query->where("blog_category_id", $request->category);
+      }
+
       return $query;
     }
 

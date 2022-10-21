@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('title_ar');
             $table->string('title_en')->nullable();
             $table->string('slug');
-            $table->text('content_ar');
-            $table->text('content_en')->nullable();
+            $table->longtext('content_ar');
+            $table->longtext('content_en')->nullable();
             $table->timestamps();
         });
     }

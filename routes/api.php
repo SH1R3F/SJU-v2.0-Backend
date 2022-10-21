@@ -8,9 +8,10 @@ use App\Models\Course\Location;
 use App\Models\Course\Template;
 use App\Models\Course\Questionnaire;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\Admin\MenuController;
-use App\Http\Controllers\Api\Admin\PageController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Resources\Admin\Course\NamingResource;
@@ -53,8 +54,20 @@ Route::get('/', function () {
   return 'Welcome to api';
 });
 
-Route::get('/menus', [HomeController::class, 'menus']);
-Route::get('/home', [HomeController::class, 'index']);
+
+Route::group(['name' => 'frontend'], function() { // Front-end routes
+  Route::get('/menus', [HomeController::class, 'menus']);
+  Route::get('/home', [HomeController::class, 'index']);
+  Route::get('/pages/{slug}', [ PageController::class, 'show' ]);
+
+  // Blog routes
+  Route::prefix('/blog')->group(function () {
+    Route::get('/categories', [ BlogController::class, 'categories' ]);
+    Route::get('/posts', [ BlogController::class, 'posts' ]);
+    Route::get('/posts/{post}', [ BlogController::class, 'post' ]);
+  });
+});
+
 
 Route::prefix('/admin')->group(function() {
   Route::post('/login', [AuthController::class, 'login']);
