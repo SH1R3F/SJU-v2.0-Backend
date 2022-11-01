@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Courseable;
 use App\Models\Course\Course;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use App\Models\TechnicalSupportTicket;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Volunteer extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $guard = 'api-volunteers';
 
@@ -36,14 +37,21 @@ class Volunteer extends Authenticatable
         'gender',
         'country',
         'branch',
+        'city',
         'nationality',
-        'birthday_hijri',
-        'birthday_meladi',
 
         'qualification',
         'major',
         'job_title',
         'employer',
+        'hearabout',
+
+        'governorate',
+        'national_address',
+        'address',
+        'fields',
+        'education',
+        'experiences',
 
         'worktel',
         'worktel_ext',
@@ -52,6 +60,8 @@ class Volunteer extends Authenticatable
 
         'post_box',
         'post_code',
+
+        // Email Activation Cols
 
         'mobile',
         'mobile_key',
@@ -79,6 +89,7 @@ class Volunteer extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'fields' => 'array'
     ];
 
     public function scopeFilter($query, $request)

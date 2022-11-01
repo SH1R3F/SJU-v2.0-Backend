@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Admin\VolunteerResource;
 
 class VolunteerController extends Controller
 {
@@ -39,7 +40,7 @@ class VolunteerController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-          'image'    => 'sometimes|nullable|image',
+          'image' => 'required|image|mimes:png,jpg,jpeg|max:2048',
 
           // Name Fields
           'fname_ar' => 'required|min:3|max:50',
@@ -56,7 +57,7 @@ class VolunteerController extends Controller
           'country'            => 'required|integer',
           'nationality'        => 'required|integer',
           'qualification'      => 'required|integer',
-          'national_id'        => 'required|integer',
+          'national_id'        => 'required|integer|unique:volunteers',
           'marital_status'     => 'required|string',
           'adminstrative_area' => 'required|string',
           'governorate'        => 'required|string',
@@ -68,7 +69,7 @@ class VolunteerController extends Controller
           'experiences'        => 'required|string',
           'branch'             => 'required|integer',
           'hearabout'          => 'required|integer',
-          'email'              => 'required|email',
+          'email'              => 'required|email|unique:volunteers',
           'mobile'             => 'required|integer',
           'mobile_key'         => 'required|integer',
           'password'           => 'required|min:6',
@@ -82,13 +83,28 @@ class VolunteerController extends Controller
         // Hash password
         $request->merge(['password' => Hash::make($request->password)]);
 
+
+        // Fields
+        $request->merge(['fields' => explode(',', $request->fields)]);
+
+
         // Update database
         $volunteer = Volunteer::create($request->all());
 
+        // Update Avatar
+        if ($request->image) {
+          $imageName = time().'.'.$request->image->extension();
+          $request->image->move(public_path("storage/volunteers/{$volunteer->id}/images"), $imageName);
+          $volunteer->image = "volunteers/{$volunteer->id}/images/{$imageName}";
+          $volunteer->save();
+        }
+
         // Login and return access token
         return response()->json([
-          'message' => __('messages.successful_create'),
-        ], 200);
+          'userData'    => new VolunteerResource($volunteer),
+          'accessToken' => $volunteer->createToken('accessToken')->plainTextToken
+        ]);
+        
     }
 
     /**

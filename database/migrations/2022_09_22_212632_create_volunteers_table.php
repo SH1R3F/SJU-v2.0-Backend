@@ -27,15 +27,21 @@ return new class extends Migration
             $table->boolean('gender')->comment('0: Male, 1: Female');
             $table->integer('country');
             $table->integer('branch');
+            $table->integer('city')->nullable();
             $table->integer('nationality');
-            $table->date('birthday_hijri')->nullable();
-            $table->date('birthday_meladi')->nullable();
 
             $table->string('qualification')->nullable();
             $table->string('major')->nullable();
             $table->string('job_title')->nullable();
             $table->string('employer')->nullable();
             $table->integer('hearabout')->nullable();
+
+            $table->string('governorate')->nullable();
+            $table->text('national_address')->nullable();
+            $table->text('address')->nullable();
+            $table->json('fields')->nullable();
+            $table->string('education')->nullable();
+            $table->text('experiences')->nullable();
 
             $table->string('worktel')->nullable();
             $table->string('worktel_ext')->nullable();

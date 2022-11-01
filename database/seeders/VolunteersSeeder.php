@@ -33,8 +33,6 @@ class VolunteersSeeder extends Seeder
             'country'         => 1,
             'branch'            => 3,
             'nationality'     => 1,
-            'birthday_hijri'  => '1412-03-22',
-            'birthday_meladi' => '1991-09-30',
 
             'qualification' => 6,
 
@@ -60,8 +58,6 @@ class VolunteersSeeder extends Seeder
             'country'         => 1,
             'branch'            => 10,
             'nationality'     => 1,
-            'birthday_hijri'  => '1412-03-22',
-            'birthday_meladi' => '1991-09-30',
 
             'qualification' => 6,
 

@@ -144,8 +144,6 @@ class VolunteerController extends Controller
           'tname_en'        => 'nullable|min:3',
           'lname_en'        => 'nullable|min:3',
           'gender'          => 'nullable|in:0,1',
-          'birthday_meladi' => 'nullable|date',
-          'birthday_hijri'  => 'nullable|date',
           'qualification'   => 'nullable|min:3',
           'major'           => 'nullable|min:3',
           'job_title'       => 'nullable|min:3',

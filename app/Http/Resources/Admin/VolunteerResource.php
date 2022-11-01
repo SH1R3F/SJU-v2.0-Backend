@@ -32,8 +32,6 @@ class VolunteerResource extends JsonResource
           "country"         => $this->country,
           "branch"          => $this->branch,
           "nationality"     => $this->nationality,
-          "birthday_hijri"  => $this->birthday_hijri,
-          "birthday_meladi" => $this->birthday_meladi,
           "qualification"   => $this->qualification,
           "major"           => $this->major,
           "job_title"       => $this->job_title,
