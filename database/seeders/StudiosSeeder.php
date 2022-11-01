@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Page;
+use App\Models\Studio;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class PagesSeeder extends Seeder
+class StudiosSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,9 +17,9 @@ class PagesSeeder extends Seeder
     public function run()
     {
 
-      // Pages Seeding From .sql File
-      Page::unguard();
-      $sql = base_path('database/data/pages.sql');
+      // Studios Seeding From .sql File
+      Studio::unguard();
+      $sql = base_path('database/data/studios.sql');
       DB::unprepared(file_get_contents($sql));
 
     }

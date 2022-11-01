@@ -71,7 +71,7 @@ class VolunteerController extends Controller
           'mobile'          => 'required',
           'mobile_key'      => 'required',
           'country'         => 'required',
-          'city'            => 'required',
+          'branch'            => 'required',
           'nationality'     => 'required',
         ]);
 
@@ -82,7 +82,7 @@ class VolunteerController extends Controller
         // Hash password
         $request->merge(['password' => Hash::make($request->password)]);
 
-        // Update
+        // Update database
         $volunteer = Volunteer::create($request->all());
 
         return response()->json([
@@ -151,7 +151,7 @@ class VolunteerController extends Controller
           'job_title'       => 'nullable|min:3',
           'employer'        => 'nullable|min:3',
           'country'         => 'nullable',
-          'city'            => 'nullable',
+          'branch'            => 'nullable',
           'nationality'     => 'nullable',
           'post_box'        => 'nullable|min:3',
           'post_code'       => 'nullable|min:3',

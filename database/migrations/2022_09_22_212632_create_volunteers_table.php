@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('volunteers', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('national_id')->unique();
             $table->string('fname_ar');
             $table->string('sname_ar');
             $table->string('tname_ar');
@@ -25,7 +26,7 @@ return new class extends Migration
             $table->string('lname_en')->nullable();
             $table->boolean('gender')->comment('0: Male, 1: Female');
             $table->integer('country');
-            $table->integer('city');
+            $table->integer('branch');
             $table->integer('nationality');
             $table->date('birthday_hijri')->nullable();
             $table->date('birthday_meladi')->nullable();
@@ -34,6 +35,7 @@ return new class extends Migration
             $table->string('major')->nullable();
             $table->string('job_title')->nullable();
             $table->string('employer')->nullable();
+            $table->integer('hearabout')->nullable();
 
             $table->string('worktel')->nullable();
             $table->string('worktel_ext')->nullable();
@@ -46,6 +48,9 @@ return new class extends Migration
             $table->string('mobile');
             $table->string('mobile_key');
             $table->string('email')->unique();
+            // Email Activation Columns
+
+            
             $table->string('password');
             $table->boolean('status')->comment('0: Disabled, 1: Active')->default(0);
 

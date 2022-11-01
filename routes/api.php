@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Models\Course\Type;
 use Illuminate\Http\Request;
 use App\Models\Course\Gender;
@@ -34,6 +35,7 @@ use App\Http\Controllers\Api\Admin\Course\LocationController;
 use App\Http\Controllers\Api\Admin\Course\TemplateController;
 use App\Http\Controllers\Api\Admin\TechnicalSupportController;
 use App\Http\Controllers\Api\Admin\Course\QuestionnaireController;
+use App\Http\Controllers\Api\VolunteerController as VolunteerUsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +57,7 @@ Route::get('/', function () {
 });
 
 
-Route::group(['name' => 'frontend'], function() { // Front-end routes
+Route::group(['name' => 'users-app'], function() { // Users-App routes
   Route::get('/menus', [HomeController::class, 'menus']);
   Route::get('/home', [HomeController::class, 'index']);
   Route::get('/pages/{slug}', [ PageController::class, 'show' ]);
@@ -65,6 +67,13 @@ Route::group(['name' => 'frontend'], function() { // Front-end routes
     Route::get('/categories', [ BlogController::class, 'categories' ]);
     Route::get('/posts', [ BlogController::class, 'posts' ]);
     Route::get('/posts/{post}', [ BlogController::class, 'post' ]);
+  });
+
+  // Pages
+
+  // Volunteers
+  Route::prefix('/volunteers')->group(function() {
+    Route::post('/register', [ VolunteerUsersController::class, 'store' ]);
   });
 });
 

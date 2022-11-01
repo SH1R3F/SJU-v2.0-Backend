@@ -23,6 +23,7 @@ class Volunteer extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'national_id',
         'fname_ar',
         'sname_ar',
         'tname_ar',
@@ -34,7 +35,7 @@ class Volunteer extends Authenticatable
         
         'gender',
         'country',
-        'city',
+        'branch',
         'nationality',
         'birthday_hijri',
         'birthday_meladi',

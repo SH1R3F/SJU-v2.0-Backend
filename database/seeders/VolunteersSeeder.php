@@ -19,6 +19,7 @@ class VolunteersSeeder extends Seeder
 
         $records = [
           [
+            'national_id' => 123123123123,
             'fname_ar' => 'محمد',
             'sname_ar' => 'عيسى',
             'tname_ar' => 'أحمد',
@@ -30,7 +31,7 @@ class VolunteersSeeder extends Seeder
             
             'gender'          => 0,
             'country'         => 1,
-            'city'            => 3,
+            'branch'            => 3,
             'nationality'     => 1,
             'birthday_hijri'  => '1412-03-22',
             'birthday_meladi' => '1991-09-30',
@@ -45,6 +46,7 @@ class VolunteersSeeder extends Seeder
 
           ],
           [
+            'national_id' => 123231212,
             'fname_ar' => 'محمد',
             'sname_ar' => 'عبدالعزيز',
             'tname_ar' => 'عبدالله',
@@ -56,7 +58,7 @@ class VolunteersSeeder extends Seeder
             
             'gender'          => 0,
             'country'         => 1,
-            'city'            => 10,
+            'branch'            => 10,
             'nationality'     => 1,
             'birthday_hijri'  => '1412-03-22',
             'birthday_meladi' => '1991-09-30',

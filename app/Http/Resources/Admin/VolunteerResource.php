@@ -16,6 +16,7 @@ class VolunteerResource extends JsonResource
     {
         return [
           'id'              => $this->id,
+          'national_id'     => $this->national_id,
           'fname_ar'        => $this->fname_ar,
           'sname_ar'        => $this->sname_ar,
           'tname_ar'        => $this->tname_ar,
@@ -29,7 +30,7 @@ class VolunteerResource extends JsonResource
           'name'            => "{$this->fname_ar} {$this->lname_ar}",
           'gender'          => $this->gender,
           "country"         => $this->country,
-          "city"            => $this->city,
+          "branch"          => $this->branch,
           "nationality"     => $this->nationality,
           "birthday_hijri"  => $this->birthday_hijri,
           "birthday_meladi" => $this->birthday_meladi,
