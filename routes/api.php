@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\Admin\SiteOptionController;
 use App\Http\Controllers\Api\Admin\SubscriberController;
 use App\Http\Controllers\Api\Admin\Course\TypeController;
 use App\Http\Controllers\Api\Admin\BlogCategoryController;
+use App\Http\Controllers\Api\Auth\VolunteerAuthController;
 use App\Http\Resources\Admin\Course\QuestionnaireResource;
 use App\Http\Controllers\Api\Admin\Course\CourseController;
 use App\Http\Controllers\Api\Admin\Course\GenderController;
@@ -35,6 +36,7 @@ use App\Http\Controllers\Api\Admin\Course\LocationController;
 use App\Http\Controllers\Api\Admin\Course\TemplateController;
 use App\Http\Controllers\Api\Admin\TechnicalSupportController;
 use App\Http\Controllers\Api\Admin\Course\QuestionnaireController;
+use App\Http\Controllers\Api\Auth\AuthController as UsersAuthController;
 use App\Http\Controllers\Api\VolunteerController as VolunteerUsersController;
 
 /*
@@ -69,12 +71,24 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
     Route::get('/posts/{post}', [ BlogController::class, 'post' ]);
   });
 
-  // Pages
-
   // Volunteers
   Route::prefix('/volunteers')->group(function() {
-    Route::post('/register', [ VolunteerUsersController::class, 'store' ]);
+
+    // Routes that must be a guest to enter
+    Route::middleware('guestalluser')->group(function() {
+      Route::post('/register', [ VolunteerAuthController::class, 'register' ]);
+      Route::post('/login', [ VolunteerAuthController::class, 'login' ]);
+    });
+
+
   });
+
+
+  // Authenticated Routes
+  Route::middleware('authanyuser')->group(function() {
+    Route::post('/auth/logout', [ UsersAuthController::class, 'logout' ]);
+  });
+
 });
 
 

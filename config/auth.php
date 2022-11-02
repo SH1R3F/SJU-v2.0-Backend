@@ -48,6 +48,14 @@ return [
             'driver' => 'sanctum',
             'provider' => 'subscribers',
         ],
+        'api-volunteers' => [
+            'driver' => 'sanctum',
+            'provider' => 'volunteers',
+        ],
+        'api-members' => [
+            'driver' => 'sanctum',
+            'provider' => 'members',
+        ],
     ],
 
     /*
@@ -71,6 +79,14 @@ return [
         'subscribers' => [
             'driver' => 'eloquent',
             'model' => App\Models\Subscriber::class,
+        ],
+        'volunteers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Volunteer::class,
+        ],
+        'members' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Member::class,
         ],
         'admins' => [
             'driver' => 'eloquent',
@@ -96,6 +112,18 @@ return [
     'passwords' => [
         'subscribers' => [
             'provider' => 'subscribers',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'volunteers' => [
+            'provider' => 'volunteers',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'members' => [
+            'provider' => 'members',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

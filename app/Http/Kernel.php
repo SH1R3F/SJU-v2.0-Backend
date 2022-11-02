@@ -70,5 +70,7 @@ class Kernel extends HttpKernel
         'cors' => \App\Http\Middleware\Cors::class,
         'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
         'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
+        'authanyuser' => \App\Http\Middleware\AuthAnyUserType::class,
+        'guestalluser' => \App\Http\Middleware\GuestAllUserType::class,
     ];
 }
