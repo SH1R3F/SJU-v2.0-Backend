@@ -81,12 +81,18 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
     });
 
 
+    Route::middleware('auth:api-volunteers')->group(function () {
+      Route::post('/profile/', [ VolunteerUsersController::class, 'update' ]);
+      Route::post('/profile/password', [ VolunteerUsersController::class, 'updatePassword' ]);
+    });
+
   });
 
 
   // Authenticated Routes
   Route::middleware('authanyuser')->group(function() {
     Route::post('/auth/logout', [ UsersAuthController::class, 'logout' ]);
+    Route::get('/auth/user', [ UsersAuthController::class, 'user' ]);
   });
 
 });

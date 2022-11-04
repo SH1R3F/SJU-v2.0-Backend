@@ -17,4 +17,6 @@ return [
     "successful_delete" => "Deleted successfully",
     "successful_register" => "Registered successfully",
     "successful_logout" => "Logged out successfully",
+    "password_incorrect" => "Password is incorrect",
+    "invalid_credentials" => "invalid login credentials",
 ];

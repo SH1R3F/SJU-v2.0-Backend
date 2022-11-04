@@ -28,7 +28,7 @@ class AuthController extends Controller
       // Check login
       $admin = Admin::where('email', $request->email)->with('roles')->first();
       if (!$admin || !Hash::check($request->password, $admin->password)) {
-        return response(['message' => 'invalid login credentials'], 422);
+        return response(['message' => __('messages.invalid_credentials')], 422);
       }
 
       // Revoking previous tokens
