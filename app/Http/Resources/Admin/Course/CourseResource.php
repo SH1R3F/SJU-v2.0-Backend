@@ -58,7 +58,9 @@ class CourseResource extends JsonResource
           'users'  => $this->users ? $this->users->count() : null,
           'passed' => $this->passed,
           'unpassed' => $this->users ? ($this->users->count() - $this->passed) : null,
-          'pivot' => $this->pivot
+          'pivot' => $this->pivot,
+          'registered' => $this->registered ? $this->registered : false,
+          'volunteers' => $this->volunteers->pluck('id'),
         ];
     }
 }

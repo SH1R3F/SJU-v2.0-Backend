@@ -11,8 +11,8 @@ use App\Models\Course\Questionnaire;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\HomeController;
-use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\Admin\MenuController;
+use App\Http\Controllers\Api\Admin\PageController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Resources\Admin\Course\NamingResource;
@@ -36,6 +36,8 @@ use App\Http\Controllers\Api\Admin\Course\LocationController;
 use App\Http\Controllers\Api\Admin\Course\TemplateController;
 use App\Http\Controllers\Api\Admin\TechnicalSupportController;
 use App\Http\Controllers\Api\Admin\Course\QuestionnaireController;
+use App\Http\Controllers\Api\PageController as UsersPageController;
+use App\Http\Controllers\Api\CourseController as UsersCourseController;
 use App\Http\Controllers\Api\Auth\AuthController as UsersAuthController;
 use App\Http\Controllers\Api\VolunteerController as VolunteerUsersController;
 
@@ -62,7 +64,9 @@ Route::get('/', function () {
 Route::group(['name' => 'users-app'], function() { // Users-App routes
   Route::get('/menus', [HomeController::class, 'menus']);
   Route::get('/home', [HomeController::class, 'index']);
-  Route::get('/pages/{slug}', [ PageController::class, 'show' ]);
+  Route::get('/pages/{slug}', [ UsersPageController::class, 'show' ]);
+  Route::get('/events', [ UsersCourseController::class, 'index' ]);
+  Route::get('/events/{event}', [ UsersCourseController::class, 'show' ]);
 
   // Blog routes
   Route::prefix('/blog')->group(function () {
@@ -82,6 +86,7 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
 
 
     Route::middleware('auth:api-volunteers')->group(function () {
+      Route::get('/events/', [ VolunteerUsersController::class, 'index' ]);
       Route::post('/profile/', [ VolunteerUsersController::class, 'update' ]);
       Route::post('/profile/password', [ VolunteerUsersController::class, 'updatePassword' ]);
     });
@@ -93,6 +98,11 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
   Route::middleware('authanyuser')->group(function() {
     Route::post('/auth/logout', [ UsersAuthController::class, 'logout' ]);
     Route::get('/auth/user', [ UsersAuthController::class, 'user' ]);
+
+
+    // Events that share some code
+    Route::post('/events/{event}', [ UsersCourseController::class, 'enroll' ]);
+
   });
 
 });

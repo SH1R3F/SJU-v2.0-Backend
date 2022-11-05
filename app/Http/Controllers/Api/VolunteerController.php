@@ -2,16 +2,43 @@
 
 namespace App\Http\Controllers\Api;
 
+use Carbon\Carbon;
 use App\Models\Volunteer;
 use Illuminate\Http\Request;
+use App\Models\Course\Course;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\VolunteerResource;
+use App\Http\Resources\Admin\Course\CourseResource;
 
 class VolunteerController extends Controller
 {
+
+
+    /**
+     * Display the data of the default page for volunteers.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+      // Upcoming events
+      $upcoming = Course::whereIn('status', [1,2,3,4])->where('date_from', '>', Carbon::now())->get();
+
+      // Enrolled events
+      $enrolled = Auth::guard('api-volunteers')->user()->courses()->get();
+
+      return response()->json([
+        'upcomingEvents' => CourseResource::collection($upcoming),
+        'enrolledEvents' => CourseResource::collection($enrolled)
+      ]);
+    
+    }
+
+
     /**
      * Update the specified resource in storage.
      *

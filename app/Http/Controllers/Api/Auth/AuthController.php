@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Models\Volunteer;
+use App\Traits\LoggedInUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -11,25 +12,7 @@ use App\Http\Resources\Admin\VolunteerResource;
 class AuthController extends Controller
 {
 
-    private function loggedInUser()
-    {
-      $user = null;
-      $type = null;
-      if (Auth::guard('api-volunteers')->check()) {
-        $user = new VolunteerResource(Auth::guard('api-volunteers')->user());
-        $type = 'volunteer';
-      } elseif (Auth::guard('api-subscribers')->check()) {
-        $user = Auth::guard('api-subscribers')->user();
-        $type = 'subscriber';
-      } elseif (Auth::guard('api-members')->check()) {
-        $user = Auth::guard('api-members')->user();
-        $type = 'member';
-      }
-      return [
-        'user' => $user,
-        'type' => $type
-      ];
-    }
+    use LoggedInUser;
 
     public function user()
     {

@@ -46,7 +46,7 @@ class VolunteerResource extends JsonResource
           "mobile_key"      => $this->mobile_key,
           "fullMobile"      => $this->mobile_key . $this->mobile,
           "email"           => $this->email,
-          "avatar"          => $this->image ? asset("storage/volunteers/{$this->id}/images/{$this->image}") : null,
+          "avatar"          => $this->image ? asset("storage/{$this->image}") : null,
           'courses'         => 11,
           'status'          => $this->status,
           'created_at'      => $this->created_at->format('d / m / Y')

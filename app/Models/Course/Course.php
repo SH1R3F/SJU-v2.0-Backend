@@ -2,6 +2,7 @@
 
 namespace App\Models\Course;
 
+use Carbon\Carbon;
 use App\Models\Member;
 use App\Models\Volunteer;
 use App\Models\Subscriber;
@@ -76,6 +77,19 @@ class Course extends Model
       if ($request->year) {
         $query->whereYear('date_from', $request->year)
               ->orWhereYear('date_to', $request->year);
+      }
+
+      // Filter by type
+      if ($request->type) {
+        switch ($request->type) {
+          case 'upcoming':
+            $query->where('date_from', '>=', Carbon::now());
+            break;
+
+          case 'done':
+            $query->where('date_from', '<', Carbon::now());
+            break;
+        }
       }
 
       // Filter by search
