@@ -67,8 +67,8 @@ class TechnicalSupportController extends Controller
 
         // Validate
         $validator = Validator::make($request->all(), [
-          'body'  => 'sometimes|nullable',
-          'image' => 'sometimes|nullable',
+          'body'  => 'nullable',
+          'image' => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -116,7 +116,7 @@ class TechnicalSupportController extends Controller
       $validator = Validator::make($request->all(), [
         'title'       => 'required',
         'description' => 'required',
-        'image'       => 'sometimes|nullable',
+        'image'       => 'nullable',
       ]);
 
       if ($validator->fails()) {

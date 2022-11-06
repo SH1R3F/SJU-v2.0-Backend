@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\DB;
 use App\Models\TechnicalSupportTicket;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Http\Notifications\VerifyDifferentUsersEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Volunteer extends Authenticatable
+class Volunteer extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -91,6 +92,17 @@ class Volunteer extends Authenticatable
         'email_verified_at' => 'datetime',
         'fields' => 'array'
     ];
+
+
+    /**
+     * Send the email verification notification.
+     *
+     * @return void
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyDifferentUsersEmail);
+    }
 
     public function scopeFilter($query, $request)
     {

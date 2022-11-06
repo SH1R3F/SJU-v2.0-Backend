@@ -49,9 +49,9 @@ class VolunteerController extends Controller
     {
       // Validation
       $validator = Validator::make($request->all(), [
-        'gender'        => 'sometimes|nullable|in:0,1',
+        'gender'        => 'nullable|in:0,1',
         'country'       => 'required|integer',
-        'city'          => 'sometimes|nullable|integer',
+        'city'          => 'nullable|integer',
         'qualification' => 'required|integer',
         'mobile'        => 'nullable|integer',
         'mobile_key'    => 'required|integer'

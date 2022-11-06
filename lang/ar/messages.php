@@ -20,5 +20,6 @@ return [
     "successful_logout" => "تم تسجيل الخروج بنجاح",
     "password_incorrect" => "كلمة المرور غير صحيحة",
     "invalid_credentials" => "معلومات تسجيل الدخول غير صحيحة",
-
+    "verification_sent"  => "تم إرسال رابط التفعيل",
+    "email_unverified"  => "يجب تفعيل البريد الإلكتروني قبل تسجيل الدخول"
 ];

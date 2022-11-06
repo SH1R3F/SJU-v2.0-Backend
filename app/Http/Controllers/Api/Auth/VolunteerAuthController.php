@@ -6,6 +6,7 @@ use App\Models\Volunteer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\VolunteerResource;
 
@@ -33,6 +34,11 @@ class VolunteerAuthController extends Controller
         $volunteer = Volunteer::where('email', $request->email)->first();
         if (!$volunteer || !Hash::check($request->password, $volunteer->password)) {
           return response(['message' => 'invalid login credentials'], 422);
+        }
+
+        if (!$volunteer->hasVerifiedEmail()) {
+            $validator->getMessageBag()->add('email', __('messages.email_unverified'));
+            return response()->json(array_merge($validator->errors()->toArray(), ['resend' => route('verification.send', ['email' => $volunteer->email, 'type' => 'volunteer'])]), 400);
         }
 
         // Revoking previous tokens
@@ -112,10 +118,14 @@ class VolunteerAuthController extends Controller
           $volunteer->save();
         }
 
+        // dispatching the Registered event
+        event(new Registered($volunteer));
+
         // Login and return access token
         return response()->json([
-          'userData'    => new VolunteerResource($volunteer),
-          'accessToken' => $volunteer->createToken('accessToken')->plainTextToken
+          // 'userData'    => new VolunteerResource($volunteer),
+          // 'accessToken' => $volunteer->createToken('accessToken')->plainTextToken,
+          'message' => __('messages.successful_create')
         ]);
         
     }

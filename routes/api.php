@@ -18,7 +18,7 @@ use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Controllers\Api\Admin\StudioController;
-use App\Http\Controllers\Api\TechnicalSupportController as UsersSupportController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\BlogPostController;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
@@ -41,6 +41,7 @@ use App\Http\Controllers\Api\PageController as UsersPageController;
 use App\Http\Controllers\Api\CourseController as UsersCourseController;
 use App\Http\Controllers\Api\Auth\AuthController as UsersAuthController;
 use App\Http\Controllers\Api\VolunteerController as VolunteerUsersController;
+use App\Http\Controllers\Api\TechnicalSupportController as UsersSupportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,6 +112,24 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
     Route::post('/support/{ticket}', [ UsersSupportController::class, 'update' ]);
 
   });
+
+
+  /**
+   * Verification Routes
+   */
+  // Verification link
+  Route::get('/email/verify/{id}/{type}/{hash}', [ VerifyEmailController::class, '__invoke' ])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
+  // Resend link to verify email
+  // Route::post('/email/verify/resend/{email}/{type}', function (Request $request) {
+  //   $request->user()->sendEmailVerificationNotification();
+  //   return back()->with('message', 'Verification link sent!');
+  // })->middleware(['auth:api', 'throttle:6,1'])->name('verification.send');
+
+  Route::post('/email/verify/resend/{email}/{type}', [ VerifyEmailController::class, 'resend' ])->middleware('throttle:6,1')->name('verification.send');
+
 
 });
 

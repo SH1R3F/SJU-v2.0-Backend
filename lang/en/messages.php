@@ -20,4 +20,6 @@ return [
     "successful_logout" => "Logged out successfully",
     "password_incorrect" => "Password is incorrect",
     "invalid_credentials" => "invalid login credentials",
+    "verification_sent"  => "Email verification has been sent",
+    "email_unverified"  => "Email has to be verified before you can login"
 ];
