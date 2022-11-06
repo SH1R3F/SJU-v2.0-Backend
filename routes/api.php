@@ -103,6 +103,7 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
 
     // Events that share some code
     Route::post('/events/{event}', [ UsersCourseController::class, 'enroll' ]);
+    Route::post('/events/{event}/attend', [ UsersCourseController::class, 'attend' ]);
     // Technical support that share same code
     Route::get('/support', [ UsersSupportController::class, 'index' ]);
     Route::post('/support', [ UsersSupportController::class, 'store' ]);
