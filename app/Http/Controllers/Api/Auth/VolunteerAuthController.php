@@ -105,7 +105,7 @@ class VolunteerAuthController extends Controller
         $volunteer = Volunteer::create($request->all());
 
         // Update Avatar
-        if ($request->image) {
+        if (!empty($request->image)) {
           $imageName = time().'.'.$request->image->extension();
           $request->image->move(public_path("storage/volunteers/{$volunteer->id}/images"), $imageName);
           $volunteer->image = "volunteers/{$volunteer->id}/images/{$imageName}";

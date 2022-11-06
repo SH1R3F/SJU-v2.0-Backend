@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Controllers\Api\Admin\StudioController;
+use App\Http\Controllers\Api\TechnicalSupportController as UsersSupportController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\BlogPostController;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
@@ -102,6 +103,11 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
 
     // Events that share some code
     Route::post('/events/{event}', [ UsersCourseController::class, 'enroll' ]);
+    // Technical support that share same code
+    Route::get('/support', [ UsersSupportController::class, 'index' ]);
+    Route::post('/support', [ UsersSupportController::class, 'store' ]);
+    Route::get('/support/{ticket}', [ UsersSupportController::class, 'show' ]);
+    Route::post('/support/{ticket}', [ UsersSupportController::class, 'update' ]);
 
   });
 
