@@ -22,5 +22,7 @@ return [
     "invalid_credentials" => "invalid login credentials",
     "verification_sent"  => "Email verification has been sent",
     "email_unverified"  => "Email has to be verified before you can login",
-    "invalid_token"  => "This link might be expired or invalid, please try again!"
+    "invalid_token"  => "This link might be expired or invalid, please try again!",
+    "event_unavailable"  => "Event is currently unavailable.",
+    "attendance_unavailable"  => "Attending this event is currently not available"
 ];

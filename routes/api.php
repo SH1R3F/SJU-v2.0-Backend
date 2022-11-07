@@ -18,7 +18,7 @@ use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Controllers\Api\Admin\StudioController;
-use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\BlogPostController;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
@@ -126,9 +126,7 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
    * Verification Routes, Doesnt require any auth or guest middlewares.
    */
   // Verification link
-  Route::get('/email/verify/{id}/{type}/{hash}', [ VerifyEmailController::class, '__invoke' ])
-    ->middleware(['signed', 'throttle:6,1'])
-    ->name('verification.verify');
+  Route::get('/email/verify/{id}/{type}/{hash}', [ VerifyEmailController::class, '__invoke' ])->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
   Route::post('/email/verify/resend/{email}/{type}', [ VerifyEmailController::class, 'resend' ])->middleware('throttle:6,1')->name('verification.send');
 
 
@@ -192,6 +190,7 @@ Route::prefix('/admin')->group(function() {
      * Middleware permissions: read-volunteer, create-volunteer, update-volunteer, delete-volunteer
      */
     Route::get('volunteers/show/{volunteer}/courses', [ VolunteerController::class, 'courses' ]);
+    Route::post('volunteers/{volunteer}/toggle', [ VolunteerController::class, 'toggle' ]);
     Route::resource('volunteers', VolunteerController::class)->except(['edit', 'create']);
   
     Route::prefix('courses')->group(function () {
@@ -200,7 +199,7 @@ Route::prefix('/admin')->group(function() {
        * Naming routes
        * Middleware permissions: manage-namings
        */
-      Route::middleware('permission:read-manage-namings')->prefix('namings')->group(function () {
+      Route::middleware('permission:manage-namings')->prefix('namings')->group(function () {
   
         /**
          * Types routes

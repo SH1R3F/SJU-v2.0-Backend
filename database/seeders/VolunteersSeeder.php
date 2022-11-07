@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use Carbon\Carbon;
 use App\Models\Volunteer;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class VolunteersSeeder extends Seeder
 {
@@ -40,8 +41,8 @@ class VolunteersSeeder extends Seeder
             'mobile_key'  => '966',
             'email'       => 'moheis@outlook.com',
             'password'    => Hash::make('secret'),
-            'status'      => 1,
-
+            // 'status'      => 1,
+            'email_verified_at' => Carbon::now()
           ],
           [
             'national_id' => 123231212,
@@ -65,10 +66,11 @@ class VolunteersSeeder extends Seeder
             'mobile_key'  => '966',
             'email'       => 'msadeis@outlook.com',
             'password'    => Hash::make('secret'),
-            'status'      => 0,
+            // 'status'      => 0,
           ]
         ];
 
+        Volunteer::unguard();
         collect($records)->each(function( $record ) {
           Volunteer::create($record);
         });

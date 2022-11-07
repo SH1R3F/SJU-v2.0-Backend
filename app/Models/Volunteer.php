@@ -65,8 +65,6 @@ class Volunteer extends Authenticatable implements MustVerifyEmail, CanResetPass
         'post_box',
         'post_code',
 
-        // Email Activation Cols
-
         'mobile',
         'mobile_key',
         'email',
@@ -122,7 +120,11 @@ class Volunteer extends Authenticatable implements MustVerifyEmail, CanResetPass
     {
 
       // Filter by status
-      $query->where('status', $request->status);
+      if ($request->status) {
+        $query->whereNotNull('email_verified_at');
+      } else {
+        $query->whereNull('email_verified_at');
+      }
 
       // Filter by mobile
       if ($request->mobile) {

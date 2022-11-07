@@ -36,6 +36,12 @@ class CourseController extends Controller
      */
     public function show(Course $event)
     {
+
+      // Only if course is still active
+      if (!in_array($event->status, [1, 2, 3, 4])) {
+        return abort(404);
+      }
+
       if ($this->loggedInUser()['user']) {
         $course = $this->loggedInUser()['user']->courses()->where('id', $event->id);
         $event->registered = ($course->count() ? $course->first()->pivot : false);
@@ -58,6 +64,14 @@ class CourseController extends Controller
      */
     public function enroll(Request $request, Course $event)
     {
+
+      // Only if course is still active
+      if (!in_array($event->status, [1, 2, 3, 4])) {
+        return response()->json([
+          'message' => __('messages.event_unavailable'),
+        ], 422); 
+      }
+
       $user = $this->loggedInUser()['user'];
 
       // Update only if not registered
@@ -80,6 +94,25 @@ class CourseController extends Controller
     public function attend(Request $request, Course $event)
     {
       $user = $this->loggedInUser()['user'];
+
+
+      // Only if course is still active and still allowed to attend
+      if (!in_array($event->status, [1, 2, 3, 4])) {
+        return response()->json([
+          'message' => __('messages.event_unavailable'),
+        ], 422); 
+      }
+
+      // If attendance duration has already passed
+      $date     = explode(' ', $event->date_to)[0];
+      $end_date = Carbon::parse("{$date} {$event->time_to}")->addMinutes($event->attendance_duration);
+
+      if (Carbon::now()->gt($end_date)) {
+        return response()->json([
+          'message' => __('messages.attendance_unavailable'),
+        ], 422); 
+      }
+
 
       // Update only if registered
       if ($user->courses()->where('course_id', $event->id)->count()) {

@@ -58,7 +58,7 @@ return new class extends Migration
 
             
             $table->string('password');
-            $table->boolean('status')->comment('0: Disabled, 1: Active')->default(0);
+            // $table->boolean('status')->comment('0: Disabled, 1: Active')->default(0);
 
             $table->string('image')->nullable();
             $table->dateTime('last_seen')->nullable();

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use Carbon\Carbon;
 use App\Models\Volunteer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\VolunteerResource;
@@ -63,6 +65,7 @@ class VolunteerController extends Controller
           'password' => 'required|min:6',
 
           // Personal information
+          'national_id'     => 'required|integer',
           'fname_ar'        => 'required|min:3',
           'sname_ar'        => 'required|min:3',
           'tname_ar'        => 'required|min:3',
@@ -71,7 +74,7 @@ class VolunteerController extends Controller
           'mobile'          => 'required',
           'mobile_key'      => 'required',
           'country'         => 'required',
-          'branch'            => 'required',
+          'branch'          => 'required',
           'nationality'     => 'required',
         ]);
 
@@ -84,6 +87,7 @@ class VolunteerController extends Controller
 
         // Update database
         $volunteer = Volunteer::create($request->all());
+        event(new Registered($volunteer));
 
         return response()->json([
           'message' => __('messages.successful_create'),
@@ -223,5 +227,20 @@ class VolunteerController extends Controller
         return response()->json([
           'message' => __('messages.successful_delete')
         ], 200);
+    }
+
+    /**
+     * Toggle verification of the specified resource from storage.
+     *
+     * @param  Volunteer  $volunteer
+     * @return \Illuminate\Http\Response
+     */
+    public function toggle(Volunteer $volunteer)
+    {
+      $volunteer->email_verified_at = $volunteer->email_verified_at ? NULL : Carbon::now();
+      $volunteer->save();
+      return response()->json([
+        'message' => __('messages.successful_update')
+      ], 200);
     }
 }

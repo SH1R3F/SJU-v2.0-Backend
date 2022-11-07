@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Api\Auth;
 
 use App\Models\Member;
 use App\Models\Volunteer;
@@ -22,6 +22,10 @@ class VerifyEmailController extends Controller
     {
 
         $user = $request->user();
+        // if ($user instanceof Volunteer) {
+        //   $user->status = 1;
+        //   $user->save();
+        // }
       
         if ($user->hasVerifiedEmail()) {
             return redirect()->intended(
