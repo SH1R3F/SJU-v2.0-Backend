@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\VolunteerController;
 use App\Http\Controllers\Api\Admin\SiteOptionController;
 use App\Http\Controllers\Api\Admin\SubscriberController;
+use App\Http\Controllers\Api\Auth\NewPasswordController;
 use App\Http\Controllers\Api\Admin\Course\TypeController;
 use App\Http\Controllers\Api\Admin\BlogCategoryController;
 use App\Http\Controllers\Api\Auth\VolunteerAuthController;
@@ -36,6 +37,7 @@ use App\Http\Controllers\Api\Admin\Course\CategoryController;
 use App\Http\Controllers\Api\Admin\Course\LocationController;
 use App\Http\Controllers\Api\Admin\Course\TemplateController;
 use App\Http\Controllers\Api\Admin\TechnicalSupportController;
+use App\Http\Controllers\Api\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Api\Admin\Course\QuestionnaireController;
 use App\Http\Controllers\Api\PageController as UsersPageController;
 use App\Http\Controllers\Api\CourseController as UsersCourseController;
@@ -96,12 +98,12 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
   });
 
 
-  // Authenticated Routes
+  /**
+   * Routes that requires ANY USER TYPE to be logged in
+   */
   Route::middleware('authanyuser')->group(function() {
     Route::post('/auth/logout', [ UsersAuthController::class, 'logout' ]);
     Route::get('/auth/user', [ UsersAuthController::class, 'user' ]);
-
-
     // Events that share some code
     Route::post('/events/{event}', [ UsersCourseController::class, 'enroll' ]);
     Route::post('/events/{event}/attend', [ UsersCourseController::class, 'attend' ]);
@@ -110,28 +112,27 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
     Route::post('/support', [ UsersSupportController::class, 'store' ]);
     Route::get('/support/{ticket}', [ UsersSupportController::class, 'show' ]);
     Route::post('/support/{ticket}', [ UsersSupportController::class, 'update' ]);
-
   });
 
+  /**
+   * Routes that requires ALL USERS to be logged out
+   */
+  Route::middleware('guestalluser')->group(function() {
+    Route::post('/forgot-password/{type}', [ PasswordResetLinkController::class, 'store' ])->name('password.email');;
+    Route::post('/reset-password/{type}', [ NewPasswordController::class, 'store' ])->name('password.email');;
+  });
 
   /**
-   * Verification Routes
+   * Verification Routes, Doesnt require any auth or guest middlewares.
    */
   // Verification link
   Route::get('/email/verify/{id}/{type}/{hash}', [ VerifyEmailController::class, '__invoke' ])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
-
-  // Resend link to verify email
-  // Route::post('/email/verify/resend/{email}/{type}', function (Request $request) {
-  //   $request->user()->sendEmailVerificationNotification();
-  //   return back()->with('message', 'Verification link sent!');
-  // })->middleware(['auth:api', 'throttle:6,1'])->name('verification.send');
-
   Route::post('/email/verify/resend/{email}/{type}', [ VerifyEmailController::class, 'resend' ])->middleware('throttle:6,1')->name('verification.send');
 
 
-});
+}); // ----> USERS APP
 
 
 Route::prefix('/admin')->group(function() {

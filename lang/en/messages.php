@@ -21,5 +21,6 @@ return [
     "password_incorrect" => "Password is incorrect",
     "invalid_credentials" => "invalid login credentials",
     "verification_sent"  => "Email verification has been sent",
-    "email_unverified"  => "Email has to be verified before you can login"
+    "email_unverified"  => "Email has to be verified before you can login",
+    "invalid_token"  => "This link might be expired or invalid, please try again!"
 ];

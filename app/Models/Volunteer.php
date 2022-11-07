@@ -9,13 +9,16 @@ use Illuminate\Support\Facades\DB;
 use App\Models\TechnicalSupportTicket;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Http\Notifications\VerifyDifferentUsersEmail;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use App\Notifications\VerifyDifferentUsersEmail;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 
-class Volunteer extends Authenticatable implements MustVerifyEmail
+class Volunteer extends Authenticatable implements MustVerifyEmail, CanResetPassword
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, CanResetPasswordTrait;
 
     protected $guard = 'api-volunteers';
 
@@ -102,6 +105,17 @@ class Volunteer extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification()
     {
         $this->notify(new VerifyDifferentUsersEmail);
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPassword($token));
     }
 
     public function scopeFilter($query, $request)

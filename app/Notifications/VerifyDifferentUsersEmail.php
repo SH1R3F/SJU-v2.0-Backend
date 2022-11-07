@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Notifications;
+namespace App\Notifications;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
