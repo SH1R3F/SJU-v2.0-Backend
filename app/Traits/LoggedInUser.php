@@ -3,7 +3,9 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\Admin\MemberResource;
 use App\Http\Resources\Admin\VolunteerResource;
+use App\Http\Resources\Admin\SubscriberResource;
 
 trait loggedInUser {
 
@@ -15,10 +17,10 @@ trait loggedInUser {
         $user = new VolunteerResource(Auth::guard('api-volunteers')->user());
         $type = 'volunteer';
       } elseif (Auth::guard('api-subscribers')->check()) {
-        $user = Auth::guard('api-subscribers')->user();
+        $user = new SubscriberResource(Auth::guard('api-subscribers')->user());
         $type = 'subscriber';
       } elseif (Auth::guard('api-members')->check()) {
-        $user = Auth::guard('api-members')->user();
+        $user = new MemberResource(Auth::guard('api-members')->user());
         $type = 'member';
       }
       return [

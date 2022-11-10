@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use Carbon\Carbon;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -223,5 +224,21 @@ class SubscriberController extends Controller
         return response()->json([
           'message' => __('messages.successful_delete')
         ], 200);
+    }
+
+    
+    /**
+     * Toggle verification of the specified resource from storage.
+     *
+     * @param  Subscriber  $subscriber
+     * @return \Illuminate\Http\Response
+     */
+    public function toggle(Subscriber $subscriber)
+    {
+      $subscriber->email_verified_at = $subscriber->email_verified_at ? NULL : Carbon::now();
+      $subscriber->save();
+      return response()->json([
+        'message' => __('messages.successful_update')
+      ], 200);
     }
 }

@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\Auth\VolunteerAuthController;
 use App\Http\Resources\Admin\Course\QuestionnaireResource;
 use App\Http\Controllers\Api\Admin\Course\CourseController;
 use App\Http\Controllers\Api\Admin\Course\GenderController;
+use App\Http\Controllers\Api\Auth\SubscriberAuthController;
 use App\Http\Controllers\Api\Admin\Course\CategoryController;
 use App\Http\Controllers\Api\Admin\Course\LocationController;
 use App\Http\Controllers\Api\Admin\Course\QuestionController;
@@ -44,6 +45,7 @@ use App\Http\Controllers\Api\PageController as UsersPageController;
 use App\Http\Controllers\Api\CourseController as UsersCourseController;
 use App\Http\Controllers\Api\Auth\AuthController as UsersAuthController;
 use App\Http\Controllers\Api\VolunteerController as VolunteerUsersController;
+use App\Http\Controllers\Api\SubscriberController as SubscriberUsersController;
 use App\Http\Controllers\Api\TechnicalSupportController as UsersSupportController;
 use App\Http\Controllers\Api\QuestionnaireController as UsersQuestionnaireController;
 
@@ -89,13 +91,28 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
       Route::post('/login', [ VolunteerAuthController::class, 'login' ]);
     });
 
-
     Route::middleware('auth:api-volunteers')->group(function () {
       Route::get('/events/', [ VolunteerUsersController::class, 'index' ]);
       Route::post('/profile/', [ VolunteerUsersController::class, 'update' ]);
       Route::post('/profile/password', [ VolunteerUsersController::class, 'updatePassword' ]);
     });
 
+  });
+
+  // Subscribers
+  Route::prefix('/subscribers')->group(function() {
+
+    // Routes that must be a guest to enter
+    Route::middleware('guestalluser')->group(function() {
+      Route::post('/register', [ SubscriberAuthController::class, 'register' ]);
+      Route::post('/login', [ SubscriberAuthController::class, 'login' ]);
+    });
+
+    Route::middleware('auth:api-subscribers')->group(function () {
+      Route::get('/events/', [ SubscriberUsersController::class, 'index' ]);
+      Route::post('/profile/', [ SubscriberUsersController::class, 'update' ]);
+      Route::post('/profile/password', [ SubscriberUsersController::class, 'updatePassword' ]);
+    });
 
   });
 
@@ -190,6 +207,7 @@ Route::prefix('/admin')->group(function() {
      * Middleware permissions: read-susbcriber, create-susbcriber, update-susbcriber, delete-susbcriber
      */
     Route::get('subscribers/show/{subscriber}/courses', [ SubscriberController::class, 'courses' ]);
+    Route::post('subscribers/{subscriber}/toggle', [ SubscriberController::class, 'toggle' ]);
     Route::resource('subscribers', SubscriberController::class)->except(['edit', 'create']);
   
     /**

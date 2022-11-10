@@ -4,16 +4,22 @@ namespace App\Models;
 
 use App\Models\Courseable;
 use App\Models\Course\Course;
+use Laravel\Sanctum\HasApiTokens;
+use App\Models\Course\Certificate;
 use Illuminate\Support\Facades\DB;
 use App\Models\TechnicalSupportTicket;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use App\Notifications\VerifyDifferentUsersEmail;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 
-class Subscriber extends Authenticatable
+class Subscriber extends Authenticatable implements MustVerifyEmail, CanResetPassword
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, CanResetPasswordTrait;
 
 
     protected $guard = 'api-subscribers';
@@ -81,11 +87,38 @@ class Subscriber extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
+    /**
+     * Send the email verification notification.
+     *
+     * @return void
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyDifferentUsersEmail);
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPassword($token));
+    }
+
+
     public function scopeFilter($query, $request)
     {
 
       // Filter by status
-      $query->where('status', $request->status);
+      if ($request->status) {
+        $query->whereNotNull('email_verified_at');
+      } else {
+        $query->whereNull('email_verified_at');
+      }
 
       // Filter by mobile
       if ($request->mobile) {
@@ -134,6 +167,17 @@ class Subscriber extends Authenticatable
       return !empty($sortBy) ? $query->orderBy($sortBy, $sortType) : $query;
     }
 
+    public function getFullNameAttribute()
+    {
+      return "{$this->fname_ar} {$this->sname_ar} {$this->tname_ar} {$this->lname_ar}";
+    }
+
+    public function getFullNameEnAttribute()
+    {
+      return "{$this->fname_en} {$this->sname_en} {$this->tname_en} {$this->lname_en}";
+    }
+
+
     public function courses()
     {
       return $this->morphToMany(Course::class, 'courseable', 'course_user');
@@ -148,4 +192,10 @@ class Subscriber extends Authenticatable
     {
       return $this->morphToMany(Question::class, 'questionnable', 'question_user');
     }
+
+    public function certificates()
+    {
+      return $this->morphMany(Certificate::class, 'certificateable');
+    }
+
 }
