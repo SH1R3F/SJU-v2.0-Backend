@@ -24,5 +24,9 @@ return [
     "email_unverified"  => "يجب تفعيل البريد الإلكتروني قبل تسجيل الدخول",
     "invalid_token"  => "الرابط قد يكون منتهي او غير صالح، برجاء المحاولة مرة أخرى",
     "event_unavailable"  => "الفعالية غير متاحة حالياً",
-    "attendance_unavailable"  => "التحضير بالفعالية غير متاح الآن"
+    "attendance_unavailable"  => "التحضير بالفعالية غير متاح الآن",
+    "certificate_notallowed" => "الشهادة غير مسموحة لك",
+    "questionnaire_notallowed" => "الإستبيان غير مسموح لك",
+    "thankyou" => "شكراً لوقتك",
+    "questionnaire_solved" => "تم ملى الإستبيان بالفعل",
 ];

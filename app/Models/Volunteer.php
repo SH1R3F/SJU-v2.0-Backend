@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Models\Courseable;
 use App\Models\Course\Course;
+use App\Models\Course\Question;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Course\Certificate;
 use Illuminate\Support\Facades\DB;
 use App\Models\TechnicalSupportTicket;
 use Illuminate\Notifications\Notifiable;
@@ -173,6 +175,15 @@ class Volunteer extends Authenticatable implements MustVerifyEmail, CanResetPass
       return !empty($sortBy) ? $query->orderBy($sortBy, $sortType) : $query;
     }
 
+    public function getFullNameAttribute()
+    {
+      return "{$this->fname_ar} {$this->sname_ar} {$this->tname_ar} {$this->lname_ar}";
+    }
+
+    public function getFullNameEnAttribute()
+    {
+      return "{$this->fname_en} {$this->sname_en} {$this->tname_en} {$this->lname_en}";
+    }
 
     public function courses()
     {
@@ -182,6 +193,16 @@ class Volunteer extends Authenticatable implements MustVerifyEmail, CanResetPass
     public function tickets()
     {
       return $this->morphMany(TechnicalSupportTicket::class, 'ticketable');
+    }
+
+    public function questions()
+    {
+      return $this->morphToMany(Question::class, 'questionnable', 'question_user');
+    }
+
+    public function certificates()
+    {
+      return $this->morphMany(Certificate::class, 'certificateable');
     }
 
 }

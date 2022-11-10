@@ -15,10 +15,11 @@ class QuestionnaireResource extends JsonResource
     public function toArray($request)
     {
         return [
-          'id'      => $this->id,
-          'name_ar' => $this->name_ar,
-          'name_en' => $this->name_en,
-          'status'  => $this->status,
+          'id'        => $this->id,
+          'name_ar'   => $this->name_ar,
+          'name_en'   => $this->name_en,
+          'status'    => $this->status,
+          'questions' => $this->questions()->orderBy('order')->get()
         ];
     }
 }

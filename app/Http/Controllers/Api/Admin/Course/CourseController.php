@@ -163,7 +163,7 @@ class CourseController extends Controller
           'zoom_link' => 'nullable',
           'youtube_link' => 'nullable',
           'template_id' => 'required|integer|exists:templates,id',
-          'questionnaire_id' => 'nullable|integer|exists:questionnaires,id',
+          'questionnaire_id' => 'nullable|integer',
           'status' => 'required|integer'
         ]);
 

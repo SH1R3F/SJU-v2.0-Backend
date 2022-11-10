@@ -18,8 +18,27 @@ class Template extends Model
     protected $fillable = [
       'name',
       'file',
+      'file_preview',
       'language',
-      'layout'
+      'layout',
+      'fields',
+      'with_title',
+      'male_title',
+      'female_title',
+      'certcode',
+      'code_margin_top',
+      'code_margin_right',
+      'code_margin_bottom',
+      'code_margin_left',
+    ];
+
+    /**
+     * The attributes that should be casts.
+     *
+     * @var array
+     */
+    protected $casts = [
+      'fields' => 'array',
     ];
 
     public function scopeFilter($query, $request)

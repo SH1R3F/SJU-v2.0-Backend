@@ -7,6 +7,7 @@ use App\Traits\LoggedInUser;
 use Illuminate\Http\Request;
 use App\Models\Course\Course;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\CertificateController;
 use App\Http\Resources\Admin\Course\CourseResource;
 
 class CourseController extends Controller
@@ -123,5 +124,53 @@ class CourseController extends Controller
         'message' => __('messages.successful_attend'),
       ], 200);  
     }
+
+
+    /**
+     * Get the certificate of the course for the authenticated user.
+     * Only if he has passed the questionnaire if exists
+     * Or return questionnaire if didn't
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Course  $event
+     * @return \Illuminate\Http\Response
+     */
+    public function certificate(Request $request, Course $event)
+    {
+      $user = $this->loggedInUser()['user'];
+      
+      $registered = $user->courses()->where('course_id', $event->id)->first();
+
+      // ONLY IF has registered and attended the event
+      if (!$registered || !$registered->pivot->attendance) {
+        return response()->json([
+          'message' => __('messages.certificate_notallowed')
+        ], 422);
+      }
+      // Registered and attended
+
+
+      // If it has questionnaire. FIRST OF ALL. he has to complete it
+      if ($event->questionnaire) { 
+        $solved = $user->questions()->where('questionnaire_id', $event->questionnaire_id)->count();
+
+        // User didn't solve all of the questions
+        if ($solved != $event->questionnaire->questions()->count()) { 
+          return response()->json([
+            'id'   => $event->questionnaire_id,
+            'type' => 'questionnaire'
+          ]);
+        }
+      }
+
+
+      // Make the user certificate !
+      if ($event->template) {
+        return app(CertificateController::class)->show($event);
+      }
+
+
+    }
+    
 
 }

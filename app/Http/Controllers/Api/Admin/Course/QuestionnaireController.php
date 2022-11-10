@@ -27,7 +27,7 @@ class QuestionnaireController extends Controller
      */
     public function index(Request $request)
     {
-        $questionnaires = Questionnaire::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
+        $questionnaires = Questionnaire::with('questions')->filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
 
         return response()->json([
           'total'   => Questionnaire::all()->count(),

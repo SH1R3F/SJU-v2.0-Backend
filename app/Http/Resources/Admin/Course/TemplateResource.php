@@ -15,12 +15,23 @@ class TemplateResource extends JsonResource
     public function toArray($request)
     {
         return [
-          'id'         => $this->id,
-          'name'       => $this->name,
-          'file'       => $this->file,
-          'language'   => $this->language,
-          'layout'     => $this->layout,
-          'created_at' => $this->created_at->format('d / m / Y')
+          'id'                 => $this->id,
+          'name'               => $this->name,
+          'tmp_file'           => $this->file ? asset("storage/courses/templates/{$this->file}") : null,
+          'preview'            => $this->file_preview ? asset("storage/courses/templates/{$this->file_preview}") : null,
+          'language'           => $this->language,
+          'layout'             => $this->layout,
+          'fields'             => $this->fields ? $this->fields : [],
+          'with_title'         => $this->with_title,
+          'with_title'         => $this->with_title,
+          'male_title'         => $this->male_title,
+          'female_title'       => $this->female_title,
+          'certcode'           => $this->certcode,
+          'code_margin_top'    => $this->code_margin_top,
+          'code_margin_right'  => $this->code_margin_right,
+          'code_margin_bottom' => $this->code_margin_bottom,
+          'code_margin_left'   => $this->code_margin_left,
+          'created_at'   => $this->created_at->format('d / m / Y')
         ];
     }
 }

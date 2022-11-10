@@ -18,7 +18,6 @@ use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Controllers\Api\Admin\StudioController;
-use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\BlogPostController;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
@@ -27,6 +26,7 @@ use App\Http\Controllers\Api\Admin\VolunteerController;
 use App\Http\Controllers\Api\Admin\SiteOptionController;
 use App\Http\Controllers\Api\Admin\SubscriberController;
 use App\Http\Controllers\Api\Auth\NewPasswordController;
+use App\Http\Controllers\Api\Auth\VerifyEmailController;
 use App\Http\Controllers\Api\Admin\Course\TypeController;
 use App\Http\Controllers\Api\Admin\BlogCategoryController;
 use App\Http\Controllers\Api\Auth\VolunteerAuthController;
@@ -35,6 +35,7 @@ use App\Http\Controllers\Api\Admin\Course\CourseController;
 use App\Http\Controllers\Api\Admin\Course\GenderController;
 use App\Http\Controllers\Api\Admin\Course\CategoryController;
 use App\Http\Controllers\Api\Admin\Course\LocationController;
+use App\Http\Controllers\Api\Admin\Course\QuestionController;
 use App\Http\Controllers\Api\Admin\Course\TemplateController;
 use App\Http\Controllers\Api\Admin\TechnicalSupportController;
 use App\Http\Controllers\Api\Auth\PasswordResetLinkController;
@@ -44,6 +45,7 @@ use App\Http\Controllers\Api\CourseController as UsersCourseController;
 use App\Http\Controllers\Api\Auth\AuthController as UsersAuthController;
 use App\Http\Controllers\Api\VolunteerController as VolunteerUsersController;
 use App\Http\Controllers\Api\TechnicalSupportController as UsersSupportController;
+use App\Http\Controllers\Api\QuestionnaireController as UsersQuestionnaireController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,9 +63,8 @@ use App\Http\Controllers\Api\TechnicalSupportController as UsersSupportControlle
 // });
 
 Route::get('/', function () {
-  return 'Welcome to api';
+  return phpinfo();
 });
-
 
 Route::group(['name' => 'users-app'], function() { // Users-App routes
   Route::get('/menus', [HomeController::class, 'menus']);
@@ -95,6 +96,7 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
       Route::post('/profile/password', [ VolunteerUsersController::class, 'updatePassword' ]);
     });
 
+
   });
 
 
@@ -104,9 +106,15 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
   Route::middleware('authanyuser')->group(function() {
     Route::post('/auth/logout', [ UsersAuthController::class, 'logout' ]);
     Route::get('/auth/user', [ UsersAuthController::class, 'user' ]);
+
     // Events that share some code
     Route::post('/events/{event}', [ UsersCourseController::class, 'enroll' ]);
     Route::post('/events/{event}/attend', [ UsersCourseController::class, 'attend' ]);
+    Route::get('/events/{event}/certificate', [ UsersCourseController::class, 'certificate' ]);
+
+    Route::get('/questionnaires/{event}/{questionnaire}', [ UsersQuestionnaireController::class, 'show' ]);
+    Route::post('/questionnaires/{event}/{questionnaire}', [ UsersQuestionnaireController::class, 'store' ]);
+
     // Technical support that share same code
     Route::get('/support', [ UsersSupportController::class, 'index' ]);
     Route::post('/support', [ UsersSupportController::class, 'store' ]);
@@ -192,7 +200,7 @@ Route::prefix('/admin')->group(function() {
     Route::get('volunteers/show/{volunteer}/courses', [ VolunteerController::class, 'courses' ]);
     Route::post('volunteers/{volunteer}/toggle', [ VolunteerController::class, 'toggle' ]);
     Route::resource('volunteers', VolunteerController::class)->except(['edit', 'create']);
-  
+
     Route::prefix('courses')->group(function () {
   
       /**
@@ -254,6 +262,13 @@ Route::prefix('/admin')->group(function() {
          * Middleware permissions: read-questionnaire, create-questionnaire, update-questionnaire, delete-questionnaire
          */
         Route::resource('questionnaires', QuestionnaireController::class)->except(['edit', 'create']);
+        // Questions, same middleware as questionnaires
+        Route::delete('questions/{question}', [ QuestionController::class, 'destroy' ]);
+        Route::post('questions/reorder', [ QuestionController::class, 'reorder' ]);
+        Route::put('questions/{question}', [ QuestionController::class, 'update' ]);
+        Route::get('questions/{questionnaire}', [ QuestionController::class, 'index' ]);
+        Route::get('question/{question}', [ QuestionController::class, 'show' ]);
+        Route::post('questions/{questionnaire}', [ QuestionController::class, 'store' ]);
   
     }); // courses
 

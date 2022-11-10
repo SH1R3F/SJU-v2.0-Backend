@@ -3,6 +3,7 @@
 namespace App\Models\Course;
 
 use App\Models\Course\Course;
+use App\Models\Course\Question;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -48,6 +49,15 @@ class Questionnaire extends Model
     public function courses()
     {
         return $this->hasMany(Course::class);
+    }
+
+    /**
+     * Get all of the questions for this questionnaire
+     *
+     */
+    public function questions()
+    {
+        return $this->hasMany(Question::class);
     }
 
 }

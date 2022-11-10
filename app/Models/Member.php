@@ -191,4 +191,9 @@ class Member extends Authenticatable
     {
       return $this->morphMany(TechnicalSupportTicket::class, 'ticketable');
     }
+    
+    public function questions()
+    {
+      return $this->morphToMany(Question::class, 'questionnable', 'question_user');
+    }
 }
