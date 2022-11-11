@@ -23,17 +23,17 @@ class EnrollersResource extends JsonResource
         // Avatar
         switch ($this->pivot->courseable_type) {
           case 'App\Models\Member':
-            $avatar = $this->profile_image ? asset("storage/members/{$this->id}/profile_image/{$this->profile_image}") : null;
+            $avatar = $this->profile_image ? asset("storage/{$this->profile_image}") : null;
             $mobile = $this->mobile;
             break;
 
           case 'App\Models\Subscriber':
-            $avatar = $this->image ? asset("storage/subscribers/{$this->id}/images/{$this->image}") : null;
+            $avatar = $this->image ? asset("storage/{$this->image}") : null;
             $mobile = $this->mobile_key . $this->mobile;
             break;
 
           case 'App\Models\Volunteer':
-            $avatar = $this->image ? asset("storage/volunteers/{$this->id}/images/{$this->image}") : null;
+            $avatar = $this->image ? asset("storage/{$this->image}") : null;
             $mobile = $this->mobile_key . $this->mobile;
             break;
         }

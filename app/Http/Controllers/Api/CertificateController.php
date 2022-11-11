@@ -7,6 +7,7 @@ use Endroid\QrCode\QrCode;
 use App\Traits\LoggedInUser;
 use Illuminate\Http\Request;
 use App\Models\Course\Course;
+use App\Traits\UserTypeClass;
 use App\Models\Course\Certificate;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\User;
@@ -14,7 +15,38 @@ use Illuminate\Foundation\Auth\User;
 class CertificateController extends Controller
 {
 
-    use LoggedInUser;
+
+    public function __construct()
+    {
+        $this->middleware('permission:read-course', [ 'only' => 'showForAdmin']);
+    }
+
+    use LoggedInUser, UserTypeClass;
+  
+    /**
+     * Display the specified resource or create it [for admin].
+     *
+     * @param  Course $event
+     * @param  String $type of user
+     * @param  String $id of user
+     * @return \Illuminate\Http\Response
+     */
+    public function showForAdmin(Course $event, $type, $id)
+    {
+        $class = $this->userTypeClass($type);
+        $user = $class->findOrFail($id);
+        $certificate = $user->certificates()->where('course_id', $event->id)->first();
+
+        if ($certificate) {
+            return response()->json([
+                'type' => 'certificate',
+                'certificate' => asset("storage/courses/certificates/{$certificate->code}.pdf")
+            ]); 
+        }
+
+        // Otherwise create it
+        return $this->create($event, $user);
+    }
   
     /**
      * Display the specified resource or create it.
@@ -27,15 +59,15 @@ class CertificateController extends Controller
         $user = $this->loggedInUser()['user'];
         $certificate = $user->certificates()->where('course_id', $event->id)->first();
 
-        // if ($certificate) {
-        //     return response()->json([
-        //         'type' => 'certificate',
-        //         'certificate' => asset("storage/courses/certificates/{$certificate->code}.pdf")
-        //     ]); 
-        // }
+        if ($certificate) {
+            return response()->json([
+                'type' => 'certificate',
+                'certificate' => asset("storage/courses/certificates/{$certificate->code}.pdf")
+            ]); 
+        }
 
         // Otherwise create it
-        return $this->create($event);
+        return $this->create($event, $user);
     }
 
 
@@ -43,9 +75,10 @@ class CertificateController extends Controller
      * Create a new resource.
      *
      * @param  Course  $event
+     * @param  User  $user
      * @return \Illuminate\Http\Response
      */
-    public function create(Course $event)
+    public function create(Course $event, $user)
     {
         $template = $event->template;
         if (!$template) {
@@ -53,8 +86,6 @@ class CertificateController extends Controller
             'message' => 'Event has no certificate'
           ], 404);
         }
-
-        $user = $this->loggedInUser()['user'];
 
         // Get our data from the template
         $layout                  = $template->layout;
@@ -176,7 +207,7 @@ class CertificateController extends Controller
           $mpdf->WriteHTML($html);
 
           // Store output
-          return $this->store($mpdf, $getcertcode, $event->id);
+          return $this->store($mpdf, $getcertcode, $event->id, $user);
         } catch (\Exception $e) {
           return [
             'error' => $e->getMessage()
@@ -192,20 +223,27 @@ class CertificateController extends Controller
      * @param  Mpdf  $mpdf
      * @param  String  $getcertcode
      * @param  Integer  $course_id
+     * @param  User  $user
      * @return \Illuminate\Http\Response
      */
-    public function store($mpdf, $getcertcode, $course_id)
+    public function store($mpdf, $getcertcode, $course_id, $user)
     {
         $path = storage_path("/app/public/courses/certificates/{$getcertcode}.pdf");
         $mpdf->Output($path, \Mpdf\Output\Destination::FILE);
 
-        // Save to database
-        $user = $this->loggedInUser()['user'];
-        $user->certificates()->create([
-          'code'        => $getcertcode,
-          'course_id'   => $course_id,
-          'certificate' => $getcertcode . '.pdf',
-        ]);
+        // Save to database or update if exists
+        if ($user->certificates()->where('course_id', $course_id)->count()) {
+          $user->certificates()->where('course_id', $course_id)->update([
+            'code'        => $getcertcode,
+            'certificate' => $getcertcode . '.pdf',
+          ]);
+        } else {
+          $user->certificates()->create([
+            'code'        => $getcertcode,
+            'course_id'   => $course_id,
+            'certificate' => $getcertcode . '.pdf',
+          ]);
+        }
 
         return response()->json([
           'type' => 'certificate',

@@ -107,30 +107,32 @@ class TemplateController extends Controller
           return response()->json($validator->errors(), 400);
         }
 
-        // Upload Image
-        if ($request->hasFile('templatefile')) {
+        $data = $request->all();
 
-          // Delete the previous if exists
+        Storage::disk('public')->delete("courses/templates/{$template->file_preview}");
+        if ($request->hasFile('templatefile')) {
           Storage::disk('public')->delete("courses/templates/{$template->file}");
-          Storage::disk('public')->delete("courses/templates/{$template->file_preview}");
-          
-          // Save the new file
           $file = $request->file('templatefile');
           $name = uniqid() . '.' . $file->extension();
           $file->storeAs("/courses/templates/", $name, 'public');
-          $request->merge(['file' => $name]);
+          $data['file'] = $name;
 
-          // Save the new preview
           $name = 'preview_' . uniqid() . '.' . $file->extension();
           $file->storeAs("/courses/templates/", $name, 'public');
-          $request->merge(['file_preview' => $name]);
-
+          $data['file_preview'] = $name;
         }
+        else { // In case we didn't upload nothing
+          // Copy the file template
+          $name = 'preview_' . $template->file;
+          Storage::copy("/public/courses/templates/" . $template->file, "/public/courses/templates/" . $name);
+          $data['file_preview'] = $name;
+        }
+        
         // Work on template preview?
-        $this->preview($request, $request->hasFile('templatefile') ? $request->file_preview : $template->file_preview);
+        $this->preview($request, $data['file_preview']);
 
         // Store in database
-        $template->update($request->all());
+        $template->update($data);
 
         return response()->json([
           'message' => __('messages.successful_update'),
@@ -205,6 +207,7 @@ class TemplateController extends Controller
           'margin_footer' => 0
         ]);
 
+        $mpdf->AddFontDirectory(public_path('/fonts'));
         $mpdf->SetDirectionality($dir);
         $path = storage_path("/app/public/courses/templates/{$file_preview}");
         $mpdf->SetDocTemplate($path, 1);

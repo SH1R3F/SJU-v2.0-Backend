@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\Admin\MenuController;
 use App\Http\Controllers\Api\Admin\PageController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\CertificateController;
 use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Controllers\Api\Admin\StudioController;
@@ -261,8 +262,8 @@ Route::prefix('/admin')->group(function() {
             'categories' => NamingResource::collection(Category::all()),
             'genders' => NamingResource::collection(Gender::all()),
             'locations' => NamingResource::collection(Location::all()),
-            'templates' => TemplateResource::collection(Template::all()),
-            'questionnaires' => QuestionnaireResource::collection(Questionnaire::all()),
+            'templates' => TemplateResource::collection(Template::orderBy('id', 'DESC')->get()),
+            'questionnaires' => QuestionnaireResource::collection(Questionnaire::orderBy('id', 'DESC')->get()),
           ]);
   
         });
@@ -296,6 +297,7 @@ Route::prefix('/admin')->group(function() {
      */
     Route::get('/courses/{course}/enrollers', [courseController::class, 'enrollers']);
     Route::post('/courses/{course}/enrollers/{type}/{id}', [courseController::class, 'togglePass']);
+    Route::get('/courses/{event}/certificate/{type}/{id}', [CertificateController::class, 'showForAdmin']);
     Route::delete('/courses/{course}/enrollers/{type}/{id}', [courseController::class, 'deleteEnroller']);
     Route::resource('/courses', CourseController::class)->except(['edit', 'ceate']);
   
