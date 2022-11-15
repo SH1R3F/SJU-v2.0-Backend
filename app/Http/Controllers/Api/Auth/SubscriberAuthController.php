@@ -110,7 +110,7 @@ class SubscriberAuthController extends Controller
         return response()->json([
           // 'userData'    => new SubscriberResource($subscriber),
           // 'accessToken' => $subscriber->createToken('accessToken')->plainTextToken,
-          'message' => __('messages.successful_create')
+          'message' => __('messages.successful_register')
         ]);
         
     }

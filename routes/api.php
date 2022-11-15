@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\Admin\BlogPostController;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\VolunteerController;
+use App\Http\Controllers\Api\Auth\MemberAuthController;
 use App\Http\Controllers\Api\Admin\SiteOptionController;
 use App\Http\Controllers\Api\Admin\SubscriberController;
 use App\Http\Controllers\Api\Auth\NewPasswordController;
@@ -44,6 +45,7 @@ use App\Http\Controllers\Api\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Api\Admin\Course\QuestionnaireController;
 use App\Http\Controllers\Api\PageController as UsersPageController;
 use App\Http\Controllers\Api\CourseController as UsersCourseController;
+use App\Http\Controllers\Api\MemberController as MemberUsersController;
 use App\Http\Controllers\Api\Auth\AuthController as UsersAuthController;
 use App\Http\Controllers\Api\VolunteerController as VolunteerUsersController;
 use App\Http\Controllers\Api\SubscriberController as SubscriberUsersController;
@@ -113,6 +115,23 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
       Route::get('/events/', [ SubscriberUsersController::class, 'index' ]);
       Route::post('/profile/', [ SubscriberUsersController::class, 'update' ]);
       Route::post('/profile/password', [ SubscriberUsersController::class, 'updatePassword' ]);
+    });
+
+  });
+
+  // Members
+  Route::prefix('/members')->group(function() {
+
+    // Routes that must be a guest to enter
+    Route::middleware('guestalluser')->group(function() {
+      Route::post('/register', [ MemberAuthController::class, 'register' ]);
+      Route::post('/login', [ MemberAuthController::class, 'login' ]);
+    });
+
+    Route::middleware('auth:api-members')->group(function () {
+      Route::get('/events/', [ MemberUsersController::class, 'index' ]);
+      Route::post('/profile/', [ MemberUsersController::class, 'update' ]);
+      Route::post('/profile/password', [ MemberUsersController::class, 'updatePassword' ]);
     });
 
   });

@@ -125,7 +125,7 @@ class VolunteerAuthController extends Controller
         return response()->json([
           // 'userData'    => new VolunteerResource($volunteer),
           // 'accessToken' => $volunteer->createToken('accessToken')->plainTextToken,
-          'message' => __('messages.successful_create')
+          'message' => __('messages.successful_register')
         ]);
         
     }

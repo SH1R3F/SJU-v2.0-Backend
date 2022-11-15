@@ -47,9 +47,10 @@ return new class extends Migration
             $table->string('post_box')->nullable();
             $table->string('post_code')->nullable();
 
-            $table->string('mobile')->unique();
+            $table->string('mobile');
             $table->string('email')->unique();
-            $table->integer('city');
+            $table->string('city')->nullable();
+            $table->integer('branch');
 
             // Experiences and fields
             $table->json('experiences_and_fields')->nullable();
