@@ -126,6 +126,8 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
     Route::middleware('guestalluser')->group(function() {
       Route::post('/register', [ MemberAuthController::class, 'register' ]);
       Route::post('/login', [ MemberAuthController::class, 'login' ]);
+      Route::post('/resend/{mobile}', [ MemberAuthController::class, 'sendVerificationCode' ])->middleware('throttle:3,2');
+      Route::post('/verify/{mobile}/{code}', [ MemberAuthController::class, 'verifyMobile' ])->middleware('throttle:3,2');
     });
 
     Route::middleware('auth:api-members')->group(function () {

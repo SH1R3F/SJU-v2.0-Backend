@@ -41,8 +41,6 @@ class SubscribersSeeder extends Seeder
             'mobile_key'  => '966',
             'email'       => 'moheis@outlook.com',
             'password'    => Hash::make('secret'),
-            'status'      => 1,
-
           ],
           [
             'fname_ar' => 'محمد',
@@ -67,7 +65,6 @@ class SubscribersSeeder extends Seeder
             'mobile_key'  => '966',
             'email'       => 'msadeis@outlook.com',
             'password'    => Hash::make('secret'),
-            'status'      => 0,
           ]
         ];
 

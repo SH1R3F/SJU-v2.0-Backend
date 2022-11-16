@@ -47,7 +47,7 @@ class MembersSeeder extends Seeder
             'post_code' => '31952',
             'mobile' => '966504830702',
             'email' => 'aldawood14d@gmail.com',
-            'city' => 3,
+            'branch' => 3,
             // Experiences and fields [JSON]
             'experiences_and_fields' => [
               'experiences' => [
@@ -134,7 +134,7 @@ class MembersSeeder extends Seeder
             'post_code' => '31952',
             'mobile' => '966504830703',
             'email' => 'aldawood14@gmail.com',
-            'city' => 3,
+            'branch' => 3,
             // Experiences and fields [JSON]
             'experiences_and_fields' => [
               'experiences' => [
@@ -221,7 +221,7 @@ class MembersSeeder extends Seeder
             'post_code' => '31952',
             'mobile' => '966514830703',
             'email' => 'aldawood11@gmail.com',
-            'city' => 3,
+            'branch' => 3,
             // Experiences and fields [JSON]
             'experiences_and_fields' => [
               'experiences' => [
@@ -308,7 +308,7 @@ class MembersSeeder extends Seeder
             'post_code' => '31952',
             'mobile' => '966524830703',
             'email' => 'aldawood24@gmail.com',
-            'city' => 3,
+            'branch' => 3,
             // Experiences and fields [JSON]
             'experiences_and_fields' => [
               'experiences' => [
@@ -395,7 +395,7 @@ class MembersSeeder extends Seeder
             'post_code' => '31952',
             'mobile' => '966534830703',
             'email' => 'aldawood3@gmail.com',
-            'city' => 3,
+            'branch' => 3,
             // Experiences and fields [JSON]
             'experiences_and_fields' => [
               'experiences' => [

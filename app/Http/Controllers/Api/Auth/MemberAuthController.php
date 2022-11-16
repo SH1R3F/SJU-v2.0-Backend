@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use Carbon\Carbon;
 use App\Models\Member;
+use App\Models\SiteOption;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -144,6 +146,94 @@ class MemberAuthController extends Controller
           'message' => __('messages.successful_register')
         ]);
         
+    }
+
+    /**
+     * Resending the verification code to member's mobile.
+     *
+     * @param  String  $mobile
+     * @return \Illuminate\Http\Response
+     */
+    public function sendVerificationCode($mobile)
+    {
+        // Validate mobile
+        $valid = preg_match('/^(5)\d{8}$/', $mobile);
+        if (!$valid) {
+          return response()->json(['message' => __('messages.mobile_invalid')], 422);
+        }
+
+        // Validate members's mobile
+        $member = Member::where('mobile', "966{$mobile}")->first();
+        if (!$member) {
+          return response()->json(['message' => __('messages.mo_member_with_mobile')], 422);
+        }
+
+        // Member has not to be verified already
+        if ($member->mobile_verified_at) {
+          return response()->json(['message' => __('messages.already_verified')], 422);
+        }
+
+        // Send verification code
+        if (config('app.env') === 'production') {
+          $code = rand(1000,9999);
+          $result = sendSMS("966{$mobile}", __('messages.verification_code_is', ['mobile' => "966{$mobile}", 'code' => $code]));
+        } else { // Save resources in development
+          $code = 1234;
+          $result = true;
+        }
+        if ($result === true) { // Because it might be 1
+          // Save code to db
+          $member->mobile_code = $code;
+          $member->save();
+          // Return success message
+          return response()->json([
+            'message' => __('messages.verification_sent')
+          ]);
+        } else {
+          return response()->json([
+            'message' => __('messages.verification_not_sent', 422)
+          ]);
+        }
+    }
+
+    /**
+     * Verifying mobile number of a member.
+     *
+     * @param  String  $mobile
+     * @param  String  $code
+     * @return \Illuminate\Http\Response
+     */
+    public function verifyMobile($mobile, $code) 
+    {
+        // Validate mobile
+        $valid = preg_match('/^(5)\d{8}$/', $mobile);
+        if (!$valid) {
+          return response()->json(['message' => __('messages.mobile_invalid')], 422);
+        }
+
+        // Validate members's mobile
+        $member = Member::where('mobile', "966{$mobile}")->first();
+        if (!$member) {
+          return response()->json(['message' => __('messages.mo_member_with_mobile')], 422);
+        }
+
+        // Member has not to be verified already
+        if ($member->mobile_verified_at) {
+          return response()->json(['message' => __('messages.already_verified')], 422);
+        }
+
+        // Validate code 
+        if ($member->mobile_code !== $code) {
+          return response()->json(['message' => __('messages.code_invalid')], 422);
+        }
+
+        // Otherwise. Verify
+        $member->mobile_verified_at = Carbon::now();
+        $member->save();
+
+        return response()->json([
+          'message' => __('messages.verification_done')
+        ]);
     }
 
 }
