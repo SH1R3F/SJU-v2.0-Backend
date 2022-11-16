@@ -24,8 +24,8 @@ class MemberAuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-          'email'    => 'required|email',
-          'password' => 'required|min:6'
+          'national_id' => 'required',
+          'password'    => 'required|min:6'
         ]);
 
         if ($validator->fails()) {
@@ -33,14 +33,25 @@ class MemberAuthController extends Controller
         }
 
         // Check login
-        $member = Member::where('email', $request->email)->first();
+        $member = Member::where('national_id', $request->national_id)->first();
         if (!$member || !Hash::check($request->password, $member->password)) {
           return response(['message' => 'invalid login credentials'], 422);
         }
 
+        // Email verification check
         if (!$member->hasVerifiedEmail()) {
-            $validator->getMessageBag()->add('email', __('messages.email_unverified'));
+            $validator->getMessageBag()->add('national_id', __('messages.email_unverified'));
             return response()->json(array_merge($validator->errors()->toArray(), ['resend' => route('verification.send', ['email' => $member->email, 'type' => 'member'])]), 400);
+        }
+
+        // Mobile verification check
+        if (!$member->mobile_verified_at) {
+            $validator->getMessageBag()->add('national_id', __('messages.mobile_unverified'));
+            $mobile = substr($member->mobile, 3);
+            return response()->json(array_merge($validator->errors()->toArray(), [
+              'resend' => "/members/auth/verify?mobile={$mobile}",
+              'status' => 'verify_mobile'
+            ]), 400);
         }
 
         // Revoking previous tokens
@@ -128,14 +139,19 @@ class MemberAuthController extends Controller
         // Update database
         $member = Member::create($data);
 
-        // Update Avatar
-        // if (!empty($request->image)) {
-        //   $imageName = time().'.'.$request->image->extension();
-        //   $request->image->move(public_path("storage/members/{$member->id}/images"), $imageName);
-        //   $member->image = "members/{$member->id}/images/{$imageName}";
-        //   $member->save();
-        // }
+        // Send mobile verification code
+        if (config('app.env') === 'production') {
+          $code = rand(1000,9999);
+          $result = sendSMS("966{$mobile}", __('messages.verification_code_is', ['mobile' => "966{$mobile}", 'code' => $code]));
+        } else { // Save resources in development
+          $code = 1234;
+          $result = true;
+        }
+        // Save code to db
+        $member->mobile_code = $code;
+        $member->save();
 
+        
         // dispatching the Registered event
         event(new Registered($member));
 
