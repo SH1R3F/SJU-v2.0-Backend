@@ -70,6 +70,7 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
         'profile_image',
         'national_image',
         'employer_letter',
+        'newspaper_license',
 
         // To be updated options
         'updated_personal_information',
@@ -80,12 +81,8 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
 
         // Membership information
         'membership_number',
-        // 'membership_type',
-        // 'membership_start_date',
-        // 'membership_end_date',
-        // 'invoice_id',
-        // 'invoice_status',
-        // 'status',
+        'active',
+        'approved',
         // 'last_seen'
         'password',
     ];

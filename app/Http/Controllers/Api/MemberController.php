@@ -215,6 +215,11 @@ class MemberController extends Controller
     public function updateStatement(Request $request)
     {
       $member = Auth::guard('api-members')->user();
+
+      // Only for members with subscription type === 3 [Affiliate members]
+      if ($member->subscription->type !== 3) {
+        return abort(404);
+      }
       // Validation
       $validator = Validator::make($request->all(), [
         'image' => 'required',
@@ -250,6 +255,12 @@ class MemberController extends Controller
     public function updateLicense(Request $request)
     {
       $member = Auth::guard('api-members')->user();
+
+      // Only for members with newspaper type === 2 [E-newspaper]
+      if ($member->newspaper_type !== 2) {
+        return abort(404);
+      }
+
       // Validation
       $validator = Validator::make($request->all(), [
         'image' => 'required',

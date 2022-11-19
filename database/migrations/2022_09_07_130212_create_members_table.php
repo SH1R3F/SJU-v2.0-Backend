@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('tname_en');
             $table->string('lname_en');
             $table->boolean('gender')->comment('0: Male, 1: Female');
-            $table->integer('nationality');
+            $table->string('nationality');
             $table->date('birthday_hijri');
             $table->date('birthday_meladi');
             $table->string('qualification');

@@ -28,7 +28,7 @@ return new class extends Migration
             $table->integer('country');
             $table->integer('branch');
             $table->integer('city')->nullable();
-            $table->integer('nationality');
+            $table->string('nationality');
 
             $table->string('qualification')->nullable();
             $table->string('major')->nullable();

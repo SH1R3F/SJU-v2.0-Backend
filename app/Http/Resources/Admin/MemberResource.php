@@ -77,6 +77,7 @@ class MemberResource extends JsonResource
 
           "membership_number"              => $this->membership_number,
           'subscription'                   => $this->subscription,
+          'invoice'                        => $this->invoices()->orderBy('id', 'DESC')->first(),
           'delivery_method'                => $this->delivery_method,
           'delivery_address'               => $this->delivery_address,
 

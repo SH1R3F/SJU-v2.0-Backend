@@ -167,6 +167,7 @@ class MemberController extends Controller
           // Files and update requests
           'national_image'                 => 'nullable',
           'employer_letter'                => 'nullable',
+          'newspaper_license'              => 'nullable',
           'updated_personal_information'   => 'nullable|boolean',
           'updated_profile_image'          => 'nullable|boolean',
           'updated_national_image'         => 'nullable|boolean',
@@ -177,10 +178,9 @@ class MemberController extends Controller
           'membership_type'       => 'nullable|integer',
           'membership_start_date' => 'nullable|date',
           'membership_end_date'   => 'nullable|date',
-          'invoice_id'            => 'nullable|integer',
+          'invoice_id'            => 'nullable',
           'invoice_status'        => 'nullable|integer',
-          'status'                => 'nullable|integer',
-
+          'active'                => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -243,8 +243,34 @@ class MemberController extends Controller
           Storage::disk('public')->delete("members/{$member->id}/employer_letter/{$member->employer_letter}");
         }
 
+        // Uploading Newspaper license
+        if ($request->hasFile('NewspaperLicenseFile')) {
+          // Save the new file
+          $file = $request->file('NewspaperLicenseFile');
+          $name = uniqid() . '.' . $file->extension();
+          $file->storeAs("members/{$member->id}/newspaper_license/", $name, 'public');
+          $request->merge(['newspaper_license' => $name]);
+
+          // Delete the previous if exists
+          Storage::disk('public')->delete("members/{$member->id}/newspaper_license/{$member->employer_letter}");
+        }
+
         // Update
         $member->update($request->all());
+
+        if ($request->membership_type) {
+          $member->subscription->update([
+            'type'       => $request->membership_type,
+            'start_date' => $request->membership_start_date,
+            'end_date'   => $request->membership_end_date,
+          ]);
+        }
+        if ($request->invoice_id) {
+          $member->invoices()->orderBy('id', 'DESC')->first()->update([
+            'invoice_number' => $request->invoice_id,
+            'status'         => $request->invoice_status,
+          ]);
+        }
 
         return response()->json([
           'message' => __('messages.successful_update')

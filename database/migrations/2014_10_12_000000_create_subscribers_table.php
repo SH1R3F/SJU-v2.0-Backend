@@ -26,7 +26,7 @@ return new class extends Migration
             $table->boolean('gender')->comment('0: Male, 1: Female');
             $table->integer('country');
             $table->integer('city')->nullable();
-            $table->integer('nationality');
+            $table->string('nationality');
             $table->date('birthday_hijri')->nullable();
             $table->date('birthday_meladi')->nullable();
 
