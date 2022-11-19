@@ -48,7 +48,10 @@ class HomeController extends Controller
         // Statistics
         $stats = [
           'members' => Member::count(),
-          'memberships' => Member::where('status', 1)->count(),
+          'memberships' => Member::where([
+            'active' => 1,
+            'approved' => 1,
+          ])->count(),
           'events' => Course::count(),
           'workshops' => Course::count(),
         ];

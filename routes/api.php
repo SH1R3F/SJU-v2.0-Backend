@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\CertificateController;
 use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Controllers\Api\Admin\StudioController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\BlogPostController;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
@@ -133,8 +134,22 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
     Route::middleware('auth:api-members')->group(function () {
       Route::get('/events/', [ MemberUsersController::class, 'index' ]);
       Route::post('/profile/', [ MemberUsersController::class, 'update' ]);
+      Route::post('/profile/experiences', [ MemberUsersController::class, 'updateExperiences' ]);
       Route::post('/profile/password', [ MemberUsersController::class, 'updatePassword' ]);
+      Route::post('/profile/picture', [ MemberUsersController::class, 'updatePicture' ]);
+      Route::post('/profile/id', [ MemberUsersController::class, 'updateID' ]);
+      Route::post('/profile/statement', [ MemberUsersController::class, 'updateStatement' ]);
+      Route::post('/profile/license', [ MemberUsersController::class, 'updateLicense' ]);
+
+      // Membership 
+      Route::post('/membership', [ MemberUsersController::class, 'requestMembership' ]);
+
+      // Subscription & Payment
+      Route::post('/membership/subscribe/{type}', [ SubscriptionController::class, 'payment' ]);
     });
+    // The response of payment doesn't require authentication!!!
+    Route::get('/membership/payment/response', [ SubscriptionController::class, 'response' ]);
+
 
   });
 
@@ -221,6 +236,11 @@ Route::prefix('/admin')->group(function() {
      * list, show, update, store, and delete
      * Middleware permissions: read-member, create-member, update-member, delete-member
      */
+    Route::post('members/toggleActivate/{member}', [ MemberController::class, 'toggleActivate' ]);
+    Route::post('members/accept/{member}', [ MemberController::class, 'accept' ]);
+    Route::post('members/unaccept/{member}', [ MemberController::class, 'unaccept' ]);
+    Route::post('members/toggleApprove/{member}', [ MemberController::class, 'toggleApprove' ]);
+    Route::post('members/toggleRefuse/{member}', [ MemberController::class, 'toggleRefuse' ]);
     Route::resource('members', MemberController::class)->except(['edit', 'create']);
   
     /**

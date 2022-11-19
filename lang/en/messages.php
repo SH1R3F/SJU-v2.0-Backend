@@ -24,6 +24,7 @@ return [
     "verification_sent"  => "Verification has been sent",
     "verification_done"  => "Verification done successfully",
     "verification_not_sent"  => "Verification hasn't been sent. Try again or contact us.",
+    "account_locked"  => "Your account has been locked by admins",
     "email_unverified"  => "Email has to be verified before you can login",
     "mobile_unverified"  => "Mobile has to be verified before you can login",
     "invalid_token"  => "This link might be expired or invalid, please try again!",

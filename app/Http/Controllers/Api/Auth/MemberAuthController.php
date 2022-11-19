@@ -38,8 +38,14 @@ class MemberAuthController extends Controller
           return response(['message' => 'invalid login credentials'], 422);
         }
 
+        // IF account is locked by admins!
+        if ($member->active === 0) {
+            $validator->getMessageBag()->add('national_id', __('messages.account_locked'));
+            return response()->json(array_merge($validator->errors()->toArray()), 400);
+        }
+
         // Email verification check
-        if (!$member->hasVerifiedEmail()) {
+        if (!$member->hasVerifiedEmail() && false) { // && False as it's Not required at the moment
             $validator->getMessageBag()->add('national_id', __('messages.email_unverified'));
             return response()->json(array_merge($validator->errors()->toArray(), ['resend' => route('verification.send', ['email' => $member->email, 'type' => 'member'])]), 400);
         }
@@ -138,6 +144,11 @@ class MemberAuthController extends Controller
 
         // Update database
         $member = Member::create($data);
+
+        // Create a subscription for this member too !
+        $member->subscription()->create([
+          'type'   => $data['membership_type'],
+        ]);
 
         // Send mobile verification code
         if (config('app.env') === 'production') {

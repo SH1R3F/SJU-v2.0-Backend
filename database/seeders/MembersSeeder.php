@@ -17,7 +17,7 @@ class MembersSeeder extends Seeder
     {
         $records = [
           [
-            'national_id' => '1019347416',
+            'national_id' => '1234512345',
             'source' => 'تبوك',
             'date' => '1453-03-04',
             'fname_ar' => 'منى',
@@ -94,13 +94,13 @@ class MembersSeeder extends Seeder
             'updated_experiences_and_fields' => 0,
 
             // Membership information
-            'membership_number' => '1-001',
-            'membership_type' => 1,
-            'membership_start_date' => '2022-04-09',
-            'membership_end_date' => '2022-12-31',
-            'invoice_id' => null,
-            // 'invoice_status' => null,
-            'status' => 0,
+            // 'membership_number' => '1-001',
+            // // 'membership_type' => 1,
+            // // 'membership_start_date' => '2022-04-09',
+            // // 'membership_end_date' => '2022-12-31',
+            // // 'invoice_id' => null,
+            // // // 'invoice_status' => null,
+            // // 'status' => 0,
             'password' => bcrypt('123456')
           ],
           [
@@ -181,13 +181,13 @@ class MembersSeeder extends Seeder
             'updated_experiences_and_fields' => 0,
 
             // Membership information
-            'membership_number' => '1-001',
-            'membership_type' => 1,
-            'membership_start_date' => '2022-04-09',
-            'membership_end_date' => '2022-12-31',
-            'invoice_id' => null,
-            // 'invoice_status' => null,
-            'status' => 0,
+            // 'membership_number' => '1-001',
+            // 'membership_type' => 1,
+            // 'membership_start_date' => '2022-04-09',
+            // 'membership_end_date' => '2022-12-31',
+            // 'invoice_id' => null,
+            // // 'invoice_status' => null,
+            // 'status' => 0,
             'password' => bcrypt('123456')
           ],
           [
@@ -268,13 +268,13 @@ class MembersSeeder extends Seeder
             'updated_experiences_and_fields' => 0,
 
             // Membership information
-            'membership_number' => '1-001',
-            'membership_type' => 1,
-            'membership_start_date' => '2022-04-09',
-            'membership_end_date' => '2022-12-31',
-            'invoice_id' => null,
-            // 'invoice_status' => null,
-            'status' => 0,
+            // 'membership_number' => '1-001',
+            // 'membership_type' => 1,
+            // 'membership_start_date' => '2022-04-09',
+            // 'membership_end_date' => '2022-12-31',
+            // 'invoice_id' => null,
+            // // 'invoice_status' => null,
+            // 'status' => 0,
             'password' => bcrypt('123456')
           ],
           [
@@ -355,13 +355,13 @@ class MembersSeeder extends Seeder
             'updated_experiences_and_fields' => 0,
 
             // Membership information
-            'membership_number' => '1-001',
-            'membership_type' => 1,
-            'membership_start_date' => '2022-04-09',
-            'membership_end_date' => '2022-12-31',
-            'invoice_id' => null,
-            // 'invoice_status' => null,
-            'status' => 0,
+            // 'membership_number' => '1-001',
+            // 'membership_type' => 1,
+            // 'membership_start_date' => '2022-04-09',
+            // 'membership_end_date' => '2022-12-31',
+            // 'invoice_id' => null,
+            // // 'invoice_status' => null,
+            // 'status' => 0,
             'password' => bcrypt('123456')
           ],
           [
@@ -442,19 +442,22 @@ class MembersSeeder extends Seeder
             'updated_experiences_and_fields' => 0,
 
             // Membership information
-            'membership_number' => '1-001',
-            'membership_type' => 1,
-            'membership_start_date' => '2022-04-09',
-            'membership_end_date' => '2022-12-31',
-            'invoice_id' => null,
-            // 'invoice_status' => null,
-            'status' => 0,
+            // 'membership_number' => '1-001',
+            // 'membership_type' => 1,
+            // 'membership_start_date' => '2022-04-09',
+            // 'membership_end_date' => '2022-12-31',
+            // 'invoice_id' => null,
+            // // 'invoice_status' => null,
+            // 'status' => 0,
             'password' => bcrypt('123456')
           ],
         ];
 
         collect($records)->each(function( $record ) {
-          Member::create($record);
+          $member = Member::create($record);
+          $member->subscription()->create([
+            'type' => rand(1,3)
+          ]);
         });
     }
 }

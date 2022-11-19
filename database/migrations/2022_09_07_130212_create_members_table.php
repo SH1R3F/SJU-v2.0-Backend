@@ -53,6 +53,9 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->integer('branch');
 
+            $table->integer('delivery_method')->nullable()->comment('1: receive in branch, 2: delivery to home');
+            $table->string('delivery_address')->nullable();
+
             // Experiences and fields
             $table->json('experiences_and_fields')->nullable();
 
@@ -60,6 +63,7 @@ return new class extends Migration
             $table->string('profile_image')->nullable();
             $table->string('national_image')->nullable();
             $table->string('employer_letter')->nullable();
+            $table->string('newspaper_license')->nullable();
 
             // To be updated options
             $table->boolean('updated_personal_information')->default(0);
@@ -70,13 +74,19 @@ return new class extends Migration
 
             // Membership information
             $table->string('membership_number')->nullable();
-            $table->integer('membership_type')->nullable();
-            $table->date('membership_start_date')->nullable();
-            $table->date('membership_end_date')->nullable();
-            $table->bigInteger('invoice_id')->nullable(); // To be updated to a foreign id when invoices are created *UNFINISHED WORK*
-            $table->boolean('invoice_status')->default(0);
-            $table->integer('status')->default(0);
-            $table->dateTime('last_seen')->nullable();
+
+            $table->integer('active')->default(-1);
+            $table->integer('approved')->nullable();
+            $table->text('refusal_reason')->nullable();
+
+            /* To be moved to Subscription table ! */
+            // $table->integer('membership_type')->nullable();
+            // $table->date('membership_start_date')->nullable();
+            // $table->date('membership_end_date')->nullable();
+            // $table->bigInteger('invoice_id')->nullable(); // To be updated to a foreign id when invoices are created *UNFINISHED WORK*
+            // $table->boolean('invoice_status')->default(0);
+            // $table->integer('status')->default(0);
+            // $table->dateTime('last_seen')->nullable();
 
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();

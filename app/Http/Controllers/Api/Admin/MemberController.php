@@ -17,7 +17,7 @@ class MemberController extends Controller
     {
         $this->middleware('permission:read-member', [ 'only' => ['index', 'show']]);
         $this->middleware('permission:create-member', [ 'only' => 'store']);
-        $this->middleware('permission:update-member', [ 'only' => 'update']);
+        $this->middleware('permission:update-member', [ 'only' => ['update', 'toggleActivate', 'accept', 'unaccept', 'toggleApprove', 'toggleRefuse']]);
         $this->middleware('permission:delete-member', [ 'only' => 'destroy']);
     }
     /**
@@ -250,6 +250,112 @@ class MemberController extends Controller
           'message' => __('messages.successful_update')
         ], 200);
 
+    }
+
+    /**
+     * Toggle activate member.
+     * Set his active to 0 to deactivate, or to 1 to activate!
+     * When member activation is 0 he cannot login
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Member  $member
+     * @return \Illuminate\Http\Response
+     */
+    public function toggleActivate(Request $request, Member $member)
+    {
+      if ($member->active === 1) {
+        $member->active = 0;
+      } else {
+        $member->active = 1;
+      }
+      $member->save();
+      return response()->json([
+        'message' => __('messages.successful_update')
+      ], 200);
+    }
+
+    /**
+     * UnAccept member after branch approves him.
+     * Set his active back to -1, and the approved value should be 1 by branch acceptance!
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Member  $member
+     * @return \Illuminate\Http\Response
+     */
+    public function unaccept(Request $request, Member $member)
+    {
+      $member->approved = 1;
+      $member->active = -1;
+      $member->save();
+      return response()->json([
+        'message' => __('messages.successful_update')
+      ], 200);
+    }
+
+    /**
+     * Accept member after branch approves him.
+     * Set his active to 1, and the approved value should be 1 by branch acceptance!
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Member  $member
+     * @return \Illuminate\Http\Response
+     */
+    public function accept(Request $request, Member $member)
+    {
+      $member->approved = 1;
+      $member->active = 1;
+      $member->save();
+      return response()->json([
+        'message' => __('messages.successful_update')
+      ], 200);
+    }
+
+    /**
+     * Branchly toggle approve member.
+     * Set his approved value to 1, and active is already -1 by default!
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Member  $member
+     * @return \Illuminate\Http\Response
+     */
+    public function toggleApprove(Request $request, Member $member)
+    {
+      if ($member->approved === 1) {
+        $member->approved = 0;
+      } else if (!$member->approved) {
+        $member->approved = 1;
+      }
+      $member->save();
+      return response()->json([
+        'message' => __('messages.successful_update')
+      ], 200);
+    }
+
+    /**
+     * Branchly toggle refuse member.
+     * Set his approved value to -2, and active is already -1 by default!
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Member  $member
+     * @return \Illuminate\Http\Response
+     */
+    public function toggleRefuse(Request $request, Member $member)
+    {
+      if ($member->approved === -2) { // Unrefuse
+        $member->approved = 0;
+        $member->refusal_reason = null;
+      } else { // Refuse
+        $member->approved = -2;
+        if ($request->reason === 'unsatisfy') {
+          $member->refusal_reason = 'unsatisfy';
+        } else {
+          $member->refusal_reason = $request->reason_text;
+        }
+      }
+      $member->save();
+      return response()->json([
+        'message' => __('messages.successful_update')
+      ], 200);
     }
 
     /**

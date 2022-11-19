@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Invoice;
 use App\Models\Courseable;
+use App\Models\Subscription;
 use App\Models\Course\Course;
 use App\Models\Course\Question;
 use Laravel\Sanctum\HasApiTokens;
@@ -78,14 +80,14 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
 
         // Membership information
         'membership_number',
-        'membership_type',
-        'membership_start_date',
-        'membership_end_date',
-        'invoice_id',
-        'invoice_status',
-        'status',
+        // 'membership_type',
+        // 'membership_start_date',
+        // 'membership_end_date',
+        // 'invoice_id',
+        // 'invoice_status',
+        // 'status',
+        // 'last_seen'
         'password',
-        'last_seen'
     ];
 
     /**
@@ -138,9 +140,21 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
     public function scopeFilter($query, $request)
     {
 
-      // Filter by status
-      if ($request->status !== 'all') {
-        $query->where('status', $request->status);
+      // Filter by approval status
+      if (isset($request->approved)) {
+        $query->where('approved', $request->approved);
+        if ($request->approved == 0) {
+          $query->orWhereNull('approved');
+        }
+      }
+
+      // Filter by active status
+      if (isset($request->active)) {
+        if (is_array($request->active)) {
+          $query->whereIn('active', $request->active);
+        } else {
+          $query->where('active', $request->active);
+        }
       }
 
       // Filter by mobile
@@ -239,5 +253,15 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
     public function certificates()
     {
       return $this->morphMany(Certificate::class, 'certificateable');
+    }
+
+    public function invoices()
+    {
+      return $this->hasMany(Invoice::class);
+    }
+
+    public function subscription()
+    {
+      return $this->hasOne(Subscription::class);
     }
 }
