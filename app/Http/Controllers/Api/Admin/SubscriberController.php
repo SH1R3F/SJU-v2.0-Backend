@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\SubscriberResource;
+use App\Http\Controllers\Api\Admin\ExcelController;
 use App\Http\Resources\Admin\Course\CourseResource;
 
 class SubscriberController extends Controller
@@ -17,7 +18,7 @@ class SubscriberController extends Controller
   
     public function __construct()
     {
-        $this->middleware('permission:read-subscriber', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:read-subscriber', [ 'only' => ['index', 'show', 'export']]);
         $this->middleware('permission:create-subscriber', [ 'only' => 'store']);
         $this->middleware('permission:update-subscriber', [ 'only' => 'update']);
         $this->middleware('permission:delete-subscriber', [ 'only' => 'destroy']);
@@ -37,6 +38,65 @@ class SubscriberController extends Controller
           'total'       => Subscriber::filter($request)->get()->count(),
           'subscribers' => SubscriberResource::collection($subscribers)
         ]);
+    }
+
+    /**
+     * Export a listing of the resource to Excel sheet.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function export(Request $request)
+    {
+
+        $subscribers = Subscriber::filter($request)->sortData($request)->get();
+        $cells = array(
+          'A1' => 'م',
+          'B1' => 'اسم المشترك',
+          'C1' => 'البريد الإلكتروني',
+          'D1' => 'عدد البرامج',
+          'E1' => 'حالة المشترك',
+        );
+        $cells_keys = array(
+            'A' => 'counter',
+            'B' => 'name',
+            'C' => 'email',
+            'D' => 'cources',
+            'E' => 'status',
+        );
+
+        // Build excel cells
+        $counter = 2;
+        foreach ($subscribers as $subscriber) {
+          foreach ($cells_keys as $key => $val) {
+            switch ($val) {
+              case 'counter':
+                $cells[$key . $counter] = $counter - 1;
+                break;
+                
+              case 'email':
+                $cells[$key . $counter] = $subscriber->email;
+                break;
+                
+              case 'name':
+                $cells[$key . $counter] = $subscriber->fullName;
+                break;
+                
+              case 'courses':
+                $cells[$key . $counter] = $subscriber->courses()->count() ? $subscriber->courses()->count() : 0;
+                break;
+                              
+              case 'status':
+                $cells[$key . $counter] = config('sju.status')[$subscriber->email_verified_at ? 1 : 0];
+                break;
+            }
+          }
+          $counter++;
+        }
+
+        // Create the excel file
+        return app(ExcelController::class)->create('subscribers', $cells);
+        
     }
 
     /**

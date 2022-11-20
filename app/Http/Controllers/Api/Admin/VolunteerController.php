@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\VolunteerResource;
+use App\Http\Controllers\Api\Admin\ExcelController;
 use App\Http\Resources\Admin\Course\CourseResource;
 
 class VolunteerController extends Controller
@@ -18,7 +19,7 @@ class VolunteerController extends Controller
     
     public function __construct()
     {
-        $this->middleware('permission:read-volunteer', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:read-volunteer', [ 'only' => ['index', 'show', 'export']]);
         $this->middleware('permission:create-volunteer', [ 'only' => 'store']);
         $this->middleware('permission:update-volunteer', [ 'only' => 'update']);
         $this->middleware('permission:delete-volunteer', [ 'only' => 'destroy']);
@@ -38,6 +39,59 @@ class VolunteerController extends Controller
           'total'       => Volunteer::filter($request)->get()->count(),
           'volunteers' => VolunteerResource::collection($volunteers)
         ]);
+    }
+
+    /**
+     * Export a listing of the resource to Excel sheet.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function export(Request $request)
+    {
+
+        $volunteers = Volunteer::filter($request)->sortData($request)->get();
+        $cells = array(
+          'A1' => 'م',
+          'B1' => 'اسم المتدرب',
+          'C1' => 'البريد الإلكتروني',
+          'D1' => 'حالة المشترك',
+        );
+        $cells_keys = array(
+            'A' => 'counter',
+            'B' => 'name',
+            'C' => 'email',
+            'D' => 'status',
+        );
+
+        // Build excel cells
+        $counter = 2;
+        foreach ($volunteers as $volunteer) {
+          foreach ($cells_keys as $key => $val) {
+            switch ($val) {
+              case 'counter':
+                $cells[$key . $counter] = $counter - 1;
+                break;
+                
+              case 'email':
+                $cells[$key . $counter] = $volunteer->email;
+                break;
+                
+              case 'name':
+                $cells[$key . $counter] = $volunteer->fullName;
+                break;
+                              
+              case 'status':
+                $cells[$key . $counter] = config('sju.status')[$volunteer->email_verified_at ? 1 : 0];
+                break;
+            }
+          }
+          $counter++;
+        }
+
+        // Create the excel file
+        return app(ExcelController::class)->create('volunteers', $cells);
+        
     }
 
     /**

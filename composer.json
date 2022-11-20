@@ -15,6 +15,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "mpdf/mpdf": "^8.1",
+        "phpoffice/phpspreadsheet": "^1.25",
         "santigarcor/laratrust": "^7.1"
     },
     "require-dev": {

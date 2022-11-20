@@ -1,5 +1,6 @@
 <?php 
 
+use Carbon\Carbon;
 use App\Models\SiteOption;
 
 if(!function_exists('get_arabic_day'))
@@ -113,5 +114,39 @@ if(!function_exists('sendSMS'))
             }
             return true;
         }  
+    }
+
+    
+}
+
+if(!function_exists('membership_status')) {
+    function membership_status($member) {
+        if ($member->approved === -2) {
+          return 'مرفوض';
+        } elseif ($member->approved === null) {
+          return 'يستكمل البيانات';
+        } elseif ($member->approved === 0) {
+          if ($member->refusal_reason) {
+            return 'بإنتظار الموافقة (بعد الرفض)';
+          } else {
+            return 'بإنتظار موافقة الفرع';
+          }
+        } elseif ($member->approved === 1) {
+          if ($member->active === -1) {
+            return 'بإنتظار موافقة الأدمن';
+          } elseif ($member->active === 0) {
+            return 'غير فعال';
+          } elseif ($member->active === 1) {
+            if ($member->subscription->status === 1) {
+              if (Carbon::now()->lt($member->subscription->end_date)) {
+                return 'فعال';
+              } else {
+                return 'الاشتراك منتهي';
+              }
+            } else {
+                return 'بإنتظار الدفع';
+            }
+          }
+        }
     }
 }

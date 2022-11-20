@@ -139,10 +139,13 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
 
       // Filter by approval status
       if (isset($request->approved)) {
-        $query->where('approved', $request->approved);
-        if ($request->approved == 0) {
+        
+        if (in_array($request->approved, [0, null])) {
           $query->orWhereNull('approved');
+        } else {
+          $query->where('approved', $request->approved);
         }
+
       }
 
       // Filter by active status
@@ -155,48 +158,52 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
       }
 
       // Filter by mobile
-      if ($request->mobile) {
+      if (isset($request->mobile) && $request->mobile) {
         $query->where('mobile', 'LIKE', "%{$request->mobile}%");
       }
       
       // Filter by email
-      if ($request->email) {
+      if (isset($request->email) && $request->email) {
         $query->where('email', 'LIKE', "%{$request->email}%");
       }
 
       // Filter by name
-      if ($request->name) {
+      if (isset($request->name) && $request->name) {
         $query->where(DB::raw("CONCAT(`fname_ar`, ' ', `sname_ar`, ' ', `tname_ar`, ' ', `lname_ar` )"), 'LIKE', "%{$request->name}%")
               ->orWhere(DB::raw("CONCAT(`fname_en`, ' ', `sname_en`, ' ', `tname_en`, ' ', `lname_en` )"), 'LIKE', "%{$request->name}%");
       }
 
       // Filter by national id
-      if ($request->nationalId) {
+      if (isset($request->nationalId) && $request->nationalId) {
         $query->where('national_id', 'LIKE', "%{$request->nationalId}%");
       }
 
       // Filter by membership number
-      if ($request->membershipNumber) {
+      if (isset($request->membershipNumber) && $request->membershipNumber) {
         $query->where('membership_number', 'LIKE', "%{$request->membershipNumber}%");
       }
 
       // Filter by membership type
-      if (is_numeric($request->membershipType)) {
-        $query->where('membership_type', $request->membershipType);
+      if (isset($request->membershipType) && is_numeric($request->membershipType)) {
+        $query->whereHas('subscription', function ($query) use ($request) {
+          $query->where('type', $request->membershipType);
+        });
       }
 
       // Filter by city
-      if (is_numeric($request->city)) {
+      if (isset($request->city) && is_numeric($request->city)) {
         $query->where('city', $request->city);
       }
 
       // Filter by year
-      if ($request->year) {
-        $query->whereYear('membership_start_date', $request->year);
+      if (isset($request->year) && $request->year) {
+        $query->whereHas('subscription', function ($query) use ($request) {
+          $query->whereYear('start_date', $request->year);
+        });
       }
 
       // Filter by search
-      if ($request->q) {
+      if (isset($request->q) && $request->q) {
         $query->where(DB::raw("CONCAT(`fname_ar`, ' ', `sname_ar`, ' ', `tname_ar`, ' ', `lname_ar` )"), 'LIKE', "%{$request->q}%")
               ->orWhere(DB::raw("CONCAT(`fname_en`, ' ', `sname_en`, ' ', `tname_en`, ' ', `lname_en` )"), 'LIKE', "%{$request->q}%");
       }

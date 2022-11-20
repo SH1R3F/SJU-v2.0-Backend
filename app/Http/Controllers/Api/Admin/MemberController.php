@@ -11,20 +11,23 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\MemberResource;
+use App\Http\Controllers\Api\Admin\ExcelController;
 
 class MemberController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('permission:read-member', [ 'only' => ['index', 'show', 'card']]);
+        $this->middleware('permission:read-member', [ 'only' => ['index', 'show', 'card', 'export']]);
         $this->middleware('permission:create-member', [ 'only' => 'store']);
         $this->middleware('permission:update-member', [ 'only' => ['update', 'toggleActivate', 'accept', 'unaccept', 'toggleApprove', 'toggleRefuse']]);
         $this->middleware('permission:delete-member', [ 'only' => 'destroy']);
     }
+
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -41,6 +44,146 @@ class MemberController extends Controller
           'total'   => Member::filter($request)->get()->count(),
           'members' => MemberResource::collection($members),
         ]);
+    }
+
+    /**
+     * Export a listing of the resource to Excel sheet.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function export(Request $request)
+    {
+        $admin = Auth::guard('api-admins')->user();
+        $members = Member::filter($request)->sortData($request)->get();
+
+        if ($admin->branch_id) {
+          // This admin is associated with a branch. Only show him members of this branch!
+          $members = Member::where('branch', $admin->branch_id)->filter($request)->sortData($request)->get();
+        }
+
+        if ($request->approved === -2) { // Refused
+            $cells = array(
+                'A1' => 'م',
+                'B1' => 'رقم الهوية',
+                'C1' => 'رقم العضوية',
+                'D1' => 'البريد الإلكتروني',
+                'E1' => 'اسم العضو',
+                'F1' => 'فئة العضوية',
+                'G1' => 'المدينة',
+                'H1' => 'الجوال',
+                'I1' => 'سبب الرفض',
+                'J1' => 'تاريخ التسجيل',
+            );
+            
+            $cells_keys = array(
+                'A' => 'counter',
+                'B' => 'national_id',
+                'C' => 'membership_number',
+                'D' => 'email',
+                'E' => 'name',
+                'F' => 'type',
+                'G' => 'city',
+                'H' => 'mobile',
+                'I' => 'refusal_reason',
+                'J' => 'created_at',
+            );
+        } else {
+            $cells = array(
+                'A1' => 'م',
+                'B1' => 'رقم الهوية',
+                'C1' => 'رقم العضوية',
+                'D1' => 'البريد الإلكتروني',
+                'E1' => 'اسم العضو',
+                'F1' => 'فئة العضوية',
+                'G1' => 'المدينة',
+                'H1' => 'الجوال',
+                'I1' => 'حالة العضو',
+                'J1' => 'حالة الدفع',
+                'K1' => 'الجهة',
+            );
+
+            $cells_keys = array(
+                'A' => 'counter',
+                'B' => 'national_id',
+                'C' => 'membership_number',
+                'D' => 'email',
+                'E' => 'name',
+                'F' => 'type',
+                'G' => 'city',
+                'H' => 'mobile',
+                'I' => 'state',
+                'J' => 'status',
+                'K' => 'employer',
+            );
+        }
+
+        // Build excel cells
+        $counter = 2;
+        foreach ($members as $member) {
+          foreach ($cells_keys as $key => $val) {
+            switch ($val) {
+              case 'counter':
+                $cells[$key . $counter] = $counter - 1;
+                break;
+                
+              case 'national_id':
+                $cells[$key . $counter] = $member->national_id;
+                break;
+                
+              case 'membership_number':
+                $cells[$key . $counter] = $member->membership_number;
+                break;
+                
+              case 'email':
+                $cells[$key . $counter] = $member->email;
+                break;
+                
+              case 'name':
+                $cells[$key . $counter] = $member->fullName;
+                break;
+                
+              case 'type':
+                $cells[$key . $counter] = config('sju.members.types')[$member->subscription->type];
+                break;
+                              
+              case 'city':
+                $cells[$key . $counter] = config('sju.branches')[$member->branch];
+                break;
+                
+              case 'mobile':
+                $cells[$key . $counter] = $member->mobile;
+                break;
+                
+              case 'state':
+                $cells[$key . $counter] = membership_status($member);
+                break;
+                
+              case 'status':
+                $status = $member->invoices()->orderBy('id', 'DESC')->first() ? $member->invoices()->orderBy('id', 'DESC')->first()->status : 0;
+                $cells[$key . $counter] = config('sju.members.invoice_status')[$status];
+                break;
+                
+              case 'employer':
+                $cells[$key . $counter] = $member->employer;
+                break;
+                
+              case 'refusal_reason':
+                $cells[$key . $counter] = $member->refusal_reason === 'unsatisfy' ? 'غير مستوفي للشروط' : $member->refusal_reason;
+                break;
+                
+              case 'created_at':
+                $cells[$key . $counter] = $member->created_at;
+                break;
+                
+            }
+          }
+          $counter++;
+        }
+
+        // Create the excel file
+        return app(ExcelController::class)->create('members', $cells);
+
     }
 
     /**

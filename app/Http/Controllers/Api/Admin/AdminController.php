@@ -62,11 +62,12 @@ class AdminController extends Controller
     {
         // Validation
         $validator = Validator::make($request->all(), [
-          'email'    => 'required|email|unique:admins,email',
-          'password' => 'required|min:6',
-          'username' => 'required|min:3|unique:admins,username',
-          'mobile'   => 'required',
-          'role'     => 'required|exists:roles,id'
+          'email'     => 'required|email|unique:admins,email',
+          'password'  => 'required|min:6',
+          'username'  => 'required|min:3|unique:admins,username',
+          'mobile'    => 'required',
+          'role'      => 'required|exists:roles,id',
+          'branch_id' => 'nullable'
         ]);
 
         if ($validator->fails()) {

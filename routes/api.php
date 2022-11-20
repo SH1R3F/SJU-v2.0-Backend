@@ -242,6 +242,7 @@ Route::prefix('/admin')->group(function() {
     Route::post('members/toggleApprove/{member}', [ MemberController::class, 'toggleApprove' ]);
     Route::post('members/toggleRefuse/{member}', [ MemberController::class, 'toggleRefuse' ]);
     Route::get('members/card/{member}', [ MemberController::class, 'card' ]);
+    Route::post('members/export', [ MemberController::class, 'export' ]);
     Route::resource('members', MemberController::class)->except(['edit', 'create']);
   
     /**
@@ -251,6 +252,7 @@ Route::prefix('/admin')->group(function() {
      */
     Route::get('subscribers/show/{subscriber}/courses', [ SubscriberController::class, 'courses' ]);
     Route::post('subscribers/{subscriber}/toggle', [ SubscriberController::class, 'toggle' ]);
+    Route::post('subscribers/export', [ SubscriberController::class, 'export' ]);
     Route::resource('subscribers', SubscriberController::class)->except(['edit', 'create']);
   
     /**
@@ -260,6 +262,7 @@ Route::prefix('/admin')->group(function() {
      */
     Route::get('volunteers/show/{volunteer}/courses', [ VolunteerController::class, 'courses' ]);
     Route::post('volunteers/{volunteer}/toggle', [ VolunteerController::class, 'toggle' ]);
+    Route::post('volunteers/export', [ VolunteerController::class, 'export' ]);
     Route::resource('volunteers', VolunteerController::class)->except(['edit', 'create']);
 
     Route::prefix('courses')->group(function () {
@@ -341,6 +344,7 @@ Route::prefix('/admin')->group(function() {
     Route::post('/courses/{course}/enrollers/{type}/{id}', [courseController::class, 'togglePass']);
     Route::get('/courses/{event}/certificate/{type}/{id}', [CertificateController::class, 'showForAdmin']);
     Route::delete('/courses/{course}/enrollers/{type}/{id}', [courseController::class, 'deleteEnroller']);
+    Route::post('courses/export', [ CourseController::class, 'export' ]);
     Route::resource('/courses', CourseController::class)->except(['edit', 'ceate']);
   
 
