@@ -38,6 +38,7 @@ class AdminResource extends JsonResource
           'mobile'      => $this->mobile,
           'role'        => $this->roles()->first() ? $this->roles()->first()->display_name : null,
           'role_id'     => $this->roles()->first() ? $this->roles()->first()->id : null,
+          'branch_id'   => $this->branch_id,
           'permissions' => $permissions,
           'ability'     => $abilities
         ];

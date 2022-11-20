@@ -115,7 +115,8 @@ class AdminController extends Controller
           'password'   => 'nullable|min:6',
           'username'   => 'required|min:3|unique:admins,username,' . $admin->id,
           'mobile'     => 'required',
-          'role_id'    => 'required|exists:roles,id'
+          'role_id'    => 'required|exists:roles,id',
+          'branch_id'  => 'nullable'
         ]);
 
         if ($validator->fails()) {

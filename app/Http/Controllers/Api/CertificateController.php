@@ -15,14 +15,13 @@ use Illuminate\Foundation\Auth\User;
 class CertificateController extends Controller
 {
 
+    use LoggedInUser, UserTypeClass;
 
     public function __construct()
     {
         $this->middleware('permission:read-course', [ 'only' => 'showForAdmin']);
     }
 
-    use LoggedInUser, UserTypeClass;
-  
     /**
      * Display the specified resource or create it [for admin].
      *
@@ -141,7 +140,21 @@ class CertificateController extends Controller
           'margin_top'    => 0,
           'margin_bottom' => 0,
           'margin_header' => 0,
-          'margin_footer' => 0
+          'margin_footer' => 0,
+          
+          'fontDir' => [base_path('public/fonts/')],
+          'fontdata' => [ // lowercase letters only in font key
+            'almarai' => [ // must be lowercase and snake_case
+              'R'  => 'Almarai-Regular.ttf',    // regular font
+              'B'  => 'Almarai-Bold.ttf',       // optional: bold font
+              'I'  => 'Almarai-Italic.ttf',     // optional: italic font
+              'BI' => 'Almarai-Bold-Italic.ttf', // optional: bold-italic font
+              'useOTL' => 0xFF,
+              'useKashida' => 75,
+            ]
+          ],
+          'default_font' => 'almarai',
+          'unAGlyphs' => true,
         ]);
         $mpdf->AddFontDirectory(storage_path('/fonts'));
         $mpdf->SetDirectionality($dir);

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             
             $table->unsignedBigInteger('branch_id')->nullable();
-            $table->foreign('branch_id')->references('id')->on('branches');
+            // $table->foreign('branch_id')->references('id')->on('branches');
             
             $table->string('password');
             $table->rememberToken();

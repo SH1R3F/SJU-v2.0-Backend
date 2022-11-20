@@ -241,6 +241,7 @@ Route::prefix('/admin')->group(function() {
     Route::post('members/unaccept/{member}', [ MemberController::class, 'unaccept' ]);
     Route::post('members/toggleApprove/{member}', [ MemberController::class, 'toggleApprove' ]);
     Route::post('members/toggleRefuse/{member}', [ MemberController::class, 'toggleRefuse' ]);
+    Route::get('members/card/{member}', [ MemberController::class, 'card' ]);
     Route::resource('members', MemberController::class)->except(['edit', 'create']);
   
     /**

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use Mpdf\Mpdf;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +17,7 @@ class MemberController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:read-member', [ 'only' => ['index', 'show']]);
+        $this->middleware('permission:read-member', [ 'only' => ['index', 'show', 'card']]);
         $this->middleware('permission:create-member', [ 'only' => 'store']);
         $this->middleware('permission:update-member', [ 'only' => ['update', 'toggleActivate', 'accept', 'unaccept', 'toggleApprove', 'toggleRefuse']]);
         $this->middleware('permission:delete-member', [ 'only' => 'destroy']);
@@ -27,7 +29,14 @@ class MemberController extends Controller
      */
     public function index(Request $request)
     {
+        $admin = Auth::guard('api-admins')->user();
         $members = Member::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
+
+        if ($admin->branch_id) {
+          // This admin is associated with a branch. Only show him members of this branch!
+          $members = Member::where('branch', $admin->branch_id)->filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
+        }
+
         return response()->json([
           'total'   => Member::filter($request)->get()->count(),
           'members' => MemberResource::collection($members),
@@ -107,6 +116,15 @@ class MemberController extends Controller
      */
     public function show(Member $member)
     {
+
+      $admin = Auth::guard('api-admins')->user();
+      if ($admin->branch_id) {
+        // This admin is associated with a branch. Only allow him to see members of his branch!
+        if ($member->branch !== $admin->branch_id) {
+          abort (403);
+        }
+      }
+
       return new MemberResource($member);
     }
 
@@ -120,6 +138,15 @@ class MemberController extends Controller
      */
     public function update(Request $request, Member $member)
     {
+      
+        $admin = Auth::guard('api-admins')->user();
+        if ($admin->branch_id) {
+          // This admin is associated with a branch. Only allow him to see members of his branch!
+          if ($member->branch !== $admin->branch_id) {
+            abort (403);
+          }
+        }
+
         // Validation
         $validator = Validator::make($request->all(), [
           // Account information
@@ -289,6 +316,15 @@ class MemberController extends Controller
      */
     public function toggleActivate(Request $request, Member $member)
     {
+
+      $admin = Auth::guard('api-admins')->user();
+      if ($admin->branch_id) {
+        // This admin is associated with a branch. Only allow him to see members of his branch!
+        if ($member->branch !== $admin->branch_id) {
+          abort (403);
+        }
+      }
+      
       if ($member->active === 1) {
         $member->active = 0;
       } else {
@@ -310,6 +346,15 @@ class MemberController extends Controller
      */
     public function unaccept(Request $request, Member $member)
     {
+
+      $admin = Auth::guard('api-admins')->user();
+      if ($admin->branch_id) {
+        // This admin is associated with a branch. Only allow him to see members of his branch!
+        if ($member->branch !== $admin->branch_id) {
+          abort (403);
+        }
+      }
+      
       $member->approved = 1;
       $member->active = -1;
       $member->save();
@@ -328,6 +373,15 @@ class MemberController extends Controller
      */
     public function accept(Request $request, Member $member)
     {
+
+      $admin = Auth::guard('api-admins')->user();
+      if ($admin->branch_id) {
+        // This admin is associated with a branch. Only allow him to see members of his branch!
+        if ($member->branch !== $admin->branch_id) {
+          abort (403);
+        }
+      }
+
       $member->approved = 1;
       $member->active = 1;
       $member->save();
@@ -346,6 +400,15 @@ class MemberController extends Controller
      */
     public function toggleApprove(Request $request, Member $member)
     {
+
+      $admin = Auth::guard('api-admins')->user();
+      if ($admin->branch_id) {
+        // This admin is associated with a branch. Only allow him to see members of his branch!
+        if ($member->branch !== $admin->branch_id) {
+          abort (403);
+        }
+      }
+
       if ($member->approved === 1) {
         $member->approved = 0;
       } else if (!$member->approved) {
@@ -367,6 +430,15 @@ class MemberController extends Controller
      */
     public function toggleRefuse(Request $request, Member $member)
     {
+
+      $admin = Auth::guard('api-admins')->user();
+      if ($admin->branch_id) {
+        // This admin is associated with a branch. Only allow him to see members of his branch!
+        if ($member->branch !== $admin->branch_id) {
+          abort (403);
+        }
+      }
+
       if ($member->approved === -2) { // Unrefuse
         $member->approved = 0;
         $member->refusal_reason = null;
@@ -392,13 +464,105 @@ class MemberController extends Controller
      */
     public function destroy(Member $member)
     {
-        // Delete his files on desk
-        Storage::disk('public')->deleteDirectory("members/{$member->id}");
 
-        // Delete database record
-        $member->delete();
-        return response()->json([
-          'message' => __('messages.successful_delete')
-        ], 200);
+      $admin = Auth::guard('api-admins')->user();
+      if ($admin->branch_id) {
+        // This admin is associated with a branch. Only allow him to see members of his branch!
+        if ($member->branch !== $admin->branch_id) {
+          abort (403);
+        }
+      }
+
+      // Delete his files on desk
+      Storage::disk('public')->deleteDirectory("members/{$member->id}");
+      
+      // Delete database record
+      $member->delete();
+      return response()->json([
+        'message' => __('messages.successful_delete')
+      ], 200);
+    }
+    
+    /**
+     * Generate the card pdf of the member.
+     *
+     * @param  Member  $member
+     * @return \Illuminate\Http\Response
+     */
+    public function card(Member $member)
+    {
+
+        $admin = Auth::guard('api-admins')->user();
+        if ($admin->branch_id) {
+          // This admin is associated with a branch. Only allow him to see members of his branch!
+          if ($member->branch !== $admin->branch_id) {
+            abort (403);
+          }
+        }
+        
+
+        // Mpdf Work
+        $mpdf = new Mpdf([
+          'mode' => 'ar',
+          'format' => [145, 244], // 550 * 923 px
+          'margin_left' => 0, 
+          'margin_right' => 0, 
+          'margin_top' => 0, 
+          'margin_bottom' => 0,
+          'margin_footer' => 0, 
+          
+          'fontDir' => [base_path('public/fonts/')],
+          'fontdata' => [ // lowercase letters only in font key
+            'almarai' => [ // must be lowercase and snake_case
+              'R'  => 'Almarai-Regular.ttf',    // regular font
+              'B'  => 'Almarai-Bold.ttf',       // optional: bold font
+              'I'  => 'Almarai-Italic.ttf',     // optional: italic font
+              'BI' => 'Almarai-Bold-Italic.ttf', // optional: bold-italic font
+              'useOTL' => 0xFF,
+              'useKashida' => 75,
+            ]
+          ],
+          'default_font' => 'almarai',
+          'unAGlyphs' => true,
+
+        ]);
+        $mpdf->AddFontDirectory(base_path('public/fonts/'));
+        $mpdf->SetDirectionality('rtl');
+        $path = public_path("pdf/card.pdf");
+        $mpdf->SetDocTemplate($path, 1);
+
+        // Refactor to add the member picture !
+        $html = <<<EOD
+          <div style="padding-top: 588px; text-align: center;">
+            <h6 style='font-size: 26px; font-family: almarai; margin: 0;'>{$member->fullName}</h6>            
+            <h6 style='font-size: 26px; font-family: almarai; margin: 0;'>{$member->fullName_en}</h6>            
+          </div>
+          <div style='font-size: 25px; font-weight: bold; font-family: almarai; margin-top: 34px; text-align: center;'>
+            {$member->membership_number}
+          </div>
+          <div style='color: #FFFFFF; font-size: 20px; font-weight: bold; font-family: almarai; margin-top: 85px; margin-right: 15px; text-align: center;'>
+            {$member->subscription->end_date}
+          </div>
+        EOD;
+
+
+        try {
+          $mpdf->WriteHTML($html);
+          // Store output
+          Storage::disk('public')->put("members/{$member->id}/card/card.pdf", 1);
+          $path = storage_path("/app/public/members/{$member->id}/card/card.pdf");
+          $mpdf->Output($path, \Mpdf\Output\Destination::FILE);
+          
+          return response()->json([
+            'path' => asset("storage/members/{$member->id}/card/card.pdf")
+          ]);
+
+        } catch (\Exception $e) {
+          return [
+            'error' => $e->getMessage()
+          ];
+        }
+        
+
     }
 }
