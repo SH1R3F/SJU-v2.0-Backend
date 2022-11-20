@@ -20,6 +20,7 @@ use App\Http\Resources\Admin\Course\NamingResource;
 use App\Http\Controllers\Api\Admin\MemberController;
 use App\Http\Controllers\Api\Admin\StudioController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\Admin\InvoiceController;
 use App\Http\Resources\Admin\Course\TemplateResource;
 use App\Http\Controllers\Api\Admin\BlogPostController;
 use App\Http\Controllers\Api\Admin\Auth\AuthController;
@@ -244,7 +245,16 @@ Route::prefix('/admin')->group(function() {
     Route::get('members/card/{member}', [ MemberController::class, 'card' ]);
     Route::post('members/export', [ MemberController::class, 'export' ]);
     Route::resource('members', MemberController::class)->except(['edit', 'create']);
-  
+    
+    /**
+     * Invoices routes
+     * list, show
+     * Middleware permissions: read-member
+     */
+    Route::get('invoices/{invoice}', [ InvoiceController::class, 'show' ]);
+    Route::post('invoices/export', [ InvoiceController::class, 'export' ]);
+    Route::get('invoices', [ InvoiceController::class, 'index' ]);
+
     /**
      * Subscribers routes
      * list, show, update, store, and delete

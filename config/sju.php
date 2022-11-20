@@ -11,6 +11,10 @@ return [
           0 => 'غير مدفوعة',
           1 => 'مدفوعة',
         ],
+        'payment_methods' => [
+          2 => 'MADA',
+          1 => 'VISA_MASTER',
+        ],
     ],
     'branches' => [
       1 => 'مكة المكرمة',
