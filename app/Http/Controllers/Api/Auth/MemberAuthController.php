@@ -98,7 +98,7 @@ class MemberAuthController extends Controller
           'memberInfo.gender' => 'required',
           'memberInfo.birthday_hijri' => 'required',
           'memberInfo.birthday_meladi' => 'required',
-          'memberInfo.nationality' => 'required|integer',
+          'memberInfo.nationality' => 'required',
           'memberInfo.qualification' => 'required',
           'memberInfo.major' => 'required',
           'memberInfo.journalist_job_title' => 'required',

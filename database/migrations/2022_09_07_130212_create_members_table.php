@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
-            $table->integer('national_id')->unique();
+            $table->string('national_id')->unique();
             $table->string('source')->nullable();
             $table->date('date')->nullable();
             $table->string('fname_ar');

@@ -63,6 +63,7 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
         'mobile',
         'email',
         'city',
+        'branch',
         // Experiences and fields [JSON]
         'experiences_and_fields',
 
