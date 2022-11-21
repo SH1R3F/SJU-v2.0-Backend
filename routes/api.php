@@ -144,6 +144,7 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
 
       // Membership 
       Route::post('/membership', [ MemberUsersController::class, 'requestMembership' ]);
+      Route::get('/notifications', [ MemberUsersController::class, 'notifications' ]);
 
       // Subscription & Payment
       Route::post('/membership/subscribe/{type}', [ SubscriptionController::class, 'payment' ]);

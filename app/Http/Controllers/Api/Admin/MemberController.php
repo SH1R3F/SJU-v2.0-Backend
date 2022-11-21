@@ -501,6 +501,13 @@ class MemberController extends Controller
       $member->approved = 1;
       $member->active = -1;
       $member->save();
+
+      // Set notification
+      $member->notifications()->create([
+        'title' => 'الاشتراك في العضوية',
+        'note'  => 'تم إلفاء موافقة الأدمن'
+      ]);
+
       return response()->json([
         'message' => __('messages.successful_update')
       ], 200);
@@ -528,6 +535,13 @@ class MemberController extends Controller
       $member->approved = 1;
       $member->active = 1;
       $member->save();
+
+      // Set notification
+      $member->notifications()->create([
+        'title' => 'الاشتراك في العضوية',
+        'note'  => 'تمت موافقة الأدمن'
+      ]);
+
       return response()->json([
         'message' => __('messages.successful_update')
       ], 200);
@@ -554,8 +568,16 @@ class MemberController extends Controller
 
       if ($member->approved === 1) {
         $member->approved = 0;
+        $member->notifications()->create([
+          'title' => 'الاشتراك في العضوية',
+          'note'  => 'تمت إلغاء موافقة الفرع'
+        ]);
       } else if (!$member->approved) {
         $member->approved = 1;
+        $member->notifications()->create([
+          'title' => 'الاشتراك في العضوية',
+          'note'  => 'تمت موافقة الفرع'
+        ]);
       }
       $member->save();
       return response()->json([
@@ -585,6 +607,14 @@ class MemberController extends Controller
       if ($member->approved === -2) { // Unrefuse
         $member->approved = 0;
         $member->refusal_reason = null;
+
+        // Set notification
+        $member->notifications()->create([
+          'title' => 'الاشتراك في العضوية',
+          'note'  => 'تم إلغاء الرفض'
+        ]);
+
+
       } else { // Refuse
         $member->approved = -2;
         if ($request->reason === 'unsatisfy') {
@@ -592,6 +622,13 @@ class MemberController extends Controller
         } else {
           $member->refusal_reason = $request->reason_text;
         }
+
+        // Set notification
+        $member->notifications()->create([
+          'title' => 'الاشتراك في العضوية',
+          'note'  => 'تم رفض الطلب'
+        ]);
+
       }
       $member->save();
       return response()->json([

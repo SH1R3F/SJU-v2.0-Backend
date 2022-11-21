@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Invoice;
 use App\Models\Courseable;
+use App\Models\Notification;
 use App\Models\Subscription;
 use App\Models\Course\Course;
 use App\Models\Course\Question;
@@ -141,10 +142,9 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
       // Filter by approval status
       if (isset($request->approved)) {
         
+        $query->where('approved', $request->approved);
         if (in_array($request->approved, [0, null])) {
           $query->orWhereNull('approved');
-        } else {
-          $query->where('approved', $request->approved);
         }
 
       }
@@ -268,5 +268,10 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
     public function subscription()
     {
       return $this->hasOne(Subscription::class);
+    }
+
+    public function notifications()
+    {
+      return $this->morphMany(Notification::class, 'notifiable');
     }
 }

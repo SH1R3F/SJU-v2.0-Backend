@@ -41,6 +41,25 @@ class MemberController extends Controller
 
 
     /**
+     * Display the notifications for current member.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function notifications(Request $request)
+    {
+
+      // Last 10 notifications
+      $notifications = Auth::guard('api-members')->user()->notifications()->orderBy('id', 'DESC')->take(10)->get();
+
+      return response()->json([
+        'notifications' => $notifications
+      ]);
+    
+    }
+
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -334,6 +353,12 @@ class MemberController extends Controller
       $member = Auth::guard('api-members')->user();
       $member->approved = 0;
       $member->save();
+
+      // Set him a notification !
+      $member->notifications()->create([
+        'title' => 'الاشتراك في العضوية',
+        'note'  => 'تم رفع الطلب'
+      ]);
 
       return response()->json([
         'message' => __('messages.successful_register'),
