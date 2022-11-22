@@ -70,7 +70,47 @@ use App\Http\Controllers\Api\QuestionnaireController as UsersQuestionnaireContro
 // });
 
 Route::get('/', function () {
-  return phpinfo();
+  // $invoices = \DB::table('mtbl_members_bills')->select('id', 'memberdata', 'subscriptiondata', 'orderdata')->get(5);
+
+  // foreach ($invoices as $invoice) {
+
+  //   $member_data = [];
+  //   if (unserialize($invoice->memberdata)) {
+  //     $member_data['ip'] = '';
+  //     $member_data['email'] = unserialize($invoice->memberdata)->email;
+  //     $member_data['mobile'] = unserialize($invoice->memberdata)->mobile;
+  //     $member_data['givenName'] = unserialize($invoice->memberdata)->fname;
+  //     $member_data['surname'] = unserialize($invoice->memberdata)->lname;
+  //     $member_data['ipCountry'] = '';
+  //   }
+
+  //   $subscription_data = [];
+  //   if (unserialize($invoice->subscriptiondata)) {
+  //     $subscription_data['id'] = unserialize($invoice->subscriptiondata)->id;
+  //     $subscription_data['type'] = unserialize($invoice->subscriptiondata)->sub_type;
+  //     $subscription_data['status'] = unserialize($invoice->subscriptiondata)->active;
+  //     $subscription_data['start_date'] = unserialize($invoice->subscriptiondata)->start_date;
+  //     $subscription_data['end_date'] = unserialize($invoice->subscriptiondata)->end_date;
+  //     $subscription_data['member_id'] = unserialize($invoice->subscriptiondata)->member_id;
+  //     $subscription_data['created_at'] = unserialize($invoice->subscriptiondata)->cdate;
+  //   }
+
+  //   $order_data = [];
+  //   if (unserialize($invoice->orderdata)) {
+  //     $order_data = (array) unserialize($invoice->orderdata);
+  //   }
+
+  //   \DB::table('mtbl_members_bills')->where([
+  //     'id' => $invoice->id
+  //   ])->update([
+  //     'member_data' => $member_data,
+  //     'subscription_data' => $subscription_data,
+  //     'order_data' => $order_data,
+  //   ]);
+
+
+  // }
+
 });
 
 Route::group(['name' => 'users-app'], function() { // Users-App routes
@@ -140,6 +180,7 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
       Route::post('/profile/picture', [ MemberUsersController::class, 'updatePicture' ]);
       Route::post('/profile/id', [ MemberUsersController::class, 'updateID' ]);
       Route::post('/profile/statement', [ MemberUsersController::class, 'updateStatement' ]);
+      Route::post('/profile/contract', [ MemberUsersController::class, 'updateContract' ]);
       Route::post('/profile/license', [ MemberUsersController::class, 'updateLicense' ]);
 
       // Membership 

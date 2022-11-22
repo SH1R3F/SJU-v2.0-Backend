@@ -15,10 +15,12 @@ class CategoriesSeeder extends Seeder
      */
     public function run()
     {
+      Category::unguard();
       $records = [
-        ['name_ar' => 'عبر الإتصال المرئي', 'description_ar' => 'zoom', 'status' => 1],
-        ['name_ar' => 'مباشر - وتبث عبر حساب الهيئة في منصة انستغرام', 'status' => 1],
-        ['name_ar' => 'الصالون الإعلامي', 'status' => 1],
+        ['id' => 2, 'name_ar' => 'عبر الإتصال المرئي', 'description_ar' => 'zoom', 'status' => 1],
+        ['id' => 12, 'name_ar' => 'مباشر - حضوري', 'status' => 1],
+        ['id' => 13, 'name_ar' => 'مباشر - وتبث عبر حساب الهيئة في منصة انستغرام', 'status' => 1],
+        ['id' => 27, 'name_ar' => 'الصالون الإعلامي', 'status' => 1],
       ];
 
       collect($records)->each(function( $record ) {

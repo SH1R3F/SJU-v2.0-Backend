@@ -16,7 +16,7 @@ class TechnicalSupportSeeder extends Seeder
      */
     public function run()
     {
-        TechnicalSupportTicket::factory()->count(200)->create();
-        TechnicalSupportChat::factory()->count(1000)->create();
+        // TechnicalSupportTicket::factory()->count(200)->create();
+        // TechnicalSupportChat::factory()->count(1000)->create();
     }
 }

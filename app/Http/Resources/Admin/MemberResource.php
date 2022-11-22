@@ -63,6 +63,7 @@ class MemberResource extends JsonResource
           "avatar"                         => $this->profile_image ? asset("storage/{$this->profile_image}") : null,
           "national_image"                 => $this->national_image ? asset("storage/{$this->national_image}") : null,
           "employer_letter"                => $this->employer_letter ? asset("storage/{$this->employer_letter}") : null,
+          "job_contract"                   => $this->job_contract ? asset("storage/{$this->job_contract}") : null,
           "newspaper_license"              => $this->newspaper_license ? asset("storage/{$this->newspaper_license}") : null,
           // "updated_personal_information"   => $this->updated_personal_information,
           // "updated_profile_image"          => $this->updated_profile_image,

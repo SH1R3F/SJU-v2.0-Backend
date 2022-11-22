@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('volunteers', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('national_id')->unique();
+            $table->bigInteger('national_id')->unique()->nullable();
             $table->string('fname_ar');
             $table->string('sname_ar');
             $table->string('tname_ar');
@@ -24,24 +24,28 @@ return new class extends Migration
             $table->string('sname_en')->nullable();
             $table->string('tname_en')->nullable();
             $table->string('lname_en')->nullable();
-            $table->boolean('gender')->comment('0: Male, 1: Female');
-            $table->integer('country');
-            $table->integer('branch');
-            $table->integer('city')->nullable();
-            $table->string('nationality');
+            $table->boolean('gender')->comment('0: Male, 1: Female')->default(0);
+            $table->string('country')->nullable(); 
+            $table->string('branch')->nullable(); 
+            $table->string('city')->nullable(); 
+            $table->string('nationality')->nullable();  
 
             $table->string('qualification')->nullable();
-            $table->string('major')->nullable();
+            // $table->string('major')->nullable();
             $table->string('job_title')->nullable();
             $table->string('employer')->nullable();
             $table->integer('hearabout')->nullable();
 
+            $table->string('marital_status')->nullable();
+            $table->string('adminstrative_area')->nullable();
             $table->string('governorate')->nullable();
             $table->text('national_address')->nullable();
             $table->text('address')->nullable();
             $table->json('fields')->nullable();
             $table->string('education')->nullable();
             $table->text('experiences')->nullable();
+
+
 
             $table->string('worktel')->nullable();
             $table->string('worktel_ext')->nullable();
@@ -50,9 +54,10 @@ return new class extends Migration
 
             $table->string('post_box')->nullable();
             $table->string('post_code')->nullable();
+            $table->string('post_city')->nullable();
 
             $table->string('mobile');
-            $table->string('mobile_key');
+            $table->string('mobile_key')->nullable();
             $table->string('email')->unique();
             // Email Activation Columns
 

@@ -24,8 +24,8 @@ return new class extends Migration
             $table->string('tname_en')->nullable();
             $table->string('lname_en')->nullable();
             $table->boolean('gender')->comment('0: Male, 1: Female');
-            $table->integer('country');
-            $table->integer('city')->nullable();
+            $table->string('country')->nullable();
+            $table->string('city')->nullable();
             $table->string('nationality');
             $table->date('birthday_hijri')->nullable();
             $table->date('birthday_meladi')->nullable();
@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('major')->nullable();
             $table->string('job_title')->nullable();
             $table->string('employer')->nullable();
+            $table->string('hearabout')->nullable();
 
             $table->string('worktel')->nullable();
             $table->string('worktel_ext')->nullable();
@@ -42,6 +43,7 @@ return new class extends Migration
 
             $table->string('post_box')->nullable();
             $table->string('post_code')->nullable();
+            $table->string('post_city')->nullable();
 
             $table->string('mobile');
             $table->string('mobile_key');

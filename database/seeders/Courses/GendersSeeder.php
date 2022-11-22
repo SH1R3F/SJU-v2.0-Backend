@@ -15,10 +15,11 @@ class GendersSeeder extends Seeder
      */
     public function run()
     {
+      Gender::unguard();
       $records = [
-        ['name_ar' => 'الجنسان', 'status' => 1],
-        ['name_ar' => 'ذكور', 'status' => 0],
-        ['name_ar' => 'إناث', 'status' => 0]
+        ['id' => 3, 'name_ar' => 'الجنسان', 'status' => 1],
+        ['id' => 9, 'name_ar' => 'ذكور', 'status' => 0],
+        ['id' => 10, 'name_ar' => 'إناث', 'status' => 0]
       ];
 
       collect($records)->each(function( $record ) {

@@ -52,6 +52,8 @@ class Volunteer extends Authenticatable implements MustVerifyEmail, CanResetPass
         'employer',
         'hearabout',
 
+        'marital_status',
+        'adminstrative_area',
         'governorate',
         'national_address',
         'address',

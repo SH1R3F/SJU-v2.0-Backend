@@ -25,17 +25,18 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $invoices = Invoice::filter($request)->sortData($request)->whereNotNull('invoice_number')->get();
+        $invoices = Invoice::filter($request)->sortData($request)->whereNotNull('invoice_number')->offset($request->perPage * $request->page)->paginate($request->perPage);
 
         $admin = Auth::guard('api-admins')->user();
         if ($admin->branch_id) {
           // This admin is associated with a branch. Only show him invoices of members of this branch!
           $invoices = Invoice::whereHas('member', function ($query) use ($request) {
             $query->where('branch', $admin->branch_id);
-          })->filter($request)->sortData($request)->whereNotNull('invoice_number')->get();
+          })->filter($request)->sortData($request)->whereNotNull('invoice_number')->offset($request->perPage * $request->page)->paginate($request->perPage);
         }
 
         return response()->json([
+          'total'    => Invoice::filter($request)->get()->count(),
           'invoices' => InvoiceResource::collection($invoices)
         ]);
     }

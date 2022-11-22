@@ -46,10 +46,11 @@ return new class extends Migration
 
             $table->string('post_box')->nullable();
             $table->string('post_code')->nullable();
+            $table->string('post_city')->nullable();
 
             $table->string('mobile');
             $table->string('mobile_code')->nullable();
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('city')->nullable();
             $table->integer('branch');
 
@@ -63,14 +64,15 @@ return new class extends Migration
             $table->string('profile_image')->nullable();
             $table->string('national_image')->nullable();
             $table->string('employer_letter')->nullable();
+            $table->string('job_contract')->nullable(); // Missing in code?
             $table->string('newspaper_license')->nullable();
 
             // To be updated options
-            $table->boolean('updated_personal_information')->default(0);
-            $table->boolean('updated_profile_image')->default(0);
-            $table->boolean('updated_national_image')->default(0);
-            $table->boolean('updated_employer_letter')->default(0);
-            $table->boolean('updated_experiences_and_fields')->default(0);
+            // $table->boolean('updated_personal_information')->default(0);
+            // $table->boolean('updated_profile_image')->default(0);
+            // $table->boolean('updated_national_image')->default(0);
+            // $table->boolean('updated_employer_letter')->default(0);
+            // $table->boolean('updated_experiences_and_fields')->default(0);
 
             // Membership information
             $table->string('membership_number')->nullable();
@@ -86,7 +88,7 @@ return new class extends Migration
             // $table->bigInteger('invoice_id')->nullable(); // To be updated to a foreign id when invoices are created *UNFINISHED WORK*
             // $table->boolean('invoice_status')->default(0);
             // $table->integer('status')->default(0);
-            // $table->dateTime('last_seen')->nullable();
+            $table->dateTime('last_seen')->nullable();
 
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();

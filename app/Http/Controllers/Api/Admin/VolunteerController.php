@@ -207,7 +207,7 @@ class VolunteerController extends Controller
           'job_title'       => 'nullable|min:3',
           'employer'        => 'nullable|min:3',
           'country'         => 'nullable',
-          'branch'            => 'nullable',
+          'branch'          => 'nullable',
           'nationality'     => 'nullable',
           'post_box'        => 'nullable|min:3',
           'post_code'       => 'nullable|min:3',

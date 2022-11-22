@@ -50,6 +50,7 @@ class Subscriber extends Authenticatable implements MustVerifyEmail, CanResetPas
         'major',
         'job_title',
         'employer',
+        'hearabout',
 
         'worktel',
         'worktel_ext',

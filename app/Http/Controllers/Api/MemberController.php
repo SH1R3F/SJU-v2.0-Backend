@@ -235,10 +235,6 @@ class MemberController extends Controller
     {
       $member = Auth::guard('api-members')->user();
 
-      // Only for members with subscription type === 3 [Affiliate members]
-      if ($member->subscription->type !== 3) {
-        return abort(404);
-      }
       // Validation
       $validator = Validator::make($request->all(), [
         'image' => 'required',
@@ -261,6 +257,46 @@ class MemberController extends Controller
       return response()->json([
         'message' => __('messages.successful_update'),
         'image' => asset("storage/{$member->employer_letter}")
+      ], 200);
+
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateContract(Request $request)
+    {
+      $member = Auth::guard('api-members')->user();
+
+      // Only for members with subscription type === 3 [Affiliate members]
+      if ($member->subscription->type !== 3) {
+        return abort(404);
+      }
+      // Validation
+      $validator = Validator::make($request->all(), [
+        'image' => 'required',
+      ]);
+
+      if ($validator->fails()) {
+        return response()->json($validator->errors(), 400);
+      }
+
+      // Update Avatar
+      if (!empty($request->image)) {
+        // Delete previous
+        if ($member->job_contract) Storage::disk('public')->delete($member->job_contract);
+        $imageName = time().'.'.$request->image->extension();
+        $request->image->move(public_path("storage/members/{$member->id}/job_contract"), $imageName);
+        $member->job_contract = "members/{$member->id}/job_contract/{$imageName}";
+        $member->save();
+      }
+
+      return response()->json([
+        'message' => __('messages.successful_update'),
+        'image' => asset("storage/{$member->job_contract}")
       ], 200);
 
     }

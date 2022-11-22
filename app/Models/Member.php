@@ -73,6 +73,7 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
         'national_image',
         'employer_letter',
         'newspaper_license',
+        'job_contract',
 
         // To be updated options
         'updated_personal_information',
