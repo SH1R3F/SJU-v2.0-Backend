@@ -39,7 +39,7 @@ class CertificateController extends Controller
         if ($certificate) {
             return response()->json([
                 'type' => 'certificate',
-                'certificate' => asset("storage/courses/certificates/{$certificate->code}.pdf")
+                'certificate' => asset("storage/courses/certificates/{$certificate->certificate}")
             ]); 
         }
 
@@ -61,7 +61,7 @@ class CertificateController extends Controller
         if ($certificate) {
             return response()->json([
                 'type' => 'certificate',
-                'certificate' => asset("storage/courses/certificates/{$certificate->code}.pdf")
+                'certificate' => asset("storage/courses/certificates/{$certificate->certificate}")
             ]); 
         }
 
@@ -162,9 +162,9 @@ class CertificateController extends Controller
         $mpdf->SetDocTemplate($path, 1);
         $html = '';
         
-        $fields = json_decode($template->fields);
-
+        $fields = is_string($template->fields) ? json_decode($template->fields) : $template->fields;
         foreach ($fields as $field) {
+            $field = (object)$field;
             $text = $field->name;
             if ($field->name === '{free_text}') {
               $text = $field->free_text;
@@ -222,9 +222,7 @@ class CertificateController extends Controller
           // Store output
           return $this->store($mpdf, $getcertcode, $event->id, $user);
         } catch (\Exception $e) {
-          return [
-            'error' => $e->getMessage()
-          ];
+          return response()->json(['message' => __('messages.error_on_our_side')], 422);
         }
 
 
@@ -266,37 +264,32 @@ class CertificateController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Verify a given code is referred to a real certificate
      *
-     * @param  int  $id
+     * @param  string  $code
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function verify($code)
     {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        if (!$code) {
+          return response()->json([
+            'message' => __('messages.certificate_not_found')
+          ], 422);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $certificate = Certificate::where('code', $code)->first();
+
+        if ($certificate) {
+          return response()->json([
+            'type' => 'certificate',
+            'certificate' => asset("storage/courses/certificates/{$certificate->certificate}")
+          ]);
+        } else {
+          return response()->json([
+            'message' => __('messages.certificate_not_found')
+          ], 422);
+        }
     }
 
 }

@@ -125,7 +125,7 @@ class MemberController extends Controller
 
       $experiences = [];
       foreach ($request->experiences as $experience) {
-        if ($experience['name'] && $experience['years']) {
+        if ($experience['name'] && isset($experience['years'])) {
           array_push($experiences, $experience);
         }
       }
@@ -137,7 +137,7 @@ class MemberController extends Controller
       }
       $languages = [];
       foreach ($request->languages as $language) {
-        if ($language['name'] && $language['level']) {
+        if ($language['name'] && isset($language['level'])) {
           array_push($languages, $language);
         }
       }

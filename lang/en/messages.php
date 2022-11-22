@@ -39,4 +39,5 @@ return [
     "mo_member_with_mobile" => "This mobile isn't associated with any member on our database",
     "error_on_our_side" => "Sorry for this, there's an error on our side. Try again or inform us.",
     "verification_code_is" => "Verification code for mobile :mobile is :code",
+    'certificate_not_found' => 'No certificate with this code'
 ];

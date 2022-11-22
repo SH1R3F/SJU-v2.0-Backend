@@ -305,7 +305,7 @@ class CourseController extends Controller
     {
       // Fetching all enrollers in this course
       return response()->json([
-        'total'     => $course->users->count(),
+        // 'total'     => $course->users->count(),
         'enrollers' => EnrollersResource::collection($course->users)
       ]);
     }

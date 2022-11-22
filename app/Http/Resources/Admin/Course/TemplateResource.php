@@ -17,7 +17,7 @@ class TemplateResource extends JsonResource
         return [
           'id'                 => $this->id,
           'name'               => $this->name,
-          'tmp_file'           => $this->file ? asset("storage/courses/templates/{$this->file}") : null,
+          'tmp_file'           => $this->file ? asset("storage/{$this->file}") : null,
           'preview'            => $this->file_preview ? asset("storage/courses/templates/{$this->file_preview}") : null,
           'language'           => $this->language,
           'layout'             => $this->layout,
@@ -31,7 +31,7 @@ class TemplateResource extends JsonResource
           'code_margin_right'  => $this->code_margin_right,
           'code_margin_bottom' => $this->code_margin_bottom,
           'code_margin_left'   => $this->code_margin_left,
-          'created_at'   => $this->created_at->format('d / m / Y')
+          'created_at'         => $this->created_at ? $this->created_at->format('d / m / Y') : $this->created_at
         ];
     }
 }

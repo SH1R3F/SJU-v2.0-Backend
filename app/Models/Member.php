@@ -243,7 +243,7 @@ class Member extends Authenticatable implements MustVerifyEmail, CanResetPasswor
 
     public function courses()
     {
-      return $this->morphToMany(Course::class, 'courseable', 'course_user');
+      return $this->morphToMany(Course::class, 'courseable', 'course_user')->withPivot('attendance');
     }
 
     public function tickets()

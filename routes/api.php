@@ -70,43 +70,31 @@ use App\Http\Controllers\Api\QuestionnaireController as UsersQuestionnaireContro
 // });
 
 Route::get('/', function () {
-  // $invoices = \DB::table('mtbl_members_bills')->select('id', 'memberdata', 'subscriptiondata', 'orderdata')->get(5);
+  // $tmpls = \DB::table('mtbl_courses_templates')->select('id', 'tpl_allnames')->get();
 
-  // foreach ($invoices as $invoice) {
+  // foreach ($tmpls as $tmpl) {
 
-  //   $member_data = [];
-  //   if (unserialize($invoice->memberdata)) {
-  //     $member_data['ip'] = '';
-  //     $member_data['email'] = unserialize($invoice->memberdata)->email;
-  //     $member_data['mobile'] = unserialize($invoice->memberdata)->mobile;
-  //     $member_data['givenName'] = unserialize($invoice->memberdata)->fname;
-  //     $member_data['surname'] = unserialize($invoice->memberdata)->lname;
-  //     $member_data['ipCountry'] = '';
+  // $fields = [];
+  // if (unserialize($tmpl->tpl_allnames)) {
+  //   foreach (unserialize($tmpl->tpl_allnames) as $fld) {
+  //     array_push($fields, [
+  //       'name' => $fld['settitle'],
+  //       'free_text' => $fld['free_text'],
+  //       'position_y' => $fld['position_y'],
+  //       'position_fixed' => $fld['position_fixed'],
+  //       'position_x' => $fld['position_x'],
+  //       'font_size' => $fld['font_size'],
+  //       'font_color' => $fld['font_color'],
+  //       'font_type' => $fld['font_type'],
+  //     ]);
   //   }
+  // }
 
-  //   $subscription_data = [];
-  //   if (unserialize($invoice->subscriptiondata)) {
-  //     $subscription_data['id'] = unserialize($invoice->subscriptiondata)->id;
-  //     $subscription_data['type'] = unserialize($invoice->subscriptiondata)->sub_type;
-  //     $subscription_data['status'] = unserialize($invoice->subscriptiondata)->active;
-  //     $subscription_data['start_date'] = unserialize($invoice->subscriptiondata)->start_date;
-  //     $subscription_data['end_date'] = unserialize($invoice->subscriptiondata)->end_date;
-  //     $subscription_data['member_id'] = unserialize($invoice->subscriptiondata)->member_id;
-  //     $subscription_data['created_at'] = unserialize($invoice->subscriptiondata)->cdate;
-  //   }
-
-  //   $order_data = [];
-  //   if (unserialize($invoice->orderdata)) {
-  //     $order_data = (array) unserialize($invoice->orderdata);
-  //   }
-
-  //   \DB::table('mtbl_members_bills')->where([
-  //     'id' => $invoice->id
-  //   ])->update([
-  //     'member_data' => $member_data,
-  //     'subscription_data' => $subscription_data,
-  //     'order_data' => $order_data,
-  //   ]);
+  // \DB::table('mtbl_courses_templates')->where([
+  //   'id' => $tmpl->id
+  // ])->update([
+  //   'fields' => $fields,
+  // ]);
 
 
   // }
@@ -119,6 +107,9 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
   Route::get('/pages/{slug}', [ UsersPageController::class, 'show' ]);
   Route::get('/events', [ UsersCourseController::class, 'index' ]);
   Route::get('/events/{event}', [ UsersCourseController::class, 'show' ]);
+
+  // Validate certificate
+  Route::get('/certificate/{code}', [ CertificateController::class, 'verify' ]);
 
   // Blog routes
   Route::prefix('/blog')->group(function () {
@@ -208,7 +199,7 @@ Route::group(['name' => 'users-app'], function() { // Users-App routes
     Route::post('/events/{event}', [ UsersCourseController::class, 'enroll' ]);
     Route::post('/events/{event}/attend', [ UsersCourseController::class, 'attend' ]);
     Route::get('/events/{event}/certificate', [ UsersCourseController::class, 'certificate' ]);
-
+    
     Route::get('/questionnaires/{event}/{questionnaire}', [ UsersQuestionnaireController::class, 'show' ]);
     Route::post('/questionnaires/{event}/{questionnaire}', [ UsersQuestionnaireController::class, 'store' ]);
 
