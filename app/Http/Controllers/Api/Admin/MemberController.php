@@ -335,14 +335,15 @@ class MemberController extends Controller
 
 
           // Files and update requests
-          'national_image'                 => 'nullable',
-          'employer_letter'                => 'nullable',
-          'newspaper_license'              => 'nullable',
-          'updated_personal_information'   => 'nullable|boolean',
-          'updated_profile_image'          => 'nullable|boolean',
-          'updated_national_image'         => 'nullable|boolean',
-          'updated_employer_letter'        => 'nullable|boolean',
-          'updated_experiences_and_fields' => 'nullable|boolean',
+          // 'national_image'                 => 'nullable',
+          // 'employer_letter'                => 'nullable',
+          // 'newspaper_license'              => 'nullable',
+          // 'job_contract'                   => 'nullable',
+          // 'updated_personal_information'   => 'nullable|boolean',
+          // 'updated_profile_image'          => 'nullable|boolean',
+          // 'updated_national_image'         => 'nullable|boolean',
+          // 'updated_employer_letter'        => 'nullable|boolean',
+          // 'updated_experiences_and_fields' => 'nullable|boolean',
 
           // Membership options
           'membership_type'       => 'nullable|integer',
@@ -357,14 +358,16 @@ class MemberController extends Controller
           return response()->json($validator->errors(), 400);
         } 
 
+        $data = $request->all();
+
         // Member email
         if ($request->memberEmail) {
-          $request->merge(['email' => $request->memberEmail]);
+          $data['email'] = $request->memberEmail;
         }
 
         // Hash password
         if ($request->password) {
-          $request->merge(['password' => Hash::make($request->password)]);
+          $data['password'] = Hash::make($request->password);
         }
 
         // Update Avatar
@@ -377,16 +380,14 @@ class MemberController extends Controller
             $image_base64 = base64_decode($base64Image[1]);
             $imageName    = uniqid() . '.'.$imageType;
             Storage::disk('public')->put("members/{$member->id}/profile_image/{$imageName}", $image_base64);
-            $request->merge(['profile_image' => $imageName]);
+            $data['profile_image'] = $imageName;
 
-          } else {
-            $request->merge(['profile_image' => $member->profile_image]);
           }
         } else if($member->profile_image) { // If member had avatar then deleted.
           // Delete file from disk
           Storage::disk('public')->delete("members/{$member->id}/profile_image/{$member->profile_image}");
           // Null db value
-          $request->merge(['profile_image' => null]);
+          $data['profile_image'] = null;
         }
 
         // Uploading NationalImageFile
@@ -395,10 +396,12 @@ class MemberController extends Controller
           $file = $request->file('NationalImageFile');
           $name = uniqid() . '.' . $file->extension();
           $file->storeAs("members/{$member->id}/national_image/", $name, 'public');
-          $request->merge(['national_image' => $name]);
+          $data['national_image'] = "members/{$member->id}/national_image/{$name}";
 
           // Delete the previous if exists
           Storage::disk('public')->delete("members/{$member->id}/national_image/{$member->national_image}");
+        } else {
+          $data['national_image'] = $member->national_image;
         }
 
         // Uploading EmployerLetterFile
@@ -407,10 +410,26 @@ class MemberController extends Controller
           $file = $request->file('EmployerLetterFile');
           $name = uniqid() . '.' . $file->extension();
           $file->storeAs("members/{$member->id}/employer_letter/", $name, 'public');
-          $request->merge(['employer_letter' => $name]);
+          $data['employer_letter'] = "members/{$member->id}/employer_letter/{$name}";
 
           // Delete the previous if exists
           Storage::disk('public')->delete("members/{$member->id}/employer_letter/{$member->employer_letter}");
+        } else {
+          $data['employer_letter'] = $member->employer_letter;
+        }
+
+        // Uploading JobContractFile
+        if ($request->hasFile('JobContractFile')) {
+          // Save the new file
+          $file = $request->file('JobContractFile');
+          $name = uniqid() . '.' . $file->extension();
+          $file->storeAs("members/{$member->id}/job_contract/", $name, 'public');
+          $data['job_contract'] = "members/{$member->id}/job_contract/{$name}";
+
+          // Delete the previous if exists
+          Storage::disk('public')->delete("members/{$member->id}/job_contract/{$member->job_contract}");
+        } else {
+          $data['job_contract'] = $member->job_contract;
         }
 
         // Uploading Newspaper license
@@ -419,14 +438,16 @@ class MemberController extends Controller
           $file = $request->file('NewspaperLicenseFile');
           $name = uniqid() . '.' . $file->extension();
           $file->storeAs("members/{$member->id}/newspaper_license/", $name, 'public');
-          $request->merge(['newspaper_license' => $name]);
+          $data['newspaper_license'] = "members/{$member->id}/newspaper_license/{$name}";
 
           // Delete the previous if exists
           Storage::disk('public')->delete("members/{$member->id}/newspaper_license/{$member->employer_letter}");
+        } else {
+          $data['newspaper_license'] = $member->newspaper_license;
         }
 
         // Update
-        $member->update($request->all());
+        $member->update($data);
 
         if ($request->membership_type) {
           $member->subscription->update([
