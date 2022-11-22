@@ -29,7 +29,7 @@ class TechnicalSupportController extends Controller
      */
     public function index(Request $request)
     {
-        $tickets = TechnicalSupportTicket::with(['ticketable', 'chats'])->filter($request)->orderBy('status', 'DESC')->orderBy('updated_at', 'DESC')->get();
+        $tickets = TechnicalSupportTicket::with(['ticketable', 'chats'])->filter($request)->orderBy('status', 'DESC')->orderBy('updated_at', 'DESC')->take(40)->get();
         return response()->json([
           // 'total'   => TechnicalSupportTicket::filter($request)->get()->count(),
           'tickets' => TechnicalSupportResource::collection($tickets),
