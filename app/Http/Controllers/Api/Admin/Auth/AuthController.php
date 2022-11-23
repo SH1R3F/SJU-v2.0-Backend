@@ -32,7 +32,7 @@ class AuthController extends Controller
       }
 
       // Revoking previous tokens
-      $admin->tokens()->delete();
+      // $admin->tokens()->delete();
 
       return response([
         'userData'  => new AdminResource($admin),

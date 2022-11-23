@@ -39,5 +39,6 @@ return [
     "mo_member_with_mobile" => "هذا الرقم غير مرتبط بأي حساب عضو",
     "error_on_our_side" => "نأسف لذلك، حدث خطأ من جانبنا.. جرب مرة أخرى أو أبلغنا.",
     "verification_code_is" => "كود التفعيل للهاتف :mobile هو :code",
-    'certificate_not_found' => 'لا يوجد شهادات بهذا الرمز'
+    'certificate_not_found' => 'لا يوجد شهادات بهذا الرمز',
+    'mobile_already_used' => 'هذا الرقم مسجل بالفعل علي حساب أخر'
 ];

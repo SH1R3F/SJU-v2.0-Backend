@@ -74,7 +74,7 @@ class VolunteerAuthController extends Controller
           // Personal Information
           'gender'             => 'required|in:0,1',
           'country'            => 'required|integer',
-          'nationality'        => 'required|integer',
+          'nationality'        => 'required',
           'qualification'      => 'required|integer',
           'national_id'        => 'required|integer|unique:volunteers',
           'marital_status'     => 'required|string',

@@ -129,6 +129,13 @@ class MemberAuthController extends Controller
           return response()->json($validator->errors(), 400);
         }
 
+        // Check if mobile is unique or not
+        if (Member::where('mobile', "966{$request->contactInfo['mobile']}")->count()) {
+          $validator->getMessageBag()->add('contactInfo.mobile', __('messages.mobile_already_used'));
+          return response()->json(array_merge($validator->errors()->toArray()), 400);
+        }
+        
+
         $data = [];
         foreach ($request->all() as $key => $fields) {
           foreach ($fields as $key => $field) {
@@ -153,7 +160,7 @@ class MemberAuthController extends Controller
         // Send mobile verification code
         if (config('app.env') === 'production') {
           $code = rand(1000,9999);
-          $result = sendSMS("966{$mobile}", __('messages.verification_code_is', ['mobile' => "966{$mobile}", 'code' => $code]));
+          $result = sendSMS("966{$member->mobile}", __('messages.verification_code_is', ['mobile' => "966{$member->mobile}", 'code' => $code]));
         } else { // Save resources in development
           $code = 1234;
           $result = true;

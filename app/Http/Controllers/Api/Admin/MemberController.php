@@ -380,7 +380,7 @@ class MemberController extends Controller
             $image_base64 = base64_decode($base64Image[1]);
             $imageName    = uniqid() . '.'.$imageType;
             Storage::disk('public')->put("members/{$member->id}/profile_image/{$imageName}", $image_base64);
-            $data['profile_image'] = $imageName;
+            $data['profile_image'] = "members/{$member->id}/profile_image/{$imageName}";
 
           }
         } else if($member->profile_image) { // If member had avatar then deleted.

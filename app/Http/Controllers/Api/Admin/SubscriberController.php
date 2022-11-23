@@ -243,14 +243,17 @@ class SubscriberController extends Controller
 
         // Update Avatar
         if ($request->avatar) {
-          $base64Image  = explode(";base64,", $request->avatar);
-          $explodeImage = explode("image/", $base64Image[0]);
-          $imageType    = $explodeImage[1];
-          $image_base64 = base64_decode($base64Image[1]);
-          $imageName    = uniqid() . '.'.$imageType;
-          Storage::disk('public')->put("subscribers/{$subscriber->id}/images/{$imageName}", $image_base64);
-          $request->merge(['image' => $imageName]);
-
+          if (str_starts_with($request->avatar, 'data:image')) {
+            $base64Image  = explode(";base64,", $request->avatar);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageType    = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName    = uniqid() . '.'.$imageType;
+            Storage::disk('public')->put("subscribers/{$subscriber->id}/images/{$imageName}", $image_base64);
+            $request->merge(['image' => "subscribers/{$subscriber->id}/images/{$imageName}"]);
+          } else {
+            $request->merge(['image' => $subscriber->image]);
+          }
         } else if($subscriber->image) { // If subscriber had avatar then deleted.
           // Delete file from disk
           Storage::disk('public')->delete("subscribers/{$subscriber->id}/images/{$subscriber->image}");

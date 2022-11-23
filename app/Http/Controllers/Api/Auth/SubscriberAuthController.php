@@ -74,7 +74,7 @@ class SubscriberAuthController extends Controller
           // Personal Information
           'gender'             => 'required|in:0,1',
           'country'            => 'required|integer',
-          'nationality'        => 'required|integer',
+          'nationality'        => 'required',
           'qualification'      => 'required|integer',
           'hearabout'          => 'required|integer',
           'email'              => 'required|email|unique:subscribers',

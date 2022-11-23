@@ -244,7 +244,7 @@ class VolunteerController extends Controller
             $image_base64 = base64_decode($base64Image[1]);
             $imageName    = uniqid() . '.'.$imageType;
             Storage::disk('public')->put("volunteers/{$volunteer->id}/images/{$imageName}", $image_base64);
-            $request->merge(['image' => $imageName]);
+            $request->merge(['image' => "volunteers/{$volunteer->id}/images/{$imageName}"]);
           } else {
             $request->merge(['image' => $volunteer->image]);
           }
