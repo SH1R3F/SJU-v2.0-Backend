@@ -3,9 +3,9 @@
 
 <h2>Setup</h2>
 <p>Make sure to update environment variables</p>
-<code>
-mv .env.example .env
-composer install
-php artisan key:generate
+<code style="white-space: pre-wrap">
+mv .env.example .env \n
+composer install \n
+php artisan key:generate \n
 php artisan migrate
 </code>
