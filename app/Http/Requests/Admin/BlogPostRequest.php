@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -31,9 +31,9 @@ class BlogPostRequest extends FormRequest
             'blog_category_id' => 'required|exists:blog_categories,id',
             'post_date'        => 'required|date',
             'summary_ar'       => 'required',
-            'summary_ar'       => 'required',
+            'summary_en'       => 'required',
             'content_ar'       => 'required',
-            'content_ar'       => 'required',
+            'content_en'       => 'required',
         ];
     }
 

@@ -6,7 +6,7 @@ use App\Models\Menu;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\BlogCategoryRequest;
+use App\Http\Requests\Admin\BlogCategoryRequest;
 
 class BlogCategoryController extends Controller
 {

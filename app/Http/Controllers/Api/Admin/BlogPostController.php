@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Models\BlogPost;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\BlogPostRequest;
+use App\Http\Requests\Admin\BlogPostRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Admin\BlogPostResource;
 
