@@ -7,16 +7,17 @@ use App\Models\Course\Question;
 use App\Http\Controllers\Controller;
 use App\Models\Course\Questionnaire;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Admin\Course\QuestionRequest;
 
 class QuestionController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('permission:read-questionnaire', [ 'only' => ['index', 'show']]);
-        $this->middleware('permission:create-questionnaire', [ 'only' => 'store']);
-        $this->middleware('permission:update-questionnaire', [ 'only' => 'update']);
-        $this->middleware('permission:delete-questionnaire', [ 'only' => 'destroy']);
+        $this->middleware('permission:read-questionnaire', ['only' => ['index', 'show']]);
+        $this->middleware('permission:create-questionnaire', ['only' => 'store']);
+        $this->middleware('permission:update-questionnaire', ['only' => 'update']);
+        $this->middleware('permission:delete-questionnaire', ['only' => 'destroy']);
     }
 
     /**
@@ -30,7 +31,6 @@ class QuestionController extends Controller
     {
 
         return $questionnaire->questions()->orderBy('order', 'ASC')->get();
-
     }
 
     /**
@@ -41,46 +41,24 @@ class QuestionController extends Controller
      */
     public function show(Question $question)
     {
-      return $question;
+        return $question;
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  QuestionRequest  $request
      * @param  Questionnaire  $questionnaire
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Questionnaire $questionnaire)
+    public function store(QuestionRequest $request, Questionnaire $questionnaire)
     {
-
-        // Validation
-        $validator = Validator::make($request->all(), [
-          'question' => 'required|min:3',
-          'type'     => 'sometimes',
-          'answer1'  => 'required_if:type,true',
-          'color1'   => 'required_if:type,true',
-          'answer2'  => 'required_if:type,true',
-          'color2'   => 'required_if:type,true',
-          'answer3'  => 'required_if:type,true',
-          'color3'   => 'required_if:type,true',
-          'answer4'  => 'required_if:type,true',
-          'color4'   => 'required_if:type,true',
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
         $request->merge(['order' => Question::orderBy('order', 'DESC')->first() ? Question::orderBy('order', 'DESC')->first()->order + 1 : 1]);
-
         // Store in database
-        $question = $questionnaire->questions()->create($request->all());
-
+        $questionnaire->questions()->create($request->all());
         return response()->json([
-          'message'       => __('messages.successful_create'),
+            'message'       => __('messages.successful_create'),
         ], 200);
-
     }
 
     /**
@@ -92,51 +70,30 @@ class QuestionController extends Controller
     public function reorder(Request $request)
     {
 
-      foreach($request->questions as $k => $question) {
-        Question::where('id', $question['id'])->update(['order' => $k + 1]);
-      }
+        foreach ($request->questions as $k => $question) {
+            Question::where('id', $question['id'])->update(['order' => $k + 1]);
+        }
 
-      return response()->json([
-        'message' => __('messages.successful_update')
-      ]);
-
+        return response()->json([
+            'message' => __('messages.successful_update')
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  QuestionRequest  $request
      * @param  Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Question $question)
+    public function update(QuestionRequest $request, Question $question)
     {
-
-        // Validation
-        $validator = Validator::make($request->all(), [
-          'question' => 'required|min:3',
-          'type'     => 'sometimes',
-          'answer1'  => 'required_if:type,true',
-          'color1'   => 'required_if:type,true',
-          'answer2'  => 'required_if:type,true',
-          'color2'   => 'required_if:type,true',
-          'answer3'  => 'required_if:type,true',
-          'color3'   => 'required_if:type,true',
-          'answer4'  => 'required_if:type,true',
-          'color4'   => 'required_if:type,true',
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
         // Store in database
         $question->update($request->all());
 
         return response()->json([
-          'message'       => __('messages.successful_update'),
+            'message'       => __('messages.successful_update'),
         ], 200);
-
     }
 
     /**
@@ -149,7 +106,7 @@ class QuestionController extends Controller
     {
         $question->delete();
         return response()->json([
-          'message' => __('messages.successful_delete')
+            'message' => __('messages.successful_delete')
         ], 200);
     }
 }
