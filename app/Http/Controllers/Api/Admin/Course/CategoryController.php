@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Api\Admin\Course;
 use Illuminate\Http\Request;
 use App\Models\Course\Category;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\Admin\Course\NamingResource;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Admin\Course\CategoryRequest;
+use App\Http\Resources\Admin\Course\NamingResource;
 
 class CategoryController extends Controller
 {
@@ -22,50 +23,32 @@ class CategoryController extends Controller
         $categories = Category::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
 
         return response()->json([
-          'total'   => Category::all()->count(),
-          'namings' => NamingResource::collection($categories)
+            'total'   => Category::all()->count(),
+            'namings' => NamingResource::collection($categories)
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  CategoryRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-          'name_ar' => 'required|min:3|unique:categories',
-          'name_en' => 'nullable|min:3',
-          'description_ar' => 'nullable|min:3',
-          'description_en' => 'nullable|min:3'
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
         // Upload Image
         if ($request->image) {
-          $base64Image  = explode(";base64,", $request->image);
-          $explodeImage = explode("image/", $base64Image[0]);
-          $imageCategory    = $explodeImage[1];
-          $image_base64 = base64_decode($base64Image[1]);
-          $imageName    = uniqid() . '.'.$imageCategory;
-          Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
-          $request->merge(['image' => $imageName]);
+            $name = upload_base64_image($request->image, "courses/namings/images");
+            $request->merge(['image' => $name]);
         }
 
         // Store in database
         $category = Category::create($request->all());
 
         return response()->json([
-          'message' => __('messages.successful_create'),
-          'subscriber' => new NamingResource($category)
+            'message' => __('messages.successful_create'),
+            'subscriber' => new NamingResource($category)
         ], 200);
-
     }
 
     /**
@@ -76,60 +59,39 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-      return new NamingResource($category);
+        return new NamingResource($category);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  CategoryRequest  $request
      * @param  Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(CategoryRequest $request, Category $category)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-          'name_ar' => 'required|min:3|unique:categories,name_ar,' . $category->id,
-          'name_en' => 'nullable|min:3',
-          'description_ar' => 'nullable|min:3',
-          'description_en' => 'nullable|min:3'
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
+        // Delete the previous image
+        if (!$request->image && $category->image) {
+            Storage::disk('public')->delete("courses/namings/images/{$category->image}");
         }
 
         // Upload Image
         if ($request->image) {
-
-          if (str_starts_with($request->image, 'data:image')) {
-            $base64Image  = explode(";base64,", $request->image);
-            $explodeImage = explode("image/", $base64Image[0]);
-            $imageCategory    = $explodeImage[1];
-            $image_base64 = base64_decode($base64Image[1]);
-            $imageName    = uniqid() . '.'.$imageCategory;
-            // Delete the previous image
-            Storage::disk('public')->delete("courses/namings/images/{$category->image}");
-            // Save the new image
-            Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
-            $request->merge(['image' => $imageName]);
-          } else {
-            $request->merge(['image' => $category->image]);
-          }
-          
-        } else if($category->image) {
-          // Delete the previous image
-          Storage::disk('public')->delete("courses/namings/images/{$category->image}");
+            if (str_starts_with($request->image, 'data:image')) {
+                // Delete the previous image
+                Storage::disk('public')->delete("courses/namings/images/{$category->image}");
+                $name = upload_base64_image($request->image, "courses/namings/images");
+                $request->merge(['image' => $name]);
+            }
         }
-
 
         // Store in database
         $category->update($request->all());
 
         return response()->json([
-          'message' => __('messages.successful_update'),
-          'subscriber' => new NamingResource($category)
+            'message' => __('messages.successful_update'),
+            'subscriber' => new NamingResource($category)
         ], 200);
     }
 
@@ -144,7 +106,7 @@ class CategoryController extends Controller
         $category->status = !$category->status;
         $category->save();
         return response()->json([
-          'message' => __('messages.successful_update')
+            'message' => __('messages.successful_update')
         ], 200);
     }
 
@@ -163,8 +125,7 @@ class CategoryController extends Controller
         // Delete database record
         $category->delete();
         return response()->json([
-          'message' => __('messages.successful_delete')
+            'message' => __('messages.successful_delete')
         ], 200);
     }
-  
 }
