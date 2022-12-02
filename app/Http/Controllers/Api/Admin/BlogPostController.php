@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BlogPostRequest;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\BlogPostResource;
 
 class BlogPostController extends Controller
