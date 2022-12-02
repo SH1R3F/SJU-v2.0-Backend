@@ -30,14 +30,22 @@ class AdminRequest extends FormRequest
             'email'     => [
                 'required',
                 'email',
-                'unique:admins,email',
                 Rule::when(request()->isMethod('POST'), Rule::unique('admins')),
                 Rule::when(request()->isMethod('PUT'), Rule::unique('admins')->ignore($this->admin)),
             ],
-            'password'  => 'required|min:6',
-            'username'  => 'required|min:3|unique:admins,username',
+            'password'  => [
+                Rule::when(request()->isMethod('POST'), 'required'),
+                Rule::when(request()->isMethod('PUT'), 'filled'),
+                'min:6'
+            ],
+            'username'  => [
+                'required',
+                'min:3',
+                Rule::when(request()->isMethod('POST'), Rule::unique('admins')),
+                Rule::when(request()->isMethod('PUT'), Rule::unique('admins')->ignore($this->admin))
+            ],
             'mobile'    => 'required',
-            'role'      => 'required|exists:roles,id',
+            'role_id'   => 'required|exists:roles,id',
             'branch_id' => 'present'
         ];
     }

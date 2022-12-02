@@ -94,27 +94,8 @@ class AdminController extends Controller
      * @param  Admin  $admin
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Admin $admin)
+    public function update(AdminRequest $request, Admin $admin)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-            'adminEmail' => 'required|email|unique:admins,email,' . $admin->id,
-            'password'   => 'nullable|min:6',
-            'username'   => 'required|min:3|unique:admins,username,' . $admin->id,
-            'mobile'     => 'required',
-            'role_id'    => 'required|exists:roles,id',
-            'branch_id'  => 'nullable'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        // Admin email
-        if ($request->adminEmail) {
-            $request->merge(['email' => $request->adminEmail]);
-        }
-
         // Hash password
         if ($request->password) {
             $request->merge(['password' => Hash::make($request->password)]);
