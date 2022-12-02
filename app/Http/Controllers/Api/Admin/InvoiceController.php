@@ -14,7 +14,7 @@ class InvoiceController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:read-member', [ 'only' => ['index', 'show', 'export']]);
+        $this->middleware('permission:read-member', ['only' => ['index', 'show', 'export']]);
     }
 
     /**
@@ -29,15 +29,15 @@ class InvoiceController extends Controller
 
         $admin = Auth::guard('api-admins')->user();
         if ($admin->branch_id) {
-          // This admin is associated with a branch. Only show him invoices of members of this branch!
-          $invoices = Invoice::whereHas('member', function ($query) use ($request) {
-            $query->where('branch', $admin->branch_id);
-          })->filter($request)->sortData($request)->whereNotNull('invoice_number')->offset($request->perPage * $request->page)->paginate($request->perPage);
+            // This admin is associated with a branch. Only show him invoices of members of this branch!
+            $invoices = Invoice::whereHas('member', function ($query) use ($admin) {
+                $query->where('branch', $admin->branch_id);
+            })->filter($request)->sortData($request)->whereNotNull('invoice_number')->offset($request->perPage * $request->page)->paginate($request->perPage);
         }
 
         return response()->json([
-          'total'    => Invoice::filter($request)->get()->count(),
-          'invoices' => InvoiceResource::collection($invoices)
+            'total'    => Invoice::filter($request)->get()->count(),
+            'invoices' => InvoiceResource::collection($invoices)
         ]);
     }
 
@@ -53,68 +53,67 @@ class InvoiceController extends Controller
 
         $admin = Auth::guard('api-admins')->user();
         if ($admin->branch_id) {
-          // This admin is associated with a branch. Only show him invoices of members of this branch!
-          $invoices = Invoice::whereHas('member', function ($query) use ($request) {
-            $query->where('branch', $admin->branch_id);
-          })->filter($request)->sortData($request)->whereNotNull('invoice_number')->get();
+            // This admin is associated with a branch. Only show him invoices of members of this branch!
+            $invoices = Invoice::whereHas('member', function ($query) use ($admin) {
+                $query->where('branch', $admin->branch_id);
+            })->filter($request)->sortData($request)->whereNotNull('invoice_number')->get();
         }
 
         $cells = array(
-          'A1' => 'م',
-          'B1' => 'رقم الفاتورة',
-          'C1' => 'العضو',
-          'D1' => 'المبلغ',
-          'E1' => 'طريقة الدفع',
-          'F1' => 'الحالة',
-          'G1' => 'معرف الدفع',
+            'A1' => 'م',
+            'B1' => 'رقم الفاتورة',
+            'C1' => 'العضو',
+            'D1' => 'المبلغ',
+            'E1' => 'طريقة الدفع',
+            'F1' => 'الحالة',
+            'G1' => 'معرف الدفع',
         );
-        
+
         $cells_keys = array(
-          'A' => 'counter',
-          'B' => 'invoice_number',
-          'C' => 'member',
-          'D' => 'amount',
-          'E' => 'payment_method',
-          'F' => 'status',
-          'G' => 'order_ref',
+            'A' => 'counter',
+            'B' => 'invoice_number',
+            'C' => 'member',
+            'D' => 'amount',
+            'E' => 'payment_method',
+            'F' => 'status',
+            'G' => 'order_ref',
         );
 
         // Build excel cells
         $counter = 2;
         foreach ($invoices as $invoice) {
-          foreach ($cells_keys as $key => $val) {
-            switch ($val) {
-              case 'counter':
-                $cells[$key . $counter] = $counter - 1;
-                break;
-                
-              case 'invoice_number':
-                $cells[$key . $counter] = $invoice->invoice_number;
-                break;
-                
-              case 'member':
-                $cells[$key . $counter] = @$invoice->member->fullName;
-                break;
-                
-              case 'amount':
-                $cells[$key . $counter] = $invoice->amount;
-                break;
-                
-              case 'payment_method':
-                $cells[$key . $counter] = $invoice->payment_method === 2 ? 'MADA' : 'VISA_MASTER';
-                break;
-                
-              case 'status':
-                $cells[$key . $counter] = $invoice->status === 1 ? 'مدفوعة' : 'غير مدفوعة';
-                break;
-                
-              case 'order_ref':
-                $cells[$key . $counter] = $invoice->order_ref;
-                break;
-                
+            foreach ($cells_keys as $key => $val) {
+                switch ($val) {
+                    case 'counter':
+                        $cells[$key . $counter] = $counter - 1;
+                        break;
+
+                    case 'invoice_number':
+                        $cells[$key . $counter] = $invoice->invoice_number;
+                        break;
+
+                    case 'member':
+                        $cells[$key . $counter] = @$invoice->member->fullName;
+                        break;
+
+                    case 'amount':
+                        $cells[$key . $counter] = $invoice->amount;
+                        break;
+
+                    case 'payment_method':
+                        $cells[$key . $counter] = $invoice->payment_method === 2 ? 'MADA' : 'VISA_MASTER';
+                        break;
+
+                    case 'status':
+                        $cells[$key . $counter] = $invoice->status === 1 ? 'مدفوعة' : 'غير مدفوعة';
+                        break;
+
+                    case 'order_ref':
+                        $cells[$key . $counter] = $invoice->order_ref;
+                        break;
+                }
             }
-          }
-          $counter++;
+            $counter++;
         }
 
         // Create the excel file
@@ -132,45 +131,11 @@ class InvoiceController extends Controller
 
         $admin = Auth::guard('api-admins')->user();
         if ($admin->branch_id) {
-          // This admin is associated with a branch. Only allow him to see invoices of members of his branch!
-          if ($invoice->member->branch !== $admin->branch_id) {
-            abort (403);
-          }
+            // This admin is associated with a branch. Only allow him to see invoices of members of his branch!
+            if ($invoice->member->branch !== $admin->branch_id) {
+                abort(403);
+            }
         }
         return new InvoiceResource($invoice);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }
