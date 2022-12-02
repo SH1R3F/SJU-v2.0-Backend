@@ -61,9 +61,6 @@ class AdminController extends Controller
      */
     public function store(AdminRequest $request)
     {
-        // Hash password
-        $request->merge(['password' => Hash::make($request->password)]);
-
         // Create
         $admin = Admin::create($request->all());
         // Attach role
@@ -96,11 +93,6 @@ class AdminController extends Controller
      */
     public function update(AdminRequest $request, Admin $admin)
     {
-        // Hash password
-        if ($request->password) {
-            $request->merge(['password' => Hash::make($request->password)]);
-        }
-
         // Update Avatar
         if ($request->avatar) {
             if (str_starts_with($request->avatar, 'data:image')) {
