@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Models\Role;
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use App\Http\Requests\AdminRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -16,12 +17,12 @@ class AdminController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:read-moderator', [ 'only' => ['index', 'show']]);
-        $this->middleware('permission:create-moderator', [ 'only' => 'store']);
-        $this->middleware('permission:update-moderator', [ 'only' => 'update']);
-        $this->middleware('permission:delete-moderator', [ 'only' => 'destroy']);
+        $this->middleware('permission:read-moderator', ['only' => ['index', 'show']]);
+        $this->middleware('permission:create-moderator', ['only' => 'store']);
+        $this->middleware('permission:update-moderator', ['only' => 'update']);
+        $this->middleware('permission:delete-moderator', ['only' => 'destroy']);
     }
-  
+
     /**
      * Display a listing of the resource.
      *
@@ -32,8 +33,8 @@ class AdminController extends Controller
     {
         $admins = Admin::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
         return response()->json([
-          'total'      => Admin::get()->count(),
-          'moderators' => AdminResource::collection($admins)
+            'total'      => Admin::get()->count(),
+            'moderators' => AdminResource::collection($admins)
         ]);
     }
 
@@ -48,7 +49,7 @@ class AdminController extends Controller
 
         $roles = Role::all();
         return response()->json([
-          'roles' => $roles
+            'roles' => $roles
         ]);
     }
 
@@ -58,36 +59,21 @@ class AdminController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AdminRequest $request)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-          'email'     => 'required|email|unique:admins,email',
-          'password'  => 'required|min:6',
-          'username'  => 'required|min:3|unique:admins,username',
-          'mobile'    => 'required',
-          'role'      => 'required|exists:roles,id',
-          'branch_id' => 'nullable'
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
         // Hash password
         $request->merge(['password' => Hash::make($request->password)]);
 
-        // Update
+        // Create
         $admin = Admin::create($request->all());
-
         // Attach role
         $admin->attachRole(Role::find($request->role));
 
+        // Response
         return response()->json([
-          'message' => __('messages.successful_create'),
-          'admin'   => new AdminResource($admin)
+            'message' => __('messages.successful_create'),
+            'admin'   => new AdminResource($admin)
         ], 200);
-
     }
 
     /**
@@ -98,7 +84,7 @@ class AdminController extends Controller
      */
     public function show(Admin $admin)
     {
-      return new AdminResource($admin);
+        return new AdminResource($admin);
     }
 
     /**
@@ -112,51 +98,49 @@ class AdminController extends Controller
     {
         // Validation
         $validator = Validator::make($request->all(), [
-          'adminEmail' => 'required|email|unique:admins,email,' . $admin->id,
-          'password'   => 'nullable|min:6',
-          'username'   => 'required|min:3|unique:admins,username,' . $admin->id,
-          'mobile'     => 'required',
-          'role_id'    => 'required|exists:roles,id',
-          'branch_id'  => 'nullable'
+            'adminEmail' => 'required|email|unique:admins,email,' . $admin->id,
+            'password'   => 'nullable|min:6',
+            'username'   => 'required|min:3|unique:admins,username,' . $admin->id,
+            'mobile'     => 'required',
+            'role_id'    => 'required|exists:roles,id',
+            'branch_id'  => 'nullable'
         ]);
 
         if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        } 
+            return response()->json($validator->errors(), 400);
+        }
 
         // Admin email
         if ($request->adminEmail) {
-          $request->merge(['email' => $request->adminEmail]);
+            $request->merge(['email' => $request->adminEmail]);
         }
 
         // Hash password
         if ($request->password) {
-          $request->merge(['password' => Hash::make($request->password)]);
+            $request->merge(['password' => Hash::make($request->password)]);
         }
 
         // Update Avatar
         if ($request->avatar) {
-          if (str_starts_with($request->avatar, 'data:image')) {
-            $base64Image  = explode(";base64,", $request->avatar);
-            $explodeImage = explode("image/", $base64Image[0]);
-            $imageType    = $explodeImage[1];
-            $image_base64 = base64_decode($base64Image[1]);
-            $imageName    = uniqid() . '.'.$imageType;
-            Storage::disk('public')->put("admins/{$admin->id}/images/{$imageName}", $image_base64);
-            $request->merge(['avatar' => $imageName]);
+            if (str_starts_with($request->avatar, 'data:image')) {
+                $base64Image  = explode(";base64,", $request->avatar);
+                $explodeImage = explode("image/", $base64Image[0]);
+                $imageType    = $explodeImage[1];
+                $image_base64 = base64_decode($base64Image[1]);
+                $imageName    = uniqid() . '.' . $imageType;
+                Storage::disk('public')->put("admins/{$admin->id}/images/{$imageName}", $image_base64);
+                $request->merge(['avatar' => $imageName]);
 
-            // Delete previous image from disk
-            Storage::disk('public')->delete("admins/{$admin->id}/images/{$admin->avatar}");
-            
-          } else {
-            $request->merge(['avatar' => $admin->avatar]);
-          }
-
-        } else if($admin->image) { // If admin had avatar then deleted.
-          // Delete file from disk
-          Storage::disk('public')->delete("admins/{$admin->id}/images/{$admin->image}");
-          // Null db value
-          $request->merge(['image' => null]);
+                // Delete previous image from disk
+                Storage::disk('public')->delete("admins/{$admin->id}/images/{$admin->avatar}");
+            } else {
+                $request->merge(['avatar' => $admin->avatar]);
+            }
+        } else if ($admin->image) { // If admin had avatar then deleted.
+            // Delete file from disk
+            Storage::disk('public')->delete("admins/{$admin->id}/images/{$admin->image}");
+            // Null db value
+            $request->merge(['image' => null]);
         }
 
 
@@ -167,9 +151,8 @@ class AdminController extends Controller
         $admin->roles()->sync([$request->role_id]);
 
         return response()->json([
-          'message' => __('messages.successful_update')
+            'message' => __('messages.successful_update')
         ], 200);
-
     }
 
     /**
@@ -187,9 +170,7 @@ class AdminController extends Controller
         // Delete database record
         $admin->delete();
         return response()->json([
-          'message' => __('messages.successful_delete')
+            'message' => __('messages.successful_delete')
         ], 200);
     }
-
-
 }
