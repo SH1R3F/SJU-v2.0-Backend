@@ -11,18 +11,20 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\VolunteerResource;
+use App\Http\Requests\Admin\StoreVolunteerRequest;
 use App\Http\Controllers\Api\Admin\ExcelController;
+use App\Http\Requests\Admin\UpdateVolunteerRequest;
 use App\Http\Resources\Admin\Course\CourseResource;
 
 class VolunteerController extends Controller
 {
-    
+
     public function __construct()
     {
-        $this->middleware('permission:read-volunteer', [ 'only' => ['index', 'show', 'export']]);
-        $this->middleware('permission:create-volunteer', [ 'only' => 'store']);
-        $this->middleware('permission:update-volunteer', [ 'only' => 'update']);
-        $this->middleware('permission:delete-volunteer', [ 'only' => 'destroy']);
+        $this->middleware('permission:read-volunteer', ['only' => ['index', 'show', 'export']]);
+        $this->middleware('permission:create-volunteer', ['only' => 'store']);
+        $this->middleware('permission:update-volunteer', ['only' => 'update']);
+        $this->middleware('permission:delete-volunteer', ['only' => 'destroy']);
     }
 
     /**
@@ -36,8 +38,8 @@ class VolunteerController extends Controller
 
         $volunteers = Volunteer::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
         return response()->json([
-          'total'       => Volunteer::filter($request)->get()->count(),
-          'volunteers' => VolunteerResource::collection($volunteers)
+            'total'       => Volunteer::filter($request)->get()->count(),
+            'volunteers' => VolunteerResource::collection($volunteers)
         ]);
     }
 
@@ -52,10 +54,10 @@ class VolunteerController extends Controller
 
         $volunteers = Volunteer::filter($request)->sortData($request)->get();
         $cells = array(
-          'A1' => 'م',
-          'B1' => 'اسم المتدرب',
-          'C1' => 'البريد الإلكتروني',
-          'D1' => 'حالة المشترك',
+            'A1' => 'م',
+            'B1' => 'اسم المتدرب',
+            'C1' => 'البريد الإلكتروني',
+            'D1' => 'حالة المشترك',
         );
         $cells_keys = array(
             'A' => 'counter',
@@ -67,31 +69,30 @@ class VolunteerController extends Controller
         // Build excel cells
         $counter = 2;
         foreach ($volunteers as $volunteer) {
-          foreach ($cells_keys as $key => $val) {
-            switch ($val) {
-              case 'counter':
-                $cells[$key . $counter] = $counter - 1;
-                break;
-                
-              case 'email':
-                $cells[$key . $counter] = $volunteer->email;
-                break;
-                
-              case 'name':
-                $cells[$key . $counter] = $volunteer->fullName;
-                break;
-                              
-              case 'status':
-                $cells[$key . $counter] = config('sju.status')[$volunteer->email_verified_at ? 1 : 0];
-                break;
+            foreach ($cells_keys as $key => $val) {
+                switch ($val) {
+                    case 'counter':
+                        $cells[$key . $counter] = $counter - 1;
+                        break;
+
+                    case 'email':
+                        $cells[$key . $counter] = $volunteer->email;
+                        break;
+
+                    case 'name':
+                        $cells[$key . $counter] = $volunteer->fullName;
+                        break;
+
+                    case 'status':
+                        $cells[$key . $counter] = config('sju.status')[$volunteer->email_verified_at ? 1 : 0];
+                        break;
+                }
             }
-          }
-          $counter++;
+            $counter++;
         }
 
         // Create the excel file
         return app(ExcelController::class)->create('volunteers', $cells);
-        
     }
 
     /**
@@ -107,35 +108,11 @@ class VolunteerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  StoreVolunteerRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreVolunteerRequest $request)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-          // Account information
-          'email' => 'required|email|unique:volunteers,email',
-          'password' => 'required|min:6',
-
-          // Personal information
-          'national_id'     => 'required|integer',
-          'fname_ar'        => 'required|min:3',
-          'sname_ar'        => 'required|min:3',
-          'tname_ar'        => 'required|min:3',
-          'lname_ar'        => 'required|min:3',
-          'gender'          => 'required|in:0,1',
-          'mobile'          => 'required',
-          'mobile_key'      => 'required',
-          'country'         => 'required',
-          'branch'          => 'required',
-          'nationality'     => 'required',
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
         // Hash password
         $request->merge(['password' => Hash::make($request->password)]);
 
@@ -144,10 +121,9 @@ class VolunteerController extends Controller
         event(new Registered($volunteer));
 
         return response()->json([
-          'message' => __('messages.successful_create'),
-          'volunteer' => new VolunteerResource($volunteer)
+            'message' => __('messages.successful_create'),
+            'volunteer' => new VolunteerResource($volunteer)
         ], 200);
-
     }
 
     /**
@@ -158,10 +134,10 @@ class VolunteerController extends Controller
      */
     public function show(Volunteer $volunteer)
     {
-      return new VolunteerResource($volunteer);
+        return new VolunteerResource($volunteer);
     }
 
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -170,89 +146,50 @@ class VolunteerController extends Controller
      */
     public function courses(Request $request, Volunteer $volunteer)
     {
-      $courses = $volunteer->courses()->withPivot('attendance')->get();;
-      return response()->json([
-          'total'   => $courses->count(),
-          'courses' => CourseResource::collection($courses)
-      ], 200);
+        $courses = $volunteer->courses()->withPivot('attendance')->get();;
+        return response()->json([
+            'total'   => $courses->count(),
+            'courses' => CourseResource::collection($courses)
+        ], 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  UpdateVolunteerRequest  $request
      * @param  Volunteer  $volunteer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Volunteer $volunteer)
+    public function update(UpdateVolunteerRequest $request, Volunteer $volunteer)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-          // Account information
-          'volunteerEmail' => 'nullable|email|unique:volunteers,email,' . $volunteer->id,
-          'password' => 'nullable|min:6|confirmed',
-
-          // Personal information
-          'fname_ar'        => 'nullable|min:3',
-          'sname_ar'        => 'nullable|min:3',
-          'tname_ar'        => 'nullable|min:3',
-          'lname_ar'        => 'nullable|min:3',
-          'fname_en'        => 'nullable|min:3',
-          'sname_en'        => 'nullable|min:3',
-          'tname_en'        => 'nullable|min:3',
-          'lname_en'        => 'nullable|min:3',
-          'gender'          => 'nullable|in:0,1',
-          'qualification'   => 'nullable|min:3',
-          'major'           => 'nullable|min:3',
-          'job_title'       => 'nullable|min:3',
-          'employer'        => 'nullable|min:3',
-          'country'         => 'nullable',
-          'branch'          => 'nullable',
-          'nationality'     => 'nullable',
-          'post_box'        => 'nullable|min:3',
-          'post_code'       => 'nullable|min:3',
-
-          // Contact information
-          'worktel'         => 'nullable',
-          'worktel_ext'     => 'nullable',
-          'fax'             => 'nullable',
-          'fax_ext'         => 'nullable',
-          'mobile'          => 'nullable',
-          'mobile_key'      => 'nullable',
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        } 
-
         // Volunteer email
         if ($request->volunteerEmail) {
-          $request->merge(['email' => $request->volunteerEmail]);
+            $request->merge(['email' => $request->volunteerEmail]);
         }
 
         // Hash password
         if ($request->password) {
-          $request->merge(['password' => Hash::make($request->password)]);
+            $request->merge(['password' => Hash::make($request->password)]);
         }
 
         // Update Avatar
         if ($request->avatar) {
-          if (str_starts_with($request->avatar, 'data:image')) {
-            $base64Image  = explode(";base64,", $request->avatar);
-            $explodeImage = explode("image/", $base64Image[0]);
-            $imageType    = $explodeImage[1];
-            $image_base64 = base64_decode($base64Image[1]);
-            $imageName    = uniqid() . '.'.$imageType;
-            Storage::disk('public')->put("volunteers/{$volunteer->id}/images/{$imageName}", $image_base64);
-            $request->merge(['image' => "volunteers/{$volunteer->id}/images/{$imageName}"]);
-          } else {
-            $request->merge(['image' => $volunteer->image]);
-          }
-        } else if($volunteer->image) { // If volunteer had avatar then deleted.
-          // Delete file from disk
-          Storage::disk('public')->delete("volunteers/{$volunteer->id}/images/{$volunteer->image}");
-          // Null db value
-          $request->merge(['image' => null]);
+            if (str_starts_with($request->avatar, 'data:image')) {
+                $base64Image  = explode(";base64,", $request->avatar);
+                $explodeImage = explode("image/", $base64Image[0]);
+                $imageType    = $explodeImage[1];
+                $image_base64 = base64_decode($base64Image[1]);
+                $imageName    = uniqid() . '.' . $imageType;
+                Storage::disk('public')->put("volunteers/{$volunteer->id}/images/{$imageName}", $image_base64);
+                $request->merge(['image' => "volunteers/{$volunteer->id}/images/{$imageName}"]);
+            } else {
+                $request->merge(['image' => $volunteer->image]);
+            }
+        } else if ($volunteer->image) { // If volunteer had avatar then deleted.
+            // Delete file from disk
+            Storage::disk('public')->delete("volunteers/{$volunteer->id}/images/{$volunteer->image}");
+            // Null db value
+            $request->merge(['image' => null]);
         }
 
 
@@ -260,9 +197,8 @@ class VolunteerController extends Controller
         $volunteer->update($request->all());
 
         return response()->json([
-          'message' => __('messages.successful_update')
+            'message' => __('messages.successful_update')
         ], 200);
-
     }
 
     /**
@@ -279,7 +215,7 @@ class VolunteerController extends Controller
         // Delete database record
         $volunteer->delete();
         return response()->json([
-          'message' => __('messages.successful_delete')
+            'message' => __('messages.successful_delete')
         ], 200);
     }
 
@@ -291,10 +227,10 @@ class VolunteerController extends Controller
      */
     public function toggle(Volunteer $volunteer)
     {
-      $volunteer->email_verified_at = $volunteer->email_verified_at ? NULL : Carbon::now();
-      $volunteer->save();
-      return response()->json([
-        'message' => __('messages.successful_update')
-      ], 200);
+        $volunteer->email_verified_at = $volunteer->email_verified_at ? NULL : Carbon::now();
+        $volunteer->save();
+        return response()->json([
+            'message' => __('messages.successful_update')
+        ], 200);
     }
 }

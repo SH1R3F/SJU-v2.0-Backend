@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateSubscriberRequest extends FormRequest
+class UpdateVolunteerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,7 +16,7 @@ class UpdateSubscriberRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -28,10 +28,10 @@ class UpdateSubscriberRequest extends FormRequest
     {
         return [
             // Account information
-            'subscriberEmail' => [
+            'volunteerEmail' => [
                 'nullable',
                 'email',
-                Rule::unique('subscribers', 'email')
+                Rule::unique('volunteers')
             ],
             'password' => 'nullable|min:6|confirmed',
 
@@ -45,14 +45,12 @@ class UpdateSubscriberRequest extends FormRequest
             'tname_en'        => 'nullable|min:3',
             'lname_en'        => 'nullable|min:3',
             'gender'          => 'nullable|in:0,1',
-            'birthday_meladi' => 'nullable|date',
-            'birthday_hijri'  => 'nullable|date',
             'qualification'   => 'nullable|min:3',
             'major'           => 'nullable|min:3',
             'job_title'       => 'nullable|min:3',
             'employer'        => 'nullable|min:3',
             'country'         => 'nullable',
-            'city'            => 'nullable',
+            'branch'          => 'nullable',
             'nationality'     => 'nullable',
             'post_box'        => 'nullable|min:3',
             'post_code'       => 'nullable|min:3',
