@@ -1,27 +1,42 @@
-<?php 
+<?php
 
 use Carbon\Carbon;
 use App\Models\SiteOption;
+use Illuminate\Support\Facades\Storage;
 
-if(!function_exists('get_arabic_day'))
-{
+
+
+if (!function_exists('upload_base64_image')) {
+    function upload_base64_image($image, $path)
+    {
+        $base64_image  = explode(";base64,", $image);
+        $explode_image = explode("image/", $base64_image[0]);
+        $image_type    = $explode_image[1];
+        $image_base64  = base64_decode($base64_image[1]);
+        $image_name    = uniqid() . '.' . $image_type;
+        Storage::disk('public')->put("$path/$image_name", $image_base64);
+        return $image_name;
+    }
+}
+
+
+if (!function_exists('get_arabic_day')) {
     function get_arabic_day($day)
     {
-        $find = array ("Sat", "Sun", "Mon", "Tue", "Wed" , "Thu", "Fri");
-        $replace = array ("السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة");
+        $find = array("Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri");
+        $replace = array("السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة");
         $ar_day = str_replace($find, $replace, $day);
         return $ar_day;
     }
 }
 
-if(!function_exists('sendSMS'))
-{
+if (!function_exists('sendSMS')) {
     function sendSMS($numbers, $message, $return = 0)
     {
         // Fetch sms settings options
         $settings = SiteOption::where('key', 'sms_settings')->first();
         if (!$settings) {
-          return response()->json(['message' => __('messages.error_on_our_side')], 422);
+            return response()->json(['message' => __('messages.error_on_our_side')], 422);
         }
 
         $key          = array_search('Service provider', array_column($settings->value, 'key'));
@@ -79,7 +94,6 @@ if(!function_exists('sendSMS'))
                 return $result;
             }
             return true;
-
         } else { // hisms.ws
 
             // Result messages
@@ -108,45 +122,44 @@ if(!function_exists('sendSMS'))
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
             $result = curl_exec($ch);
-    
+
             if ($result != 3) {
                 return $result;
             }
             return true;
-        }  
+        }
     }
-
-    
 }
 
-if(!function_exists('membership_status')) {
-    function membership_status($member) {
+if (!function_exists('membership_status')) {
+    function membership_status($member)
+    {
         if ($member->approved === -2) {
-          return 'مرفوض';
+            return 'مرفوض';
         } elseif ($member->approved === null) {
-          return 'يستكمل البيانات';
+            return 'يستكمل البيانات';
         } elseif ($member->approved === 0) {
-          if ($member->refusal_reason) {
-            return 'بإنتظار الموافقة (بعد الرفض)';
-          } else {
-            return 'بإنتظار موافقة الفرع';
-          }
-        } elseif ($member->approved === 1) {
-          if ($member->active === -1) {
-            return 'بإنتظار موافقة الأدمن';
-          } elseif ($member->active === 0) {
-            return 'غير فعال';
-          } elseif ($member->active === 1) {
-            if ($member->subscription->status === 1) {
-              if (Carbon::now()->lt($member->subscription->end_date)) {
-                return 'فعال';
-              } else {
-                return 'الاشتراك منتهي';
-              }
+            if ($member->refusal_reason) {
+                return 'بإنتظار الموافقة (بعد الرفض)';
             } else {
-                return 'بإنتظار الدفع';
+                return 'بإنتظار موافقة الفرع';
             }
-          }
+        } elseif ($member->approved === 1) {
+            if ($member->active === -1) {
+                return 'بإنتظار موافقة الأدمن';
+            } elseif ($member->active === 0) {
+                return 'غير فعال';
+            } elseif ($member->active === 1) {
+                if ($member->subscription->status === 1) {
+                    if (Carbon::now()->lt($member->subscription->end_date)) {
+                        return 'فعال';
+                    } else {
+                        return 'الاشتراك منتهي';
+                    }
+                } else {
+                    return 'بإنتظار الدفع';
+                }
+            }
         }
     }
 }

@@ -46,7 +46,8 @@ class AdminRequest extends FormRequest
             ],
             'mobile'    => 'required',
             'role_id'   => 'required|exists:roles,id',
-            'branch_id' => 'present'
+            'branch_id' => 'present',
+            'avatar'    => 'nullable'
         ];
     }
 

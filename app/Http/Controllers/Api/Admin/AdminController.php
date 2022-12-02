@@ -93,39 +93,26 @@ class AdminController extends Controller
      */
     public function update(AdminRequest $request, Admin $admin)
     {
-        // Update Avatar
-        if ($request->avatar) {
-            if (str_starts_with($request->avatar, 'data:image')) {
-                $base64Image  = explode(";base64,", $request->avatar);
-                $explodeImage = explode("image/", $base64Image[0]);
-                $imageType    = $explodeImage[1];
-                $image_base64 = base64_decode($base64Image[1]);
-                $imageName    = uniqid() . '.' . $imageType;
-                Storage::disk('public')->put("admins/{$admin->id}/images/{$imageName}", $image_base64);
-                $request->merge(['avatar' => $imageName]);
-
-                // Delete previous image from disk
-                Storage::disk('public')->delete("admins/{$admin->id}/images/{$admin->avatar}");
-            } else {
-                $request->merge(['avatar' => $admin->avatar]);
-            }
-        } else if ($admin->image) { // If admin had avatar then deleted.
+        // If deleted his avatar
+        if (!$request->avatar && $admin->avatar) {
             // Delete file from disk
-            Storage::disk('public')->delete("admins/{$admin->id}/images/{$admin->image}");
-            // Null db value
-            $request->merge(['image' => null]);
+            Storage::disk('public')->delete("admins/{$admin->id}/images/{$admin->avatar}");
         }
 
+        // Update Base64 Avatar is uploaded
+        if ($request->avatar && str_starts_with($request->avatar, 'data:image')) {
+            $name = upload_base64_image($request->avatar, "admins/{$admin->id}/images");
+            $request->merge(['avatar' => $name]);
+            // Delete previous image from disk
+            Storage::disk('public')->delete("admins/{$admin->id}/images/{$admin->avatar}");
+        }
 
         // Update
         $admin->update($request->all());
-
-        // Attach role
+        // Update role
         $admin->roles()->sync([$request->role_id]);
 
-        return response()->json([
-            'message' => __('messages.successful_update')
-        ], 200);
+        return response()->json(['message' => __('messages.successful_update')], 200);
     }
 
     /**
@@ -138,8 +125,6 @@ class AdminController extends Controller
     {
         // Delete his files on desk
         Storage::disk('public')->deleteDirectory("admins/{$admin->id}");
-
-
         // Delete database record
         $admin->delete();
         return response()->json([
