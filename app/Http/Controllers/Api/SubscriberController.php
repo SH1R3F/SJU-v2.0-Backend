@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\UpdateSubscriberRequest;
 use App\Http\Resources\Admin\SubscriberResource;
 use App\Http\Resources\Admin\Course\CourseResource;
 
@@ -25,60 +26,44 @@ class SubscriberController extends Controller
      */
     public function index(Request $request)
     {
-      // Upcoming events
-      $upcoming = Course::whereIn('status', [1,2,3,4])->where('date_from', '>', Carbon::now())->get();
+        // Upcoming events
+        $upcoming = Course::whereIn('status', [1, 2, 3, 4])->where('date_from', '>', Carbon::now())->get();
 
-      // Enrolled events
-      $enrolled = Auth::guard('api-subscribers')->user()->courses()->get();
+        // Enrolled events
+        $enrolled = Auth::guard('api-subscribers')->user()->courses()->get();
 
-      return response()->json([
-        'upcomingEvents' => CourseResource::collection($upcoming),
-        'enrolledEvents' => CourseResource::collection($enrolled)
-      ]);
-    
+        return response()->json([
+            'upcomingEvents' => CourseResource::collection($upcoming),
+            'enrolledEvents' => CourseResource::collection($enrolled)
+        ]);
     }
 
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  UpdateSubscriberRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(UpdateSubscriberRequest $request)
     {
-      // Validation
-      $validator = Validator::make($request->all(), [
-        'gender'        => 'nullable|in:0,1',
-        'country'       => 'required|integer',
-        'city'          => 'nullable|integer',
-        'qualification' => 'required|integer',
-        'mobile'        => 'nullable|integer',
-        'mobile_key'    => 'required|integer'
-      ]);
+        $subscriber = Auth::guard('api-subscribers')->user();
+        $subscriber->gender = $request->gender;
+        $subscriber->country = $request->country;
+        if ($request->country == 0) {
+            $subscriber->city = $request->city;
+        } else {
+            $subscriber->city = null;
+        }
+        $subscriber->qualification = $request->qualification;
+        $subscriber->mobile = $request->mobile;
+        $subscriber->mobile_key = $request->mobile_key;
+        $subscriber->save();
 
-      if ($validator->fails()) {
-        return response()->json($validator->errors(), 400);
-      }
-
-      $subscriber = Auth::guard('api-subscribers')->user();
-      $subscriber->gender = $request->gender;
-      $subscriber->country = $request->country;
-      if ($request->country == 0) {
-        $subscriber->city = $request->city;
-      } else {
-        $subscriber->city = null;
-      }
-      $subscriber->qualification = $request->qualification;
-      $subscriber->mobile = $request->mobile;
-      $subscriber->mobile_key = $request->mobile_key;
-      $subscriber->save();
-
-      return response()->json([
-        'message' => __('messages.successful_update'),
-        'user'    => new SubscriberResource($subscriber)
-      ], 200);
-
+        return response()->json([
+            'message' => __('messages.successful_update'),
+            'user'    => new SubscriberResource($subscriber)
+        ], 200);
     }
 
     /**
@@ -92,26 +77,24 @@ class SubscriberController extends Controller
 
         // Validation
         $validator = Validator::make($request->all(), [
-          'current_password' => 'required|min:6',
-          'new_password'     => 'required|min:6',
+            'current_password' => 'required|min:6',
+            'new_password'     => 'required|min:6',
         ]);
 
         if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 400);
         }
 
         $subscriber = Auth::guard('api-subscribers')->user();
         if (Hash::check($request->current_password, $subscriber->password)) {
 
-          $subscriber->password = Hash::make($request->new_password);
-          $subscriber->save();
-          return response()->json([
-            'message' => __('messages.successful_update'),
-          ], 200);
-
+            $subscriber->password = Hash::make($request->new_password);
+            $subscriber->save();
+            return response()->json([
+                'message' => __('messages.successful_update'),
+            ], 200);
         } else {
-          return response(['message' => __('messages.password_incorrect')], 422);
+            return response(['message' => __('messages.password_incorrect')], 422);
         }
-
     }
 }

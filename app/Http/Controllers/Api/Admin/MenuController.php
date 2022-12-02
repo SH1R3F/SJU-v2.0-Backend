@@ -5,18 +5,19 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\MenuRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\MenuResource;
 
 class MenuController extends Controller
 {
-      
+
     public function __construct()
     {
-        $this->middleware('permission:read-menu', [ 'only' => ['index', 'show']]);
-        $this->middleware('permission:create-menu', [ 'only' => 'store']);
-        $this->middleware('permission:update-menu', [ 'only' => ['update', 'reorder']]);
-        $this->middleware('permission:delete-menu', [ 'only' => 'destroy']);
+        $this->middleware('permission:read-menu', ['only' => ['index', 'show']]);
+        $this->middleware('permission:create-menu', ['only' => 'store']);
+        $this->middleware('permission:update-menu', ['only' => ['update', 'reorder']]);
+        $this->middleware('permission:delete-menu', ['only' => 'destroy']);
     }
 
     /**
@@ -28,37 +29,24 @@ class MenuController extends Controller
     {
         $menus = Menu::orderBy('order', 'ASC')->get();
         return response()->json([
-          'total' => Menu::count(),
-          'menus' => MenuResource::collection($menus)
+            'total' => Menu::count(),
+            'menus' => MenuResource::collection($menus)
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  MenuRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MenuRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-          'title_ar'          => 'required',
-          'title_en'          => 'required',
-          'parent_id'         => 'nullable|exists:menus',
-          'link'              => 'required',
-          'open_in_same_page' => 'required|boolean',
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
-        $menu = Menu::create($request->all());
+        Menu::create($request->all());
 
         return response()->json([
-          'message' => __('messages.successful_create')
+            'message' => __('messages.successful_create')
         ]);
-        
     }
 
     /**
@@ -69,35 +57,23 @@ class MenuController extends Controller
      */
     public function show(Menu $menu)
     {
-      return new MenuResource($menu);
+        return new MenuResource($menu);
     }
 
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  MenuRequest  $request
      * @param  Menu  $menu
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Menu $menu)
+    public function update(MenuRequest $request, Menu $menu)
     {
-        $validator = Validator::make($request->all(), [
-          'title_ar'          => 'required',
-          'title_en'          => 'required',
-          'parent_id'         => 'nullable|exists:menus',
-          'link'              => 'required',
-          'open_in_same_page' => 'required|boolean',
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
         $menu->update($request->all());
 
         return response()->json([
-          'message' => __('messages.successful_update')
+            'message' => __('messages.successful_update')
         ]);
     }
 
@@ -109,13 +85,13 @@ class MenuController extends Controller
      */
     public function reorder(Request $request)
     {
-      foreach($request->menus as $k => $menu) {
-        Menu::where('id', $menu['id'])->update(['order' => $k + 1]);
-      }
+        foreach ($request->menus as $k => $menu) {
+            Menu::where('id', $menu['id'])->update(['order' => $k + 1]);
+        }
 
-      return response()->json([
-        'message' => __('messages.successful_update')
-      ]);
+        return response()->json([
+            'message' => __('messages.successful_update')
+        ]);
     }
 
     /**
@@ -128,7 +104,7 @@ class MenuController extends Controller
     {
         $menu->delete();
         return response()->json([
-          'message' => __('messages.successful_delete')
+            'message' => __('messages.successful_delete')
         ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Menu;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BlogCategoryRequest;
 
 class BlogCategoryController extends Controller
 {
@@ -18,13 +19,11 @@ class BlogCategoryController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
         $categories = BlogCategory::orderBy('order', 'ASC')->get();
-
         return response()->json([
             'total'      => BlogCategory::count(),
             'categories' => $categories,
@@ -34,11 +33,12 @@ class BlogCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  BlogCategoryRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(BlogCategoryRequest $request)
     {
+<<<<<<< HEAD
         $validator = Validator::make($request->all(), [
             'title_ar'          => 'required',
             'title_en'          => 'required',
@@ -52,6 +52,9 @@ class BlogCategoryController extends Controller
         }
 
         $category = BlogCategory::create($request->all());
+=======
+        BlogCategory::create($request->validated());
+>>>>>>> refactor/SingleResponsibility
         return response()->json([
             'message' => __('messages.successful_create')
         ]);
@@ -71,12 +74,13 @@ class BlogCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  BlogCategoryRequest  $request
      * @param  BlogCategory  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, BlogCategory $category)
+    public function update(BlogCategoryRequest $request, BlogCategory $category)
     {
+<<<<<<< HEAD
         $validator = Validator::make($request->all(), [
             'title_ar'          => 'required',
             'title_en'          => 'required',
@@ -91,6 +95,9 @@ class BlogCategoryController extends Controller
 
         $category->update($request->all());
 
+=======
+        $category->update($request->validated());
+>>>>>>> refactor/SingleResponsibility
         return response()->json([
             'message' => __('messages.successful_update')
         ]);

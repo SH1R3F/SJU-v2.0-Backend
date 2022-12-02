@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Models\Role;
 use App\Models\Admin;
 use Illuminate\Http\Request;
-use App\Http\Requests\AdminRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+<<<<<<< HEAD
+=======
+use App\Http\Requests\Admin\AdminRequest;
+>>>>>>> refactor/SingleResponsibility
 use App\Http\Resources\Admin\AdminResource;
 
 class AdminController extends Controller

@@ -5,19 +5,19 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Models\BlogPost;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BlogPostRequest;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\BlogPostResource;
 
 class BlogPostController extends Controller
 {
-    
+
     public function __construct()
     {
-        $this->middleware('permission:read-post', [ 'only' => ['index', 'show']]);
-        $this->middleware('permission:create-post', [ 'only' => 'store']);
-        $this->middleware('permission:update-post', [ 'only' => 'update']);
-        $this->middleware('permission:delete-post', [ 'only' => 'destroy']);
+        $this->middleware('permission:read-post', ['only' => ['index', 'show']]);
+        $this->middleware('permission:create-post', ['only' => 'store']);
+        $this->middleware('permission:update-post', ['only' => 'update']);
+        $this->middleware('permission:delete-post', ['only' => 'destroy']);
     }
 
     /**
@@ -30,62 +30,36 @@ class BlogPostController extends Controller
     {
         $posts = BlogPost::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
         return response()->json([
-          'total' => BlogPost::filter($request)->count(),
-          'posts' => BlogPostResource::collection($posts)
+            'total' => BlogPost::filter($request)->count(),
+            'posts' => BlogPostResource::collection($posts)
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  BlogPostRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(BlogPostRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-          'title_ar'         => 'required',
-          'title_en'         => 'required',
-          'blog_category_id' => 'required|exists:blog_categories,id',
-          'post_date'        => 'required|date',
-          'summary_ar'       => 'required',
-          'summary_ar'       => 'required',
-          'content_ar'       => 'required',
-          'content_ar'       => 'required',
-        ]);
+        $post = BlogPost::create($request->validated());
 
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
-        $post = BlogPost::create($request->all());
-
-        
         // Upload photos
         $photos = [];
         foreach ($request->photos as $photo) {
-          if (str_starts_with($photo, 'data:image')) {
-            // Save to disk
-            $base64Image  = explode(";base64,", $photo);
-            $explodeImage = explode("image/", $base64Image[0]);
-            $imageType    = $explodeImage[1];
-            $image_base64 = base64_decode($base64Image[1]);
-            $imageName    = uniqid() . '.'.$imageType;
-            Storage::disk('public')->put("blog/posts/{$post->id}/{$imageName}", $image_base64);
-            array_push($photos, asset("storage/blog/posts/{$post->id}/{$imageName}"));
-          } else {
-            array_push($photos, $photo);
-          }
+            if (str_starts_with($photo, 'data:image')) {
+                $name = upload_base64_image($photo, "blog/posts/{$post->id}");
+                array_push($photos, asset("storage/blog/posts/{$post->id}/{$name}"));
+            } else {
+                array_push($photos, $photo);
+            }
         }
-
-        $data['photos'] = $photos;
         $post->update(['photos' => $photos]);
 
-
         return response()->json([
-          'message' => __('messages.successful_create')
+            'message' => __('messages.successful_create')
         ]);
-        
     }
 
     /**
@@ -96,58 +70,34 @@ class BlogPostController extends Controller
      */
     public function show(BlogPost $post)
     {
-      return new BlogPostResource($post);
+        return new BlogPostResource($post);
     }
 
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  BlogPostRequest  $request
      * @param  BlogPost  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, BlogPost $post)
+    public function update(BlogPostRequest $request, BlogPost $post)
     {
-        $validator = Validator::make($request->all(), [
-          'title_ar'         => 'required',
-          'title_en'         => 'required',
-          'blog_category_id' => 'required|exists:blog_categories,id',
-          'post_date'        => 'required|date',
-          'summary_ar'       => 'required',
-          'summary_ar'       => 'required',
-          'content_ar'       => 'required',
-          'content_ar'       => 'required',
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
         // Update photos
         $photos = [];
         foreach ($request->photos as $photo) {
-          if (str_starts_with($photo, 'data:image')) {
-            // Save to disk
-            $base64Image  = explode(";base64,", $photo);
-            $explodeImage = explode("image/", $base64Image[0]);
-            $imageType    = $explodeImage[1];
-            $image_base64 = base64_decode($base64Image[1]);
-            $imageName    = uniqid() . '.'.$imageType;
-            Storage::disk('public')->put("blog/posts/{$post->id}/{$imageName}", $image_base64);
-            array_push($photos, asset("storage/blog/posts/{$post->id}/{$imageName}"));
-          } else {
-            array_push($photos, $photo);
-          }
+            if (str_starts_with($photo, 'data:image')) {
+                $name = upload_base64_image($photo, "blog/posts/{$post->id}");
+                array_push($photos, asset("storage/blog/posts/{$post->id}/{$name}"));
+            } else {
+                array_push($photos, $photo);
+            }
         }
-
-        $data = $request->all();
-        $data['photos'] = $photos;
-
-        $post->update($data);
+        $request->merge(['photos' => $photos]);
+        $post->update($request->all());
 
         return response()->json([
-          'message' => __('messages.successful_update')
+            'message' => __('messages.successful_update')
         ]);
     }
 
@@ -162,7 +112,7 @@ class BlogPostController extends Controller
         Storage::disk('public')->deleteDirectory("blog/posts/{$post->id}");
         $post->delete();
         return response()->json([
-          'message' => __('messages.successful_delete')
+            'message' => __('messages.successful_delete')
         ]);
     }
 }

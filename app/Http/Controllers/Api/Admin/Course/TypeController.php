@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Admin\Course\TypeRequest;
 use App\Http\Resources\Admin\Course\NamingResource;
 
 class TypeController extends Controller
@@ -22,60 +23,33 @@ class TypeController extends Controller
         $types = Type::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
 
         return response()->json([
-          'total'   => Type::all()->count(),
-          'namings' => NamingResource::collection($types)
+            'total'   => Type::all()->count(),
+            'namings' => NamingResource::collection($types)
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  TypeRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TypeRequest $request)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-          'name_ar' => 'required|min:3|unique:types',
-          'name_en' => 'nullable|min:3',
-          'description_ar' => 'nullable|min:3',
-          'description_en' => 'nullable|min:3'
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
         // Upload Image
         if ($request->image) {
-          $base64Image  = explode(";base64,", $request->image);
-          $explodeImage = explode("image/", $base64Image[0]);
-          $imageType    = $explodeImage[1];
-          $image_base64 = base64_decode($base64Image[1]);
-          $imageName    = uniqid() . '.'.$imageType;
-          Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
-          $request->merge(['image' => $imageName]);
+            $name = upload_base64_image($request->image, "courses/namings/images");
+            $request->merge(['image' => $name]);
         }
 
         // Store in database
         $type = Type::create($request->all());
 
         return response()->json([
-          'message' => __('messages.successful_create'),
-          'subscriber' => new NamingResource($type)
+            'message' => __('messages.successful_create'),
+            'subscriber' => new NamingResource($type)
         ], 200);
-
     }
 
     /**
@@ -86,56 +60,37 @@ class TypeController extends Controller
      */
     public function show(Type $type)
     {
-      return new NamingResource($type);
+        return new NamingResource($type);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  TypeRequest  $request
      * @param  Type  $type
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Type $type)
+    public function update(TypeRequest $request, Type $type)
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
-          'name_ar' => 'required|min:3|unique:types,name_ar,' . $type->id,
-          'name_en' => 'nullable|min:3',
-          'description_ar' => 'nullable|min:3',
-          'description_en' => 'nullable|min:3'
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
+        // Delete the previous image
+        if (!$request->image && $type->image) {
+            Storage::disk('public')->delete("courses/namings/images/{$type->image}");
         }
-
         // Upload Image
-        if ($request->image) {
-          if (str_starts_with($request->image, 'data:image')) {
-            $base64Image  = explode(";base64,", $request->image);
-            $explodeImage = explode("image/", $base64Image[0]);
-            $imageType    = $explodeImage[1];
-            $image_base64 = base64_decode($base64Image[1]);
-            $imageName    = uniqid() . '.'.$imageType;
+        if ($request->image && str_starts_with($request->image, 'data:image')) {
             // Delete the previous image
             Storage::disk('public')->delete("courses/namings/images/{$type->image}");
             // Save the new image
-            Storage::disk('public')->put("courses/namings/images/{$imageName}", $image_base64);
-            $request->merge(['image' => $imageName]);
-          } else {
-            $request->merge(['image' => $type->image]);
-          }
-        } else if($type->image) {// Delete the previous image
-          Storage::disk('public')->delete("courses/namings/images/{$type->image}");
+            $name = upload_base64_image($request->image, "courses/namings/images");
+            $request->merge(['image' => $name]);
         }
 
         // Store in database
         $type->update($request->all());
 
         return response()->json([
-          'message' => __('messages.successful_update'),
-          'subscriber' => new NamingResource($type)
+            'message' => __('messages.successful_update'),
+            'subscriber' => new NamingResource($type)
         ], 200);
     }
 
@@ -150,7 +105,7 @@ class TypeController extends Controller
         $type->status = !$type->status;
         $type->save();
         return response()->json([
-          'message' => __('messages.successful_update')
+            'message' => __('messages.successful_update')
         ], 200);
     }
 
@@ -169,7 +124,7 @@ class TypeController extends Controller
         // Delete database record
         $type->delete();
         return response()->json([
-          'message' => __('messages.successful_delete')
+            'message' => __('messages.successful_delete')
         ], 200);
     }
 }

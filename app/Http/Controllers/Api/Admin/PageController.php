@@ -5,18 +5,19 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Models\Page;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PageRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\PageResource;
 
 class PageController extends Controller
 {
-  
+
     public function __construct()
     {
-        $this->middleware('permission:read-page', [ 'only' => ['index', 'show']]);
-        $this->middleware('permission:create-page', [ 'only' => 'store']);
-        $this->middleware('permission:update-page', [ 'only' => 'update']);
-        $this->middleware('permission:delete-page', [ 'only' => 'destroy']);
+        $this->middleware('permission:read-page', ['only' => ['index', 'show']]);
+        $this->middleware('permission:create-page', ['only' => 'store']);
+        $this->middleware('permission:update-page', ['only' => 'update']);
+        $this->middleware('permission:delete-page', ['only' => 'destroy']);
     }
 
     /**
@@ -29,37 +30,23 @@ class PageController extends Controller
     {
         $pages = Page::filter($request)->sortData($request)->offset($request->perPage * $request->page)->paginate($request->perPage);
         return response()->json([
-          'total' => Page::filter($request)->count(),
-          'pages' => PageResource::collection($pages)
+            'total' => Page::filter($request)->count(),
+            'pages' => PageResource::collection($pages)
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  PageRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PageRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-          'title_ar'   => 'required',
-          'title_en'   => 'required',
-          'slug'       => 'required|alpha_dash|unique:pages,slug',
-          'content_ar' => 'required',
-          'content_en' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
-        $page = Page::create($request->all());
-
+        Page::create($request->all());
         return response()->json([
-          'message' => __('messages.successful_create')
+            'message' => __('messages.successful_create')
         ]);
-        
     }
 
     /**
@@ -70,35 +57,22 @@ class PageController extends Controller
      */
     public function show(Page $page)
     {
-      return new PageResource($page);
+        return new PageResource($page);
     }
 
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  PageRequest  $request
      * @param  Page  $page
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Page $page)
+    public function update(PageRequest $request, Page $page)
     {
-        $validator = Validator::make($request->all(), [
-          'title_ar'   => 'required',
-          'title_en'   => 'required',
-          'slug'       => 'required|alpha_dash|unique:pages,slug,' . $page->id,
-          'content_ar' => 'required',
-          'content_ar' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
-        }
-
         $page->update($request->all());
-
         return response()->json([
-          'message' => __('messages.successful_update')
+            'message' => __('messages.successful_update')
         ]);
     }
 
@@ -113,8 +87,7 @@ class PageController extends Controller
         $page->delete();
 
         return response()->json([
-          'message' => __('messages.successful_delete')
+            'message' => __('messages.successful_delete')
         ]);
-
     }
 }
