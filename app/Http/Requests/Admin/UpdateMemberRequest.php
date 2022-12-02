@@ -31,7 +31,7 @@ class UpdateMemberRequest extends FormRequest
             'memberEmail' => [
                 'nullable',
                 'email',
-                Rule::unique('members')->ignore($this->member)
+                Rule::unique('members', 'email')->ignore($this->member)
             ],
             'password'    => 'nullable|min:6|confirmed',
 
