@@ -7,9 +7,7 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Http\Requests\AdminRequest;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Admin\AdminResource;
 
 class AdminController extends Controller
@@ -41,12 +39,10 @@ class AdminController extends Controller
     /**
      * Display a listing of the roles.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function roles(Request $request)
+    public function roles()
     {
-
         $roles = Role::all();
         return response()->json([
             'roles' => $roles

@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 
 class BlogCategoryController extends Controller
 {
-      
+
     public function __construct()
     {
         $this->middleware('permission:manage-settings');
@@ -26,8 +26,8 @@ class BlogCategoryController extends Controller
         $categories = BlogCategory::orderBy('order', 'ASC')->get();
 
         return response()->json([
-          'total'      => BlogCategory::count(),
-          'categories' => $categories,
+            'total'      => BlogCategory::count(),
+            'categories' => $categories,
         ]);
     }
 
@@ -39,21 +39,21 @@ class BlogCategoryController extends Controller
      */
     public function store(Request $request)
     {
-      $validator = Validator::make($request->all(), [
-          'title_ar'          => 'required',
-          'title_en'          => 'required',
-          'slug'              => 'required|alpha_dash|unique:blog_categories',
-          'description_ar'    => 'required',
-          'description_en'    => 'required',
+        $validator = Validator::make($request->all(), [
+            'title_ar'          => 'required',
+            'title_en'          => 'required',
+            'slug'              => 'required|alpha_dash|unique:blog_categories',
+            'description_ar'    => 'required',
+            'description_en'    => 'required',
         ]);
 
         if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 400);
         }
 
         $category = BlogCategory::create($request->all());
         return response()->json([
-          'message' => __('messages.successful_create')
+            'message' => __('messages.successful_create')
         ]);
     }
 
@@ -65,7 +65,7 @@ class BlogCategoryController extends Controller
      */
     public function show(BlogCategory $category)
     {
-      return $category;
+        return $category;
     }
 
     /**
@@ -78,21 +78,21 @@ class BlogCategoryController extends Controller
     public function update(Request $request, BlogCategory $category)
     {
         $validator = Validator::make($request->all(), [
-          'title_ar'          => 'required',
-          'title_en'          => 'required',
-          'slug'              => 'required|alpha_dash|unique:blog_categories,slug,' . $category->id,
-          'description_ar'    => 'required',
-          'description_en'    => 'required',
+            'title_ar'          => 'required',
+            'title_en'          => 'required',
+            'slug'              => 'required|alpha_dash|unique:blog_categories,slug,' . $category->id,
+            'description_ar'    => 'required',
+            'description_en'    => 'required',
         ]);
 
         if ($validator->fails()) {
-          return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors(), 400);
         }
 
         $category->update($request->all());
 
         return response()->json([
-          'message' => __('messages.successful_update')
+            'message' => __('messages.successful_update')
         ]);
     }
 
@@ -105,13 +105,13 @@ class BlogCategoryController extends Controller
      */
     public function reorder(Request $request)
     {
-      foreach($request->categories as $k => $category) {
-        Menu::where('id', $category['id'])->update(['order' => $k + 1]);
-      }
+        foreach ($request->categories as $k => $category) {
+            Menu::where('id', $category['id'])->update(['order' => $k + 1]);
+        }
 
-      return response()->json([
-        'message' => __('messages.successful_update')
-      ]);
+        return response()->json([
+            'message' => __('messages.successful_update')
+        ]);
     }
 
     /**
@@ -124,7 +124,7 @@ class BlogCategoryController extends Controller
     {
         $category->delete();
         return response()->json([
-          'message' => __('messages.successful_delete')
+            'message' => __('messages.successful_delete')
         ]);
     }
 }
