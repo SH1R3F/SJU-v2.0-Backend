@@ -10,6 +10,7 @@ use App\Models\Course\Course;
 use App\Traits\UserTypeClass;
 use App\Models\Course\Certificate;
 use App\Http\Controllers\Controller;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Foundation\Auth\User;
 
 class CertificateController extends Controller
@@ -142,7 +143,7 @@ class CertificateController extends Controller
           'margin_header' => 0,
           'margin_footer' => 0,
           
-          'fontDir' => [base_path('public/fonts/')],
+          'fontDir' => [public_path('fonts/')],
           'fontdata' => [ // lowercase letters only in font key
             'almarai' => [ // must be lowercase and snake_case
               'R'  => 'Almarai-Regular.ttf',    // regular font
@@ -156,9 +157,9 @@ class CertificateController extends Controller
           'default_font' => 'almarai',
           'unAGlyphs' => true,
         ]);
-        $mpdf->AddFontDirectory(storage_path('/fonts'));
+        $mpdf->AddFontDirectory(public_path('/fonts'));
         $mpdf->SetDirectionality($dir);
-        $path = storage_path("/app/public/courses/templates/{$template->file}");
+        $path = base_path("storage/app/public/courses/templates/{$template->file}");
         $mpdf->SetDocTemplate($path, 1);
         $html = '';
         
@@ -199,6 +200,10 @@ class CertificateController extends Controller
         $getcertcode = uniqid();
         $qrCode = new QrCode(config('app.frontend_url') . '/certval/' . $getcertcode);
 
+        $qrCode = QrCode::create(config('app.frontend_url') . '/certval/' . $getcertcode);
+        $writer = new PngWriter();
+        $result = $writer->write($qrCode);
+
 
         // If certificate validation exists
         if ($certcode != 'none') {
@@ -210,7 +215,7 @@ class CertificateController extends Controller
 
             $qr_image = asset('/images/qrcode.jpg');
             // Google says file get contents is not working on php artisan serve, so it's commented till we upload on server !
-            $img = "";// "<img src='" . $qrCode->writeDataUri() . "' style='width: 80px'/>";
+            $img = "<img src='" . $result->getDataUri() . "' style='width: 80px'/>";
             $validate_url = config('app.frontend_url') . '/certval';
 
             $html .= "<div style='text-align:center;margin-top: $certcode_margins_top;margin-right: $certcode_margins_left; margin-bottom: $certcode_margins_bottom; margin-left: $certcode_margins_right; position: absolute; $certcode_pos'>$img<br><span style='font-size: 12px'>$validatetxt</span><br><span style='font-size: 12px;font-weight: bold'>$getcertcode</span><br><span  style='font-size: 12px'>$validate_url</span></div>";
@@ -222,7 +227,7 @@ class CertificateController extends Controller
           // Store output
           return $this->store($mpdf, $getcertcode, $event->id, $user);
         } catch (\Exception $e) {
-          return response()->json(['message' => __('messages.error_on_our_side')], 422);
+          return response()->json(['message' => __('messages.error_on_our_side'), 'error' => $e->getMessage()], 422);
         }
 
 
@@ -239,7 +244,7 @@ class CertificateController extends Controller
      */
     public function store($mpdf, $getcertcode, $course_id, $user)
     {
-        $path = storage_path("/app/public/courses/certificates/{$getcertcode}.pdf");
+        $path = base_path("storage/app/public/courses/certificates/{$getcertcode}.pdf");
         $mpdf->Output($path, \Mpdf\Output\Destination::FILE);
 
         // Save to database or update if exists

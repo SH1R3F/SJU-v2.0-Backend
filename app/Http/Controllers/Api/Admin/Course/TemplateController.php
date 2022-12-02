@@ -206,7 +206,7 @@ class TemplateController extends Controller
           'margin_header' => 0,
           'margin_footer' => 0,
                     
-          'fontDir' => [base_path('public/fonts/')],
+          'fontDir' => [public_path('fonts/')],
           'fontdata' => [ // lowercase letters only in font key
             'almarai' => [ // must be lowercase and snake_case
               'R'  => 'Almarai-Regular.ttf',    // regular font
@@ -223,7 +223,7 @@ class TemplateController extends Controller
 
         $mpdf->AddFontDirectory(public_path('/fonts'));
         $mpdf->SetDirectionality($dir);
-        $path = storage_path("/app/public/courses/templates/{$file_preview}");
+        $path = base_path("storage/app/public/courses/templates/{$file_preview}");
         $mpdf->SetDocTemplate($path, 1);
         $html = '';
         $fields = json_decode($request->fields);

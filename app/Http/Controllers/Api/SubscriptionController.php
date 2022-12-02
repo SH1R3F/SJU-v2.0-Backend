@@ -183,16 +183,16 @@ class SubscriptionController extends Controller
     private function gateway($cart_ref, $member, $price, $paytype, $type_ar)
     {
         // Live codes
-        // $mada = '8acda4ca771f292f0177244ecfdc3b08';
-        // $visa = '8acda4ca771f292f0177244da4683af1';
-        // $url  = 'https://oppwa.com/v1/checkouts';
-        // $auth = 'OGFjZGE0Y2E3NzFmMjkyZjAxNzcyNDRkNGQ3MzNhZTd8WmZhZTdqSG1BOA==';
+        // $mada = env('PAYMENT_TOKEN_MADA');
+        // $visa = env('PAYMENT_TOKEN_VISA');
+        // $url  = env('PAYMENT_URL');
+        // $auth = env('PAYMENT_AUTH_TOKEN');
 
         // Test codes
-        $mada = '8ac7a4c7740661360174073f3c9d04c2';
-        $visa = '8ac7a4c7740661360174073eb3bb04bd';
-        $url  = 'https://test.oppwa.com/v1/checkouts';
-        $auth = 'OGFjN2E0Yzc3NDA2NjEzNjAxNzQwNzNlNWMxNTA0Yjl8WmN6aDU5ZTVkYg==';
+        $mada = env('PAYMENT_TOKEN_MADA_TEST');
+        $visa = env('PAYMENT_TOKEN_VISA_TEST');
+        $url  = env('PAYMENT_URL_TEST');
+        $auth = env('PAYMENT_AUTH_TOKEN_TEST');
 
         $select_paytype = ($paytype == 'MADA') ? $mada : $visa;
         $data = "entityId=" . $select_paytype.
@@ -239,17 +239,17 @@ class SubscriptionController extends Controller
     private function verify(Invoice $invoice)
     {
       
-      // Test codes
-      $mada = '8ac7a4c7740661360174073f3c9d04c2';
-      $visa = '8ac7a4c7740661360174073eb3bb04bd';
-      $urlb = 'https://test.oppwa.com/v1/checkouts/';
-      $auth = 'OGFjN2E0Yzc3NDA2NjEzNjAxNzQwNzNlNWMxNTA0Yjl8WmN6aDU5ZTVkYg==';
-      
       // Live codes
-      // $mada = '8acda4ca771f292f0177244ecfdc3b08';
-      // $visa = '8acda4ca771f292f0177244da4683af1';
-      // $urlb = 'https://oppwa.com/v1/checkouts/';
-      // $auth = 'OGFjZGE0Y2E3NzFmMjkyZjAxNzcyNDRkNGQ3MzNhZTd8WmZhZTdqSG1BOA==';
+      // $mada = env('PAYMENT_TOKEN_MADA');
+      // $visa = env('PAYMENT_TOKEN_VISA');
+      // $url  = env('PAYMENT_URL');
+      // $auth = env('PAYMENT_AUTH_TOKEN');
+
+      // Test codes
+      $mada = env('PAYMENT_TOKEN_MADA_TEST');
+      $visa = env('PAYMENT_TOKEN_VISA_TEST');
+      $url  = env('PAYMENT_URL_TEST');
+      $auth = env('PAYMENT_AUTH_TOKEN_TEST');
 
       $select_paytype = ($invoice->payment_method == 2) ? $mada : $visa;
       $url = $urlb . $invoice->order_ref . "/payment";

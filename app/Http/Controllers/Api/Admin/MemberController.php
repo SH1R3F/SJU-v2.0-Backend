@@ -148,7 +148,7 @@ class MemberController extends Controller
                 break;
                               
               case 'city':
-                $cells[$key . $counter] = config('sju.branches')[$member->branch];
+                $cells[$key . $counter] = @config('sju.branches')[$member->branch];
                 break;
                 
               case 'mobile':

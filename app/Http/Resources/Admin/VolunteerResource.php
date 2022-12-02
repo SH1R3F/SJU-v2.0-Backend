@@ -30,7 +30,7 @@ class VolunteerResource extends JsonResource
           'name'              => "{$this->fname_ar} {$this->lname_ar}",
           'gender'            => $this->gender,
           "country"           => $this->country,
-          "branch"            => $this->branch,
+          "branch"            => intval($this->branch),
           "city"              => intval($this->city),
           "nationality"       => $this->nationality,
           "qualification"     => $this->qualification,

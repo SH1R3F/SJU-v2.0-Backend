@@ -93,7 +93,7 @@ class InvoiceController extends Controller
                 break;
                 
               case 'member':
-                $cells[$key . $counter] = $invoice->member->fullName;
+                $cells[$key . $counter] = @$invoice->member->fullName;
                 break;
                 
               case 'amount':
